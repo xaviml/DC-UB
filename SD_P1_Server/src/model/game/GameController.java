@@ -6,12 +6,20 @@
 
 package model.game;
 
+import view.Log;
+
 /**
  *
  * @author Pablo
  */
-public class GameController implements AbstractGameController{
-
+public class GameController implements GameControllerInterface{
+    Log log;
+    Game game;
+    
+    public GameController(Log log){
+        this.game = new Game();
+        this.log = log;
+    }
 
     @Override
     public void endGame() {
@@ -27,6 +35,11 @@ public class GameController implements AbstractGameController{
 
     @Override
     public Turn steal() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Turn initGame() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

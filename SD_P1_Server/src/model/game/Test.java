@@ -12,14 +12,10 @@ package model.game;
  */
 public class Test {
     public static void main(String [] args){
-        DominoPiece p = new DominoPiece(2,6);
-        System.out.println(p.toString());
-        p = new DominoPiece(6, 6);
-        System.out.println(p.toString());
-        p = new DominoPiece(6, 5);
-        System.out.println(p.toString());
-        p = new DominoPiece(5,4);
-        System.out.println(p.toString());
+
+        
+        Game g = new Game();
+        g.initGame();
     }
     
 }

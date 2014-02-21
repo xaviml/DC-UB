@@ -38,6 +38,30 @@ public class DominoPiece {
     }
     
     
+    /**
+     * Method that gets the best of two pieces at start.
+     * @param piece
+     * @return true if this is better, false if not.
+     */
+    public boolean isThisBetter(DominoPiece piece){
+        if (piece == null){
+            return false;
+        }
+        
+       int scorethis = (this.isDouble())? this.nl+100 : this.nl+nr;
+       int scorepiece = (piece.isDouble())? piece.nl+100 : piece.nl+piece.nr;
+       
+       return (scorepiece>scorethis);
+    }
+    
+    /**
+     * Tell me if this piece is double
+     * @return 
+     */
+    public boolean isDouble(){
+        return this.nl == this.nr;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof DominoPiece){
