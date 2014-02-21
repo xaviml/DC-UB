@@ -6,21 +6,24 @@
 
 package view;
 
+import java.util.ArrayList;
+
 /**
- *
+ * This will be the buffer that contain logs. Any class that want to place a log
+ * in the GUI text pane must throw it to this Class. GUI will notify all changes.
  * @author Pablo
  */
-public class Log {
+public class Log{
     public boolean changed;
-    public String log;
+    private ArrayList<String> buffer;
     
     public synchronized void write(String s){
-        this.log = this.log+"\n"+s;
+        this.buffer.add(s);
         changed = true;
     }
     
     public synchronized String readLog(){
         changed = false;
-        return log;
+        return buffer.remove(0);
     }
 }
