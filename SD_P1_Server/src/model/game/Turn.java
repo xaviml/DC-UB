@@ -40,4 +40,12 @@ public class Turn {
     public int scoreClient;                     // When game's ended
     public int scoreServer;                     // When game's ended             
 
+    
+    public Turn(){
+        this.cantPlayFlag = false;
+        this.gameEndFlag = false;
+        this.missMatch = false;
+        
+        this.playerHand = null;
+    }
 }
