@@ -130,7 +130,6 @@ public class Game {
     }
 
     protected Turn steal() {
-        System.out.println("SOMEONE'S STEALING!!!!!!!!!!!!");
         // Check that resto isn't empty
         Turn t = new Turn();
         if (resto.getSize() == 0){
