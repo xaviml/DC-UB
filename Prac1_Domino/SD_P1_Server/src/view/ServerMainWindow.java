@@ -18,6 +18,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     public ServerMainWindow(Log log) {
         this.log = log;
         initComponents();
+        log.setActionListener(this);
     }
 
     /**

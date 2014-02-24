@@ -17,14 +17,17 @@ public class Log{
     private OnLogActionListener listener;
     private ArrayList<String> buffer;
     
-    
+    public Log(){
+        this.buffer = new ArrayList<>();
+    }
     
     public void setActionListener(OnLogActionListener listener){
         this.listener = listener;
     }
     public synchronized void write(String s){
-        listener.actionPerformed();
         this.buffer.add(s);
+        listener.actionPerformed();
+        
     }
     
     public synchronized String readLog(){
