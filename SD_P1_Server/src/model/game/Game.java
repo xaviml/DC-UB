@@ -28,7 +28,7 @@ public class Game {
 
     }
 
-    public Turn initGame(){
+    protected Turn initGame(){
         // First start the resto with all domino pieces
         initResto();
         
@@ -60,7 +60,7 @@ public class Game {
             
         } else{
             // Computer Starts
-            t = computerTurn();
+            t = computerTurn(null);
             t.playerHand = playerHand.getList();
             return t;
         }
@@ -80,7 +80,7 @@ public class Game {
     /**
      * Initialize all Domino pieces
      */
-    private void initResto(){
+    protected void initResto(){
         for (int i = 0; i <= 6; i++) {
             for (int j = i; j <= 6; j++) {
                 resto.addPiece(new DominoPiece(i, j));
@@ -88,8 +88,10 @@ public class Game {
         }
     }
 
-    private Turn computerTurn() {
-        Turn t = new Turn();
+    protected Turn computerTurn(Turn t) {
+        if (t == null){
+            t = new Turn();
+        }
 
         /* Check if computer can set a piece in the table */
         for (Object obj: compHand){
@@ -99,6 +101,7 @@ public class Game {
                 t.side = Pieces.Side.LEFT;
                 t.serverPiece = dp;
                 t.serverPiecesAmmount = compHand.getSize();
+                t.gameEndFlag = (compHand.getSize() == 0);
                 return t;
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
@@ -106,6 +109,7 @@ public class Game {
                 t.side = Pieces.Side.LEFT;
                 t.serverPiece = dp;
                 t.serverPiecesAmmount = compHand.getSize();
+                t.gameEndFlag = (compHand.getSize() == 0);
                 return t;
             }
         }
@@ -113,13 +117,55 @@ public class Game {
         
         // Check that resto isn't empty
         if (resto.getSize() == 0){
-            t.cantPlayFlag = true;
+            t.computerCantPlayFlag = true;
             return t;
         }
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
         t.serverPiecesAmmount = compHand.getSize();
+        return t;
+    }
+
+    protected Turn steal() {
+        // Check that resto isn't empty
+        Turn t = new Turn();
+        if (resto.getSize() == 0){
+            t.playerCantPlayFlag = true;
+        }
+        else{
+            /* if isn't empty steal a piece */
+            DominoPiece stealed = resto.takeRandomPiece();
+            playerHand.addPiece(stealed);
+            t.pieceStealed = stealed;
+        }
+        
+        // Now it's turn for the computer.
+        t = computerTurn(t);
+        return t;
+    }
+
+    protected Turn throwing(DominoPiece piece, Pieces.Side side) {
+        Turn t = new Turn();
+        /* Check if the movement is possible */
+        boolean flag = game.addPiece(piece, side);
+        
+        /* Manage the error */
+        if (!flag){
+            t.missMatch = true;
+            return t;
+        }
+        
+        /* If everything went OK */
+        playerHand.removePiece(piece);      
+        /* Manage player win */
+        if (playerHand.getSize() == 0){
+            t.gameEndFlag = true;
+            return t;
+        }
+        // If game haven't finished yet let computer play;
+        t = computerTurn(t);
+        
         return t;
     }
     

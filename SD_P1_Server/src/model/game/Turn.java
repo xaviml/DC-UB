@@ -20,7 +20,8 @@ import java.util.ArrayList;
 public class Turn {
     
     /* Control */
-    public boolean cantPlayFlag;
+    public boolean playerCantPlayFlag;
+    public boolean computerCantPlayFlag;
     public boolean gameEndFlag;                 // True if game has ended
     public boolean missMatch;                   // MissMatch between game info and play recived.
     
@@ -42,7 +43,8 @@ public class Turn {
 
     
     public Turn(){
-        this.cantPlayFlag = false;
+        this.playerCantPlayFlag = false; 
+        this.computerCantPlayFlag = false;
         this.gameEndFlag = false;
         this.missMatch = false;
         
