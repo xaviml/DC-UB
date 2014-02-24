@@ -6,6 +6,8 @@
 
 package model.connection;
 
+import java.net.Socket;
+
 /**
  * This class will be the Socket Listener, an active thread will be always listening
  * to the client, and interacting with him. This class also implements some methods
@@ -14,7 +16,7 @@ package model.connection;
  * @author Pablo
  */
 public class Connection extends Thread{
-    
+    private Socket socket;
     
     
     @Override
