@@ -2,7 +2,7 @@
 ${licenseFirst}
 </#if>
 ${licensePrefix}Server Side
-${licensePrefix}This project is being developed by Pablo Martinez and Xavi Moreno ${licensePrefix}
+${licensePrefix}This project is being developed by Pablo Martinez and Xavi Moreno
 <#if licenseLast??>
 ${licenseLast}
 </#if>
