@@ -1,0 +1,8 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Client Side
+${licensePrefix}This project is being developed by Pablo Martinez and Xavi Moreno
+<#if licenseLast??>
+${licenseLast}
+</#if>
