@@ -106,12 +106,13 @@ public class Game {
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
                 compHand.removePiece(dp);
-                t.side = Pieces.Side.LEFT;
+                t.side = Pieces.Side.RIGHT;
                 t.serverPiece = dp;
                 t.serverPiecesAmmount = compHand.getSize();
                 t.gameEndFlag = (compHand.getSize() == 0);
                 return t;
             }
+            
         }
         /* Computer can't play, let's steal a piece */
         
