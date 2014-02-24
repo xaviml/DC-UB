@@ -10,7 +10,7 @@ package view;
  * @author Pablo
  */
 public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogActionListener{
-    private Log log;
+    private Log log; // The log
     /**
      * Creates new form ServerMainWindow
      * @param log
