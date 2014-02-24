@@ -12,7 +12,7 @@ package model.game;
  */
 public interface GameControllerInterface {
     
-    abstract void endGame();
+    abstract Turn endGame(Turn t);
     abstract Turn throwing(DominoPiece piece, Pieces.Side side);
     abstract Turn steal();
     abstract Turn initGame();
