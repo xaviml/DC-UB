@@ -38,8 +38,8 @@ public class Turn {
     public ArrayList<DominoPiece> playerHand;   // Your hand, if is the first turn
     
     /* End game variables */
-    public int scoreClient;                     // When game's ended
-    public int scoreServer;                     // When game's ended             
+    public int scorePlayer;                     // When game's ended
+    public int scoreComputer;                     // When game's ended             
 
     
     public Turn(){

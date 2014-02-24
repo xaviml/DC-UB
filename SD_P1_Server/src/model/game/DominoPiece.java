@@ -33,7 +33,7 @@ public class DominoPiece {
             return " _______\n"+"| "+nl+" | "+nr+" |"+"\n|___|___|";
         }
         else{
-            return " ___\n"+"| "+nr+" |\n"+"|___|\n"+"| "+nl+" |\n"+"|___|";
+            return " ___\n"+"| "+nl+" |\n"+"|___|\n"+"| "+nr+" |\n"+"|___|";
         }
     }
     

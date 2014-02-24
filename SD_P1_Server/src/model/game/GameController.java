@@ -23,7 +23,10 @@ public class GameController implements GameControllerInterface{
 
     @Override
     public Turn endGame(Turn t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        t.gameEndFlag = true;   //If both cant move
+        t.scorePlayer = game.getPlayerScore();
+        t.scoreComputer = game.getComputerScore();
+        return t;
     }
 
 

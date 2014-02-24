@@ -69,9 +69,16 @@ public class Pieces implements Iterable{
     }
     
     public boolean addPiece(DominoPiece piece, Side side){
+
         if(listType == ListType.UNSORTED){
             // Unsorted lists cannot use this method;
             return false;
+        }
+        if (list.isEmpty()){
+            list.add(0, piece);
+            this.nl = piece.nl;
+            this.nr = piece.nr;
+            return true;
         }
         
         if (side == Side.LEFT){ // Add to the right side of the list;
@@ -83,6 +90,17 @@ public class Pieces implements Iterable{
                 
                 list.add(0, piece);
                 this.nl = piece.nl;
+                
+                //
+                System.out.println("===============");
+                for (DominoPiece dp: list){
+                    System.out.println(dp);
+                }
+                System.out.println("===============");
+                System.out.println("NUMBER LEFT: "+this.nl);
+                System.out.println("NUMBER RIGHT: "+this.nr);
+                //
+                
                 return true;
             }
             return false;
@@ -94,11 +112,20 @@ public class Pieces implements Iterable{
             // Check if is possible to add the piece
             // (one || two nuber/s equals to "ln" = Left number)
             
-            if (piece.nl == this.nr || piece.nl == this.nr){
-                if (piece.nl == this.nl) piece.reverse();
+            if (piece.nl == this.nr || piece.nr == this.nr){
+                if (piece.nr == this.nr) piece.reverse();
                 
                 list.add(piece);
                 this.nr = piece.nr;
+                //
+                System.out.println("===============");
+                for (DominoPiece dp: list){
+                    System.out.println(dp);
+                }
+                System.out.println("===============");
+                System.out.println("NUMBER LEFT: "+this.nl);
+                System.out.println("NUMBER RIGHT: "+this.nr);
+                //
                 return true;
             }
             return false;

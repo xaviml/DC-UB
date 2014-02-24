@@ -25,7 +25,8 @@ public class Game {
         resto = new Pieces(Pieces.ListType.UNSORTED);
         playerHand = new Pieces(Pieces.ListType.UNSORTED);
         compHand = new Pieces(Pieces.ListType.UNSORTED);
-
+        game = new Pieces(Pieces.ListType.SORTED);
+        
     }
 
     protected Turn initGame(){
@@ -129,6 +130,7 @@ public class Game {
     }
 
     protected Turn steal() {
+        System.out.println("SOMEONE'S STEALING!!!!!!!!!!!!");
         // Check that resto isn't empty
         Turn t = new Turn();
         if (resto.getSize() == 0){
@@ -174,6 +176,26 @@ public class Game {
         t = computerTurn(t);
         
         return t;
+    }
+
+    int getPlayerScore() {
+        if (playerHand.getSize() == 0) return -1;
+        int score = 0;
+        for(Object o: playerHand){
+            DominoPiece dp = (DominoPiece) o;
+            score += dp.nl+dp.nr;
+        }
+        return score;
+    }
+
+    int getComputerScore() {
+        if (compHand.getSize() == 0) return -1;
+        int score = 0;
+        for(Object o: compHand){
+            DominoPiece dp = (DominoPiece) o;
+            score += dp.nl+dp.nr;
+        }
+        return score;
     }
     
 }
