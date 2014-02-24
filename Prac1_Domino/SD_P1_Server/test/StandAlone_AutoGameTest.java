@@ -16,7 +16,7 @@ import model.game.Turn;
  *
  * @author Pablo
  */
-public class AutoGameTest {
+public class StandAlone_AutoGameTest {
     public static void main(String [] args){
         ArrayList<DominoPiece> hand;
         ArrayList<DominoPiece> table;
