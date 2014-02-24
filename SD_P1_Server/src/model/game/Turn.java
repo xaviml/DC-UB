@@ -18,14 +18,26 @@ import java.util.ArrayList;
  * @author Pablo
  */
 public class Turn {
+    
+    /* Control */
+    public boolean cantPlayFlag;
+    public boolean gameEndFlag;                 // True if game has ended
     public boolean missMatch;                   // MissMatch between game info and play recived.
-    public DominoPiece pieceStealed;            // The piece stealed.
+    
+    /* Comp variables */
     public DominoPiece serverPiece;             // The play from the server
-    public ArrayList<DominoPiece> playerHand;   // Your hand, if is the first turn
-    public int restoAmmount;                    // Number of pieces left in the resto
     public int serverPiecesAmmount;             // Number of pieces in comp hand
     public Pieces.Side side;                    // The side of the play of the server
-    public int scoreServer;                     // When game's ended             
-    public int scoreClient;                     // When game's ended
+
+    /* Game Variables */
+    public int restoAmmount;                    // Number of pieces left in the resto
     
+    /* Player Variables */
+    public DominoPiece pieceStealed;            // The piece stealed.
+    public ArrayList<DominoPiece> playerHand;   // Your hand, if is the first turn
+    
+    /* End game variables */
+    public int scoreClient;                     // When game's ended
+    public int scoreServer;                     // When game's ended             
+
 }

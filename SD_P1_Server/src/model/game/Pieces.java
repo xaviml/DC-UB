@@ -7,19 +7,25 @@
 package model.game;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
  *
  * @author Pablo
  */
-public class Pieces {
+public class Pieces implements Iterable{
+
+
+
+
+
     public static enum ListType{SORTED, UNSORTED};
     public static enum Side{LEFT,RIGHT};
     
     private ListType listType;
     private ArrayList<DominoPiece> list;
-    private int rn, ln;
+    private int nr, nl;
     
     public Pieces(ListType type){
         this.listType = type;
@@ -50,17 +56,32 @@ public class Pieces {
         list.add(piece);
     }
     
-    public void addPiece(DominoPiece piece, Side side){
+    public ArrayList<DominoPiece> getList() {
+        return list;
+    }
+    
+    public void removePiece(DominoPiece dp) {
+        list.remove(dp);
+    }
+    
+    public boolean addPiece(DominoPiece piece, Side side){
         if(listType == ListType.UNSORTED){
             // Unsorted lists cannot use this method;
-            return;
+            return false;
         }
         
-        if (side == Side.RIGHT){ // Add to the right side of the list;
+        if (side == Side.LEFT){ // Add to the right side of the list;
             
             // Check if is possible to add the piece
             // (one || two nuber/s equals to "rn" = Right number)
-            
+            if (piece.nr == this.nl || piece.nl == this.nl){
+                if (piece.nl == this.nl) piece.reverse();
+                
+                list.add(0, piece);
+                this.nl = piece.nl;
+                return true;
+            }
+            return false;
             // Add it to the list and change "rn"
             
         }
@@ -69,8 +90,25 @@ public class Pieces {
             // Check if is possible to add the piece
             // (one || two nuber/s equals to "ln" = Left number)
             
+            if (piece.nl == this.nr || piece.nl == this.nr){
+                if (piece.nl == this.nl) piece.reverse();
+                
+                list.add(piece);
+                this.nr = piece.nr;
+                return true;
+            }
+            return false;
             // Add it to the list and change "ln")
         }
     }
     
+    public int getSize(){
+        return list.size();
+    }
+    
+    @Override
+    public Iterator iterator() {
+        return list.iterator();
+    }
+
 }

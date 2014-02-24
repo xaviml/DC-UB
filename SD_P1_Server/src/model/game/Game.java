@@ -52,8 +52,11 @@ public class Game {
         
         if (compBest.isThisBetter(playerBest)){
             // Player Starts
+            return null;
         } else{
             // Computer Starts
+            Turn t = computerTurn();
+            return null;
         }
         
         /** =========== Test stuff
@@ -65,7 +68,6 @@ public class Game {
             System.out.println(d);
         }
         */
-        return null;
     }
     
     
@@ -78,6 +80,41 @@ public class Game {
                 resto.addPiece(new DominoPiece(i, j));
             }
         }
+    }
+
+    private Turn computerTurn() {
+        Turn t = new Turn();
+
+        /* Check if computer can set a piece in the table */
+        for (Object obj: compHand){
+            DominoPiece dp = (DominoPiece) obj;
+            if (game.addPiece(dp, Pieces.Side.LEFT)){
+                compHand.removePiece(dp);
+                t.side = Pieces.Side.LEFT;
+                t.serverPiece = dp;
+                t.serverPiecesAmmount = compHand.getSize();
+                return t;
+            }
+            else if(game.addPiece(dp, Pieces.Side.RIGHT)){
+                compHand.removePiece(dp);
+                t.side = Pieces.Side.LEFT;
+                t.serverPiece = dp;
+                t.serverPiecesAmmount = compHand.getSize();
+                return t;
+            }
+        }
+        /* Computer can't play, let's steal a piece */
+        
+        // Check that resto isn't empty
+        if (resto.getSize() == 0){
+            t.cantPlayFlag = true;
+            return t;
+        }
+        // Steal a piece
+        DominoPiece stealed = resto.takeRandomPiece();
+        compHand.addPiece(stealed);
+        t.serverPiecesAmmount = compHand.getSize();
+        return t;
     }
     
 }
