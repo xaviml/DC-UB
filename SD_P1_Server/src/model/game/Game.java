@@ -147,12 +147,18 @@ public class Game {
 
     protected Turn throwing(DominoPiece piece, Pieces.Side side) {
         Turn t = new Turn();
+        /* Check if the piece is owned by the client */
+        if (!playerHand.contains(piece)){
+            t.missMatchFlag = true;
+            return t;
+        }
+        
         /* Check if the movement is possible */
         boolean flag = game.addPiece(piece, side);
         
         /* Manage the error */
         if (!flag){
-            t.missMatch = true;
+            t.missMatchFlag = true;
             return t;
         }
         

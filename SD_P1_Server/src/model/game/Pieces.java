@@ -16,6 +16,10 @@ import java.util.Random;
  */
 public class Pieces implements Iterable{
 
+    boolean contains(DominoPiece piece) {
+        return list.contains(piece);
+    }
+
 
 
 
