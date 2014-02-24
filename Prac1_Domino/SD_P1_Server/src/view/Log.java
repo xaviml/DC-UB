@@ -14,16 +14,24 @@ import java.util.ArrayList;
  * @author Pablo
  */
 public class Log{
-    public boolean changed;
+    private OnLogActionListener listener;
     private ArrayList<String> buffer;
     
+    
+    
+    public void setActionListener(OnLogActionListener listener){
+        this.listener = listener;
+    }
     public synchronized void write(String s){
+        listener.actionPerformed();
         this.buffer.add(s);
-        changed = true;
     }
     
     public synchronized String readLog(){
-        changed = false;
         return buffer.remove(0);
+    }
+    
+    public interface OnLogActionListener{
+        public void actionPerformed();
     }
 }
