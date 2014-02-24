@@ -1,8 +1,0 @@
-<#if licenseFirst??>
-${licenseFirst}
-</#if>
-${licensePrefix}Server Side
-${licensePrefix}This project is being developed by Pablo Martinez and Xavi Moreno ${licensePrefix}
-<#if licenseLast??>
-${licenseLast}
-</#if>
