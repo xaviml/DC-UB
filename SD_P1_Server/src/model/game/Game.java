@@ -50,13 +50,19 @@ public class Game {
             
         }
         
+        Turn t = new Turn();
         if (compBest.isThisBetter(playerBest)){
             // Player Starts
-            return null;
+            // Retrive it's basic info
+            t.playerHand = playerHand.getList();
+            return t;
+            
+            
         } else{
             // Computer Starts
-            Turn t = computerTurn();
-            return null;
+            t = computerTurn();
+            t.playerHand = playerHand.getList();
+            return t;
         }
         
         /** =========== Test stuff
