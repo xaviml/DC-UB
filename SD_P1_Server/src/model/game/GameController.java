@@ -23,7 +23,7 @@ public class GameController implements GameControllerInterface{
 
     @Override
     public Turn endGame(Turn t) {
-        t.gameEndFlag = true;   //If both cant move
+        t.gameEndFlag = true;   //If both cant move this might be false
         t.scorePlayer = game.getPlayerScore();
         t.scoreComputer = game.getComputerScore();
         return t;
@@ -32,7 +32,11 @@ public class GameController implements GameControllerInterface{
 
     @Override
     public Turn throwing(DominoPiece piece, Pieces.Side side) {
-        Turn t =  game.throwing(piece, side);
+        Turn t =  game.throwing(piece, side);   // Player plays
+        if (t.gameEndFlag){
+            t = endGame(t);
+        }
+        t = game.computerTurn(t);               // Computer plays
         if (t.gameEndFlag){
             t = endGame(t);
         }
@@ -43,7 +47,9 @@ public class GameController implements GameControllerInterface{
     @Override
     public Turn steal() {
         /* Check if game has ended in a Draw*/
-        Turn t = game.steal();
+        Turn t = game.steal();      // Player play
+        t = game.computerTurn(t);   // Computer play
+        
         if ((t.computerCantPlayFlag && t.playerCantPlayFlag) || t.gameEndFlag){
             return endGame(t);
         }

@@ -141,9 +141,7 @@ public class Game {
             playerHand.addPiece(stealed);
             t.pieceStealed = stealed;
         }
-        
-        // Now it's turn for the computer.
-        t = computerTurn(t);
+
         return t;
     }
 
@@ -166,13 +164,9 @@ public class Game {
         
         /* If everything went OK */
         playerHand.removePiece(piece);      
-        /* Manage player win */
         if (playerHand.getSize() == 0){
             t.gameEndFlag = true;
-            return t;
         }
-        // If game haven't finished yet let computer play;
-        t = computerTurn(t);
         
         return t;
     }
