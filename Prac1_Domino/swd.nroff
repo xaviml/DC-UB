@@ -1,0 +1,102 @@
+.pl 10.0i
+.po 0
+.ll 7.2i
+.lt 7.2i
+.nr LL 7.2i
+.nr LT 7.2i
+.ds LF Dijous2
+.ds RF FORMFEED[Page %]
+.ad l
+.in 0
+
+.nf
+.tl 'Dijous2''Pablo M. M.'
+.tl ' ' 'Xavi M. L.'
+.fi
+
+.ce 2
+Domino Protocol -- DP/0.1
+.fi
+.in 3
+
+.ti 0
+Abstract
+
+<Abstract Text>
+
+.in 0
+Table of Contents
+
+.nf
+   1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.2 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
+   2 DP Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  3
+     5.2  Informative References  . . . . . . . . . . . . . . . . . .  3
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  3
+.fi
+.in 3
+
+.bp
+.ti 0
+1  Introduction
+
+Domino Protocol is a protocol designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define how must play to online domino's game.
+
+.ti 0
+1.1  Terminology
+
+The key words used:
+.sp
+.nf
+	C := Client
+	S := Server
+.sp
+.ti 0
+1.2 Basic Structure
+
+This is the basic structure of DP.
+
+.tl ' C''S'
+.tl ' |''|'
+.tl ' |''|'
+.tl ' |'msg to server'|'
+.tl ' |'--------------------------------------------------------------->'|'
+.tl ' |'msg to client + ERROR'|'
+.tl ' |'<---------------------------------------------------------------'|'
+.tl ' |''|'
+.tl ' |''|'
+.tl ' |''|'
+
+.bp
+.ti 0
+2 DP Commands
+
+
+
+.ti 0 
+5.1  Normative References
+
+
+.ti 0
+5.2  Informative References
+
+
+.ti 0
+Authors' Addresses
+
+.sp
+.nf
+Xavi Moreno Liceras
+Universitat de Barcelona
+EMail: xmorenli7@alumnes.ub.edu
+
+Pablo Martinez Martinez
+Universitat de Barcelona
+EMail: 
+.sp
+
+
+.fi
+
