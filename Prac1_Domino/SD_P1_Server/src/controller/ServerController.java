@@ -20,7 +20,9 @@ public class ServerController {
     
     public ServerController(Log log){
         this.log = log;
+        log.write("SC :: Server controller created");
         this.conManager = new ConnectionManager(log);
+        
     }
     
     
@@ -35,7 +37,7 @@ public class ServerController {
     }
     
     public void closeConnections(){
-        conManager.closeConnections();
+        //conManager.closeConnections();
     }
     
     public ArrayList<String> retrieveConnections(){

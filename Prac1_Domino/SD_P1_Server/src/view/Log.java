@@ -15,26 +15,39 @@ import java.util.ArrayList;
  */
 public class Log{
     private OnLogActionListener listener;
-    private ArrayList<String> buffer;
+    private ArrayList<String> logBuffer;
+    private ArrayList<String> newConnection;
+    private ArrayList<String> disconnected;
+    private ArrayList<String> gameCreated;
+    private ArrayList<String> gameDestroyed;
     
     public Log(){
-        this.buffer = new ArrayList<>();
+        this.logBuffer = new ArrayList<>();
     }
     
     public void setActionListener(OnLogActionListener listener){
         this.listener = listener;
     }
     public synchronized void write(String s){
-        this.buffer.add(s);
-        listener.actionPerformed();
-        
+        listener.onAddLog(s);
+    }
+    public synchronized void addConnection(String s){
+        listener.onNewConnection(s);
+    }
+    public synchronized void removeConnection(String s){
+        listener.onDisconnect(s);
     }
     
     public synchronized String readLog(){
-        return buffer.remove(0);
+        return logBuffer.remove(0);
     }
     
     public interface OnLogActionListener{
-        public void actionPerformed();
+        public void onAddLog(String s);
+        public void onGameCreated(String s);
+        public void onGameDestroyed(String s);
+        public void onNewConnection(String s);
+        public void onDisconnect(String s);
+        
     }
 }
