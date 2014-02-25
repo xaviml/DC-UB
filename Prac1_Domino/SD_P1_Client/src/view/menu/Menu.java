@@ -3,23 +3,21 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package view;
+package view.menu;
 
 import java.util.Scanner;
 
 /**
  * Classe Menú de soport
  * @author Pablo Martinez i Xavi Moreno
- * @param <Enum>
+ * @param <E>
  */
-public class Menu<Enum> {
+public class Menu<E extends Enum<E>> {
 
-    private Enum[] llistaOpcions;
-    private String titol;
+    private E[] llistaOpcions;
     private String[] llistaDescripcions;
 
-    public Menu(String titol, Enum[] llistaOpcions, String[]  llistaDescripcions) {
-        this.titol = titol;
+    public Menu(E[] llistaOpcions, String[]  llistaDescripcions) {
         this.llistaOpcions = llistaOpcions;
         this.llistaDescripcions = llistaDescripcions;
     }
@@ -28,9 +26,6 @@ public class Menu<Enum> {
      * Mètode per mostrar el menú
      */
     public void mostrarMenu() {
-        System.out.println("\n*******************************");
-        System.out.println(titol.toUpperCase());
-        System.out.println("*******************************\n");
         for (int i = 0; i < getMaxLen(); i++) {
             System.out.println((i+1)+".- "+llistaDescripcions[i]);
         }
@@ -40,7 +35,7 @@ public class Menu<Enum> {
      * @param sc
      * @return 
      */
-    public Enum getOpcio(Scanner sc) {
+    public E getOpcio(Scanner sc) {
         int op = 0;
         boolean sortir = false;
         while(!sortir) {
