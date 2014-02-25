@@ -1,0 +1,168 @@
+ 
+
+
+
+Dijous2                                                      Pablo M. M.
+                                                              Xavi M. L.
+
+                       Domino Protocol -- DP/0.1
+
+Abstract
+
+   <Abstract Text>
+
+Table of Contents
+
+   1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.2 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
+   2 DP Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  3
+     5.2  Informative References  . . . . . . . . . . . . . . . . . .  3
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 1]
+
+                                                                        
+
+
+1  Introduction
+
+   Domino Protocol is a protocol designed by the students of 
+   Distributed computing at the 'Universitat de Barcelona'. This
+   protocol define how must play to online domino's game.
+
+1.1  Terminology
+
+   The key words used:
+
+   	C := Client
+   	S := Server
+
+1.2 Basic Structure
+
+   This is the basic structure of DP.
+
+ C                                                                     S
+ |                                                                     |
+ |                                                                     |
+ |                            msg to server                            |
+ |  --------------------------------------------------------------->   |
+ |                        msg to client + ERROR                        |
+ |  <---------------------------------------------------------------   |
+ |                                                                     |
+ |                                                                     |
+ |                                                                     |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 2]
+
+                                                                        
+
+
+2 DP Commands
+
+
+
+5.1  Normative References
+
+
+5.2  Informative References
+
+
+Authors' Addresses
+
+
+   Xavi Moreno Liceras
+   Universitat de Barcelona
+   EMail: xmorenli7@alumnes.ub.edu
+
+   Pablo Martinez Martinez
+   Universitat de Barcelona
+   EMail: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Dijous2                                                         [Page 3]
