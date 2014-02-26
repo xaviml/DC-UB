@@ -5,25 +5,32 @@
 .nr LL 7.2i
 .nr LT 7.2i
 .ds LF Dijous2
+.ds LH Distributed computing
+.ds RH Febraury 2014
+.ds CH University of Barcelona
 .ds RF FORMFEED[Page %]
 .ad l
 .in 0
 
 .nf
 .tl 'Dijous2''Pablo M. M.'
-.tl ' ' 'Xavi M. L.'
+.tl 'Internet-Draft''Xavi M. L.'
+.tl 'Intended status: Informational''Universitat de Barcelona'
+.tl '''February 2014'
 .fi
 
 .ce 2
-Domino Protocol -- DP/0.1
+Domino's Protocol -- DP/0.1
 .fi
 .in 3
 
 .ti 0
 Abstract
 
-<Abstract Text>
+Domino is a popular game played for all types of users. Is a easy game that you must throw your tiles on a board and following a set of rules end up leaving your empty hand to win.
 
+.\" \# TD4  -- Set TOC depth by altering this value (TD5 = depth 5)
+.\" \# TOC  -- Beginning of auto updated Table of Contents
 .in 0
 Table of Contents
 
@@ -32,31 +39,44 @@ Table of Contents
      1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  2
      1.2 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
    2 DP Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  3
-     5.2  Informative References  . . . . . . . . . . . . . . . . . .  3
+     2.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+       2.1.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
+       2.1.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
+     2.2 MOVEMENT . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+       2.2.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
+       2.2.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
+     2.3 STEAL  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+       2.3.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
+       2.3.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
    Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  3
 .fi
 .in 3
+
+.\" \# ETC -- End of auto updated Table of Contents
+
+
+
 
 .bp
 .ti 0
 1  Introduction
 
-Domino Protocol is a protocol designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define how must play to online domino's game.
+Domino Protocol is a protocol designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define how must play to online domino's game. This protocol permits play one match of the domino's game. This protocol don't control a series of matches and their scores.
 
 .ti 0
 1.1  Terminology
 
 The key words used:
-.sp
 .nf
 	C := Client
 	S := Server
-.sp
+	msg := Message
+.fi
+
 .ti 0
 1.2 Basic Structure
 
-This is the basic structure of DP.
+This is the basic structure of DP. Every message will follow this structure, the client send a message to the server and the server response a client with a error message.
 
 .tl ' C''S'
 .tl ' |''|'
@@ -69,18 +89,43 @@ This is the basic structure of DP.
 .tl ' |''|'
 .tl ' |''|'
 
+
+
+
 .bp
 .ti 0
 2 DP Commands
 
-
-
-.ti 0 
-5.1  Normative References
-
+In this section will be explain all commands of this protocol. In each command explain how to send message to the server, and it response.
 
 .ti 0
-5.2  Informative References
+2.1 HELLO \" Primera trama
+
+.ti 0
+2.1.1 Send to server
+
+.ti 0
+2.1.2 Server response
+
+.ti 0
+2.2 MOVEMENT \" Trama de tirada
+
+.ti 0
+2.2.1 Send to server
+
+.ti 0
+2.2.2 Server response
+
+.ti 0
+2.3 STEAL
+
+.ti 0
+2.3.1 Send to server
+
+.ti 0
+2.3.2 Server response
+
+.ti
 
 
 .ti 0
@@ -94,7 +139,7 @@ EMail: xmorenli7@alumnes.ub.edu
 
 Pablo Martinez Martinez
 Universitat de Barcelona
-EMail: 
+EMail: pmartima22@alumnes.ub.edu
 .sp
 
 

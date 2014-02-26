@@ -26,7 +26,7 @@ public class StatsView extends View {
     @Override
     public Class run(Scanner sc) {
         Bundle b = parent.getBundle();
-        System.out.println(b.getString("prova"));
+        System.out.println(b.getString("stats"));
         
         sc.next();
         

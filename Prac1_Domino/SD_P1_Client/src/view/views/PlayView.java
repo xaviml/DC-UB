@@ -27,7 +27,7 @@ public class PlayView extends View{
     public Class run(Scanner sc) {
         sc.next();
         Bundle b = parent.getBundle();
-        b.putString("prova", "Xavii!");
+        b.putString("stats", "Xavii!");
         return StatsView.class;
     }
     
