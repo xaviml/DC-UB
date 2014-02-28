@@ -2,7 +2,6 @@
  * Server Side
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
-/* ASD*/
 package view;
 
 import controller.ServerController;
@@ -323,7 +322,6 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
 
     @Override
     public void onDisconnect(String s) {
-        this.getClass();
         connections.removeElement(s);
         updateConNumber();
     }
