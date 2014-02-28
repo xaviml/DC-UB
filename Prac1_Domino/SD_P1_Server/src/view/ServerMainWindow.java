@@ -6,7 +6,7 @@ package view;
 
 import controller.ServerController;
 import javax.swing.DefaultListModel;
-import model.connection.Constants;
+import model.Constants;
 
 /**
  *

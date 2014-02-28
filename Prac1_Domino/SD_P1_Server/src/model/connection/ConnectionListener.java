@@ -6,6 +6,7 @@
 
 package model.connection;
 
+import model.Constants;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

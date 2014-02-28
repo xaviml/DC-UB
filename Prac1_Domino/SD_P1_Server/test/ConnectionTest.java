@@ -1,7 +1,7 @@
 
 import java.io.IOException;
 import java.net.Socket;
-import model.connection.Constants;
+import model.Constants;
 
 /*
  * Server Side
