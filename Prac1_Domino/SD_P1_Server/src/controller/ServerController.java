@@ -20,7 +20,8 @@ public class ServerController {
     
     public ServerController(Log log){
         this.log = log;
-        log.write("SC :: Server controller created");
+        
+        log.write(this.getClass().getSimpleName(),"Server controller created", Log.MessageType.MONITORING);
         this.conManager = new ConnectionManager(log);
         
     }
@@ -28,16 +29,16 @@ public class ServerController {
     
     /// CONNECTION MANAGEMENT ///
     
-    public void acceptNewConnections(){
-        conManager.startListening();
+    public boolean acceptNewConnections(){
+        return conManager.startListening();
     }
     
-    public void rejectNewConnections(){
-        conManager.stopListening();
+    public boolean rejectNewConnections(){
+        return conManager.stopListening();
     }
     
     public void closeConnections(){
-        //conManager.closeConnections();
+        conManager.closeConnections();
     }
     
     public ArrayList<String> retrieveConnections(){
@@ -46,16 +47,16 @@ public class ServerController {
     
     
     /// LOGGER MANAGEMENT ///
-    public void toggleGameInfo(){
-        
+    public void toggleGames(){
+        log.toggleGames();
     }
     
-    public void toggleNewConnectionsInfo(){
-        
+    public void toggleConnections(){
+        log.toggleConnections();
     }
     
-    public void toggleConnectionExceptionsInfo(){
-        
+    public void toggleErrors(){
+        log.toggleErrors();
     }
     
     public void toggleBandWidthInfo(){

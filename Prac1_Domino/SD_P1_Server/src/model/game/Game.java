@@ -103,6 +103,7 @@ public class Game {
                 t.serverPiece = dp;
                 t.serverPiecesAmmount = compHand.getSize();
                 t.gameEndFlag = (compHand.getSize() == 0);
+                System.out.println("SYSTEM THROW");
                 return t;
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
@@ -111,6 +112,7 @@ public class Game {
                 t.serverPiece = dp;
                 t.serverPiecesAmmount = compHand.getSize();
                 t.gameEndFlag = (compHand.getSize() == 0);
+                System.out.println("SYSTEM THROW");
                 return t;
             }
             
@@ -120,13 +122,18 @@ public class Game {
         // Check that resto isn't empty
         if (resto.getSize() == 0){
             t.computerCantPlayFlag = true;
+            System.out.println("CANT STEAL! NO RESTO");
             return t;
         }
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
         t.serverPiecesAmmount = compHand.getSize();
-        return t;
+        System.out.println("SYSTEM STEAL");
+        
+        // Another call to the function until server will be able to move, or
+        // No pieces left in the resto
+        return computerTurn(t);
     }
 
     protected Turn steal() {
@@ -134,14 +141,12 @@ public class Game {
         Turn t = new Turn();
         if (resto.getSize() == 0){
             t.playerCantPlayFlag = true;
+            return t;
         }
-        else{
-            /* if isn't empty steal a piece */
-            DominoPiece stealed = resto.takeRandomPiece();
-            playerHand.addPiece(stealed);
-            t.pieceStealed = stealed;
-        }
-
+        /* if isn't empty steal a piece */
+        DominoPiece stealed = resto.takeRandomPiece();
+        playerHand.addPiece(stealed);
+        t.pieceStealed = stealed;
         return t;
     }
 
@@ -158,7 +163,7 @@ public class Game {
         
         /* Manage the error */
         if (!flag){
-            t.missMatchFlag = true;
+            t.invalidMovementFlag = true;
             return t;
         }
         

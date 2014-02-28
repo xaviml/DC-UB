@@ -23,7 +23,8 @@ public class Turn {
     public boolean playerCantPlayFlag;
     public boolean computerCantPlayFlag;
     public boolean gameEndFlag;                 // True if game has ended
-    public boolean missMatchFlag;                   // MissMatch between game info and play recived.
+    public boolean invalidMovementFlag;         // Piece cannot be placed there!
+    public boolean missMatchFlag;               // MissMatch between game info and play recived.
     
     /* Comp variables */
     public DominoPiece serverPiece;             // The play from the server

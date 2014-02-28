@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author Pablo
  */
 public class Log{
+    public static enum MessageType{MONITORING, ERROR, GAME, CONNECTION}
     private OnLogActionListener listener;
     private ArrayList<String> logBuffer;
     private ArrayList<String> newConnection;
@@ -21,15 +22,44 @@ public class Log{
     private ArrayList<String> gameCreated;
     private ArrayList<String> gameDestroyed;
     
+    private boolean connectionLogs;
+    private boolean errorLogs;
+    private boolean gameLogs;
+    
+    
     public Log(){
         this.logBuffer = new ArrayList<>();
+        this.connectionLogs = true;
+        this.errorLogs = true;
+        this.gameLogs = true;
     }
     
     public void setActionListener(OnLogActionListener listener){
         this.listener = listener;
     }
-    public synchronized void write(String s){
+    // TOGGLING MESSAGES
+    public void toggleConnections(){
+        connectionLogs = !connectionLogs;
+    }
+    public void toggleErrors(){
+        errorLogs = !errorLogs;
+    }
+    
+    public void toggleGames(){
+        gameLogs = !gameLogs;
+    }
+    
+    
+    //WRITING METHODS
+    public synchronized void writePlain(String s){
         listener.onAddLog(s);
+    }
+    public synchronized void write(String _class, String message, MessageType type){
+        if ((type == MessageType.ERROR && !errorLogs) || (type == MessageType.CONNECTION && !connectionLogs) || (type == MessageType.GAME && !gameLogs)){
+            return;
+        }
+        String s = "["+type.name()+"]";
+        listener.onAddLog(s+" -- ["+_class+"] :: "+message);
     }
     public synchronized void addConnection(String s){
         listener.onNewConnection(s);

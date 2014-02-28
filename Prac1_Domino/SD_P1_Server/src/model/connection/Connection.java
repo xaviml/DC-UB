@@ -6,7 +6,10 @@
 
 package model.connection;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -18,7 +21,9 @@ import view.Log;
  */
 public class Connection extends Thread{
     public static enum ConnectionState{CONNECTED,PLAYING,FINISHED,FORCEQUIT}
+    private OnDisconnectListener dcListener;
     private ConnectionState state;
+    private ComUtils com;
     private Socket socket;
     private int ID;
     private Log log;   
@@ -29,24 +34,56 @@ public class Connection extends Thread{
         this.log = log;
         this.ID = id;
         
+        try {
+            this.com = new ComUtils(socket);
+        } catch (IOException ex) {
+            this.log.write(this.getClass().getSimpleName(),"Cannot establish communication with "+this.ID, Log.MessageType.ERROR); 
+        }
     }
     @Override
     public void run(){
-        // Do something
+        while(state != ConnectionState.FORCEQUIT /*|| state != ConnectionState.FINISHED*/){
+            try {
+                com.write_int32(ID);
+                try {
+                    this.sleep(1000);
+                } catch (InterruptedException ex1) {
+                }
+            } catch (IOException ex) {
+                this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception. Disconnecting...", Log.MessageType.ERROR);
+                this.state = ConnectionState.FORCEQUIT;
+
+            }
+        }
+        try {
+            //Finish connection
+            socket.close();
+        } catch (IOException ex) {
+            //
+        }
+        dcListener.onDisconnect(ID);
     }
 
+    protected void setListener(OnDisconnectListener l){
+        this.dcListener = l;
+    }
+    
     protected String getIP() {
-        return "null";
-        //return socket.getInetAddress().getHostAddress();
+        return socket.getInetAddress().getHostAddress();
     }
 
     protected void closeConnection() {
         this.state = ConnectionState.FORCEQUIT;
+        
     }
     
     @Override
     public String toString(){
-        return this.ID+":"+this.getIP();
+        return this.ID+" : "+this.getIP();
         
+    }
+    
+    protected interface OnDisconnectListener{
+        public void onDisconnect(int id);
     }
 }

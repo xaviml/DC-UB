@@ -33,6 +33,8 @@ public class GameController implements GameControllerInterface{
     @Override
     public Turn throwing(DominoPiece piece, Pieces.Side side) {
         Turn t =  game.throwing(piece, side);   // Player plays
+        if (t.missMatchFlag || t.invalidMovementFlag) return t;
+        
         if (t.gameEndFlag){
             t = endGame(t);
         }
@@ -48,13 +50,15 @@ public class GameController implements GameControllerInterface{
     public Turn steal() {
         /* Check if game has ended in a Draw*/
         Turn t = game.steal();      // Player play
-        t = game.computerTurn(t);   // Computer play
         
+        if (t.playerCantPlayFlag){
+            t = game.computerTurn(t);   // Computer play
+        }
         if ((t.computerCantPlayFlag && t.playerCantPlayFlag) || t.gameEndFlag){
             return endGame(t);
         }
         
-        return game.steal();
+        return t;
     }
 
     @Override

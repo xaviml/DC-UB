@@ -37,11 +37,12 @@ public class StandAlone_AutoGameTest {
             side = false;
             for(DominoPiece dp: hand){
                 t = g.throwing(dp, Pieces.Side.LEFT);
-                if (t.missMatchFlag){
+                if (t.invalidMovementFlag){
                     t = g.throwing(dp, Pieces.Side.RIGHT);
                     side = true;
                 }
-                if (!t.missMatchFlag) {
+                if (!t.invalidMovementFlag) {
+                    System.out.println("HUMAN THROW");
                     th = true;
                     if (!side){
                         table.add(0, dp);
@@ -55,7 +56,9 @@ public class StandAlone_AutoGameTest {
             }
             if (!th){
                 t = g.steal();
+                
                 if (t.pieceStealed != null){
+                    System.out.println("HUMAN STEAL");
                     hand.add(t.pieceStealed);
                 }
             }

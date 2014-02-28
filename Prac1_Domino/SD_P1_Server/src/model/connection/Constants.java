@@ -11,6 +11,7 @@ package model.connection;
  * @author Pablo
  */
 public class Constants {
-    public static final int PORT = 7777;
+    public static int PORT;
+    public static final int MAX_CONNECTIONS = 100;
     
 }

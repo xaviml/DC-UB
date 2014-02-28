@@ -90,7 +90,7 @@ public class Pieces implements Iterable{
                 
                 list.add(0, piece);
                 this.nl = piece.nl;
-                
+                /*
                 // TEST STUFF
                 System.out.println("===============");
                 for (DominoPiece dp: list){
@@ -99,7 +99,7 @@ public class Pieces implements Iterable{
                 System.out.println("===============");
                 System.out.println("NUMBER LEFT: "+this.nl);
                 System.out.println("NUMBER RIGHT: "+this.nr);
-                //
+                //*/
                 
                 return true;
             }
@@ -117,7 +117,7 @@ public class Pieces implements Iterable{
                 
                 list.add(piece);
                 this.nr = piece.nr;
-                
+                /*
                 // TEST STUFF
                 System.out.println("===============");
                 for (DominoPiece dp: list){
@@ -126,7 +126,7 @@ public class Pieces implements Iterable{
                 System.out.println("===============");
                 System.out.println("NUMBER LEFT: "+this.nl);
                 System.out.println("NUMBER RIGHT: "+this.nr);
-                //
+                //*/
                 return true;
             }
             return false;

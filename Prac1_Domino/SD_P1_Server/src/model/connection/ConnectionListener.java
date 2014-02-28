@@ -8,6 +8,8 @@ package model.connection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import view.Log;
 
 /**
  * Here we include the server socket, that will serve all request, and will create
@@ -16,18 +18,32 @@ import java.net.ServerSocket;
  */
 public class ConnectionListener extends Thread{
     private boolean listening;
-    private ConnectionManager manager;
+    private OnConnectListener listener;
     private ServerSocket serverSocket;
+    private Log log;
     
-    public ConnectionListener(ConnectionManager aThis){
+    public ConnectionListener(Log log){
         this.listening = false;
-        this.manager = aThis;
+        this.log = log;
+    }
+    
+    public void setListener(OnConnectListener li){
+        this.listener = li;
     }
     
     @Override
     public void run(){
         while(listening){
-            // Accept connections
+            try {
+                // Accept connections
+                Socket s = serverSocket.accept();
+                listener.onConnect(s);
+            } catch (IOException ex) {
+                // Socket was closed, destroy the listener.
+                log.write(this.getClass().getSimpleName(), "Server socket closed", Log.MessageType.MONITORING);
+                this.listening = false;
+            }
+            
         }
     }
     
@@ -39,7 +55,10 @@ public class ConnectionListener extends Thread{
     }
     
     public void endListening() throws IOException{
-        this.listening = false;
         this.serverSocket.close();
+    }
+    
+    protected interface OnConnectListener{
+        public void onConnect(Socket s);
     }
 }

@@ -10,71 +10,68 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import view.Log;
 
 /**
  *
  * @author Pablo
  */
-public class ConnectionManager {
+public class ConnectionManager implements Connection.OnDisconnectListener, ConnectionListener.OnConnectListener{
     private ConcurrentHashMap<Integer,Connection> connections;
     private ConnectionListener listener;
     private int nextUid = 0;
     private Log log;
     
     public ConnectionManager(Log log){
+        //this.listener = new ConnectionListener();
         this.connections = new ConcurrentHashMap<>();
         this.log = log;
-        this.log.write("[CM] :: Connection manager created");      
+        this.log.write(this.getClass().getSimpleName(),"Connection manager created", Log.MessageType.MONITORING);      
         
         this.nextUid = 0;
         this.log = log;
-        
-        // TEST
-        for (int i = 0; i < 100; i++) {
-            this.addConnection(new Socket());
-        }
-        
-        for (int i = 0; i < 50; i++) {
-            log.removeConnection(i+":null");
-            
-        }
     }
 
     // LISTENER METHODS //
-    public void startListening() {
+    public boolean startListening() {
         try {
+            // Create a new listener
+            this.listener = new ConnectionListener(log);
+            this.listener.setListener(this);
+            this.listener.setName("Connection-Listener");
+            
+            // Set on
             listener.startListening();
+            this.log.write(this.getClass().getSimpleName(),"Listener started", Log.MessageType.MONITORING);   
+            return true;
+            
         } catch (IOException ex) {
             // Cannot start ServerSocket
-            log.write("[CM] == Cannot start server socket.");
+            this.log.write(this.getClass().getSimpleName(),"Cannot start server socket. Is another istance of the program running?", Log.MessageType.ERROR); 
+            return false;
         }
     }
 
-    public void stopListening() {
+    public boolean stopListening() {
         try {
-            listener.endListening();
+            this.listener.endListening();
+            this.listener = null; // Unlink the object to allow GarbageCollector remove it
+            this.log.write(this.getClass().getSimpleName(),"Listener stopped", Log.MessageType.MONITORING);   
+            return true;
         } catch (IOException ex) {
-            log.write("[CM] == Cannot end listener properly.");
+            // This might never happens...
+            this.log.write(this.getClass().getSimpleName(),"Cannot end listener.", Log.MessageType.ERROR); 
             // Cannot end listening
+            return false;
         }
     }
 
     // CONNECTION METHODS //
-    protected void addConnection(Socket s){
-        nextUid+=1;
-        int id = this.nextUid;
-        Connection c = new Connection(s, id, log);
-        this.connections.put(id, c);
-        log.addConnection(c.toString());
-    }
     
     /**
      * Close all connections!
      */
-    protected void closeConnections() {
+    public void closeConnections() {
         for (Connection c : connections.values()) {
             c.closeConnection();
         }
@@ -87,6 +84,32 @@ public class ConnectionManager {
         }
         return a;
     }
+
+    @Override
+    public void onDisconnect(int id) {
+        log.removeConnection(connections.remove(id).toString());
+    }
+
+    @Override
+    public void onConnect(Socket s) {
+        this.log.write(this.getClass().getSimpleName(),"New connection from "+s.getInetAddress().getHostAddress()+".", Log.MessageType.CONNECTION); 
+        nextUid+=1;
+        int id = this.nextUid;
+        
+        Connection c = new Connection(s, id, log);
+        
+        if (connections.size() >= Constants.MAX_CONNECTIONS){
+            // TODO: Reject connection
+        }
+        c.setListener(this);
+        
+        this.connections.put(id, c);
+        log.addConnection(c.toString());
+        c.setName("Connection-"+id);
+        c.start();
+    }
+    
+    
     
     
     
