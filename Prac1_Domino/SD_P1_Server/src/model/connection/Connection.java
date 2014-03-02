@@ -71,6 +71,10 @@ public class Connection extends Thread{
     protected String getIP() {
         return socket.getInetAddress().getHostAddress();
     }
+    
+    protected Socket getSocket(){
+        return socket;
+    }
 
     protected void closeConnection() {
         this.state = ConnectionState.FORCEQUIT;
@@ -82,6 +86,7 @@ public class Connection extends Thread{
         return this.ID+" : "+this.getIP();
         
     }
+    
     
     protected interface OnDisconnectListener{
         public void onDisconnect(int id);
