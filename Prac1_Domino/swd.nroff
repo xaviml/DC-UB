@@ -6,7 +6,7 @@
 .nr LT 7.2i
 .ds LF Dijous2
 .ds LH Distributed computing
-.ds RH Febraury 2014
+.ds RH February 2014
 .ds CH University of Barcelona
 .ds RF FORMFEED[Page %]
 .ad l
@@ -35,113 +35,595 @@ Domino is a popular game played for all types of users. Is a easy game that you 
 Table of Contents
 
 .nf
-   1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  2
-     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  2
-     1.2 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
-   2 DP Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     2.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.1.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.1.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-     2.2 MOVEMENT . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.2.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.2.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-     2.3 STEAL  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.3.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.3.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  3
+   1 Introduction . . . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.1 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
+   2 DP Procedure . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     2.1 Introduction . . . . . . . . . . . . . . . . . . . . . . . .  3
+     2.2 Structure of Command . . . . . . . . . . . . . . . . . . . .  3
+     2.3 Model Structure of Commands  . . . . . . . . . . . . . . . .  4
+     2.4 Commands . . . . . . . . . . . . . . . . . . . . . . . . . .  5
+       2.4.1 Client to Server . . . . . . . . . . . . . . . . . . . .  5
+         2.4.1.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . .  5
+         2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C . . . . . . .  5
+       2.4.2 Server to Client . . . . . . . . . . . . . . . . . . . .  6
+         2.4.2.1 ERROR  . . . . . . . . . . . . . . . . . . . . . . .  6
+         2.4.2.2 TILES  . . . . . . . . . . . . . . . . . . . . . . .  7
+         2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S . . . . . . .  7
+         2.4.2.4 STEAL  . . . . . . . . . . . . . . . . . . . . . . .  8
+         2.4.2.5 FINAL  . . . . . . . . . . . . . . . . . . . . . . .  9
+     2.5 Command Syntax . . . . . . . . . . . . . . . . . . . . . . . 10
+     2.6 Examples DP  . . . . . . . . . . . . . . . . . . . . . . . . 10
+       2.6.1 Terminology  . . . . . . . . . . . . . . . . . . . . . . 10
+       2.6.2 Examples . . . . . . . . . . . . . . . . . . . . . . . . 11
+   3 References . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 13
 .fi
 .in 3
 
 .\" \# ETC -- End of auto updated Table of Contents
 
 
-
-
 .bp
 .ti 0
-1  Introduction
+1 Introduction
 
 Domino Protocol is a protocol designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define how must play to online domino's game. This protocol permits play one match of the domino's game. This protocol don't control a series of matches and their scores.
 
 .ti 0
-1.1  Terminology
-
-The key words used:
-.nf
-	C := Client
-	S := Server
-	msg := Message
-.fi
-
-.ti 0
-1.2 Basic Structure
+1.1 Basic Structure
 
 This is the basic structure of DP. Every message will follow this structure, the client send a message to the server and the server response a client with a error message.
 
-.tl ' C''S'
-.tl ' |''|'
-.tl ' |''|'
-.tl ' |'msg to server'|'
-.tl ' |'--------------------------------------------------------------->'|'
-.tl ' |'msg to client + ERROR'|'
-.tl ' |'<---------------------------------------------------------------'|'
-.tl ' |''|'
-.tl ' |''|'
-.tl ' |''|'
+.tl '   Client''Server'
+.tl '   |''|'
+.tl '   |''|'
+.tl '   |'message to server'|'
+.tl '   |'------------------------------------------------------------------>'|'
+.tl '   |'message to client / ERROR'|'
+.tl '   |'<------------------------------------------------------------------'|'
+.tl '   |''|'
+.tl '   |''|'
+.tl '   |''|'
 
+.tl ''Figure 1''
 
-
+No todo el protocolo seguira esta estructura, mas abajo ser veran algunas excepciones.
 
 .bp
 .ti 0
-2 DP Commands
+2 DP Procedure
+
+.ti 0
+2.1 Introduction
 
 In this section will be explain all commands of this protocol. In each command explain how to send message to the server, and it response.
 
 .ti 0
-2.1 HELLO \" Primera trama
+2.2 Structure of Command
+
+Una comanda esta compuesta por dos partes una cabecera y un cuerpo, tal y como se muestra en la siguiente figura:
+
+.in 6
+.nf
+.c)
++----------------------------------------------------------+
+|          |                                               |
+|   HEAD   |                      BODY                     | 
+|          |                                               |
++----------------------------------------------------------+
+.)c
+.in 3
+
+.tl ''Figure 2''
+
+Head size: 1 byte
+Body size: depends on the command
+.fi
+
+.bp
+.ti 0
+2.3 Model Structure of Commands
+
+.nf
+      +---------------+                        +---------------+
+      |     _____     |----------------------->|               |
+  |-->|     HELLO     |--------|               |     FITXES    |
+  |   |               |<---|   |               |               |
+  |   +---------------+    |   |               +---------------+
+  |                        |   V                   |
+  |                    +---------------+           | 
+  |                    |               |------|    |
+  |                    |     ERROR     |<--|  |    |
+  |                    |               |   |  |    |
+  |                    +---------------+   |  |    |
+  |                                        |  V    V
+  |   +---------------+              +---------------+
+  |   |               |------------->|    ________   |
+  |   |    TIRADA S   |              |    TIRADA C   |<--|
+  |   |               |<-------------|               |   |
+  |   +---------------+              +---------------+   |
+  |          |                      /        |           |
+  |          V                     /         V           |
+  |   +---------------+           /  +---------------+   |
+  |   |               |<---------/   |               |___|  
+  |---|     FINAL     |              |  DONAR FITXA  |
+      |               |              |               |
+      +---------------+              +---------------+
+.fi
+
+.tl ''Figure 3''
+
+Esta es la estructura que siguen las comandas, donde la primera es la comanda HELLO enviada por el cliente, que inicia la partida. Luego hay que seguir el orden de las flechas para determinar el ordenen del protocolo y todas las bifurcaciones que tiene.
+
+Las comandas que tienen una raya encima son esas que envia el cliente al servidor y el resto son las que envia el servidor al cliente. 
+
+.bp
+.ti 0
+2.4 Commands
 
 .ti 0
-2.1.1 Send to server
+2.4.1 Client to Server
 
 .ti 0
-2.1.2 Server response
+2.4.1.1 HELLO \" Primera trama
+
+Esta trama da inicio a una partida de domino. Este comando esta compuesto solo por cabecera, no tiene body. Despues de finalizar una partida se puede volver a llamar a este comando de nuevo para iniciar una nueva partida.
+
+.in 6
+.nf
+.c)
++----------+
+|          |
+|   0x01   |
+|          |
++----------+
+.)c
+
+Figure 4
+
+.in 3
+Head information: 0x01
+
+Total of byte included the header: 1 byte
+Example reference: 1
+.fi
 
 .ti 0
-2.2 MOVEMENT \" Trama de tirada
+2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C
+
+Este comando sirve para que el cliente pueda hacer un movimiento (definido en la gramatica del DP). Una tirada está compuesta de 3 bytes, concretamente 3 chars. El cliente tiene dos posibles tiradas, o bien la tirada de una ficha o bien hacer una no tirada. El orden en el que se tiran las fichas importa, es decir, si en mesa hay un ("3" "2") a la izquierda, i el cliente tiene un: ("3" "4"), éste debe invertir la ficha a: ("4" "3"), y enviarla indicando la dirección como está definido en el apartado 2.5 de la sintaxis del DP. Si no se pone como es debido se enviará un error de tipo: ilegal action 
+
+.in 6
+.nf
+.c)
++----------+-------------------------------------------+
+|          |                                           |
+|   0x03   |                  movement                 |
+|          |                                           |
++----------+-------------------------------------------+
+.)c
+
+Figure 5
+
+.in 3
+Head information: 0x03
+Body information:
+.ti 6
+movement:   tirada per part del client
+
+Total of byte included the header: 4 bytes
+Example reference: 2, 3, 4, 6
+.fi
+
+./'(Pablo, traduce tirada como movement, i 'no tirada' como 'no movement', i ficha como tile)
+.ti 0
+2.4.2 Server to Client
 
 .ti 0
-2.2.1 Send to server
+2.4.2.1 ERROR
+
+El servidor en cualquier momento puede enviarnos una trama de error. Podemos encontrar 5 tipos de error donde cada uno tiene un identificador (errorid). Seguido de este identificador podemos definir con nuestras propias palabras el tipo de error que se trata (errormsg). Este mensaje no puede pasar de 140 caracteres.
+
+.in 6
+.nf
+.c)
++----------+-----------+-------------------------------+
+|          |           |                               |
+|   0x00   |  errorid  |           errormsg            |
+|          |           |                               |
++----------+-----------+-------------------------------+
+.)c
+
+Figure 6
+
+.in 3
+Head information: 0x00
+Body information:
+.in 6
+errorid:    tipo de error (definidos abajo)
+errormsg:   mensaje no superior de 140 caracteres
+.in 3
+
+Total of byte included the header: 4 bytes + extension message
+Example reference: 5, 6
+.fi
+
+Errores definidos:
+.in 6
+.nf
+Syntax error:             0x00
+Ilegal action:            0x01
+Not enoguht resources:    0x02
+Internal error server:    0x03
+Undefined error:          0x04
+.fi
+.in 3
+
+.bp
+.ti 0
+2.4.2.2 TILES
+
+Esta es la trama que el servidor envia al cliente para informar de las fichas iniciales del cliente i quien empieza tirando. Primero se envian 7 fichas (tile), compuesta cada una de dos enteros positivos comprendidos entre 0 i 6. Seguido, se indica que el ervidor tira con la ficha que tira o indicando una no tirada con 2 bytes ('NT'), no confundir con la no tirada definida en la gramatica.
+
+.in 6
+.nf
+.c)
++----------+------------+-------------------------------+
+|          |            |                               |
+|   0x02   |   7*tile   |           tile/'NT'           |
+|          |            |                               |
++----------+------------+-------------------------------+
+.)c
+
+Figure 7
+
+.in 3
+Head information: 0x02
+.in 6
+7*tile:      conjunto de 7 fichas
+tile/'NT':   indicador de quien inicia la partida
+.in 3
+
+
+Total of byte included the header: 17 bytes
+Example reference: 1
+.fi
 
 .ti 0
-2.2.2 Server response
+2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S
+
+Cuando hacemos una tirada, lo mas frecuente es que el servidor nos responda con esta trama, indicando su tirada. Es parecida a la trama M/NM C, en esta trama se indica la tirada (movement) y las fichas que le quedan al servidor (restserver)
+
+.in 6
+.nf
+.c)
++----------+-------------------+-------------------------------+
+|          |                   |                               |
+|   0x04   |      movement     |           restserver          |
+|          |                   |                               |
++----------+-------------------+-------------------------------+
+.)c
+
+Figure 8
+
+.in 3
+Head information: 0x04
+Body information:
+.in 6
+movement:     tirada del servidor
+restserver:   #fichas restantes del servidor
+.in 3
+
+Total of byte included the header: 8 bytes
+Example reference: 2, 3, 4
+.fi
+.bp
+.ti 0
+2.4.2.4 STEAL
+
+En caso que el cliente haga una no tirada, es posible que el servidor responda con esta trama, para informar la ficha robada por el cliente. La trama solo contiene la ficha (tile) que se ha robado. En caso que el cliente quiera robar otra, debera enviar un no tirada, para que el servidor vuelva a responderle con una ficha nueva o indicando que la partida ha finalizado.
+
+.in 6
+.nf
+.c)
++----------+-----------+
+|          |           |
+|   0x05   |    tile   |
+|          |           |
++----------+-----------+
+.)c
+
+Figure 9
+
+.in 3
+Head information: 0x05
+Body information:
+.ti 6
+tile:   tile stolen
+
+Total of byte included the header: 3 bytes
+Example reference: 3
+.fi
+.bp
+.ti 0
+2.4.2.5 FINAL
+
+Trama de finalizacion de partida, enviada pel servidor quan la partida ja ha acabat. El servidor nos informa de sobre quien ha ganado, y la puntuacion obtenida por el servidor en caso de empate. El cliente tiene que ocuparse de calcular su propia mano.
+
+.in 6
+.nf
+.c)
+If draw
+   +----------+------------+---------------+
+   |          |            |               |
+   |   0x06   |   winner   |  scoreserver  |
+   |          |            |               |
+   +----------+------------+---------------+
+Otherwise
+   +----------+------------+
+   |          |            |
+   |   0x06   |   winner   |
+   |          |            |
+   +----------+------------+
+.)c
+
+Figure 10
+
+.in 3
+Head information: 0x06
+Body information:
+.in 6
+winner:        ganador de la partida
+scoreserver:   puntuacion del servidor
+.in 3
+.fi
+
+Winner:
+.in 6
+.nf
+Client:   0x00
+Server:   0x01
+Draw:     0x02
+
+.in 3
+Total of byte included the header: 6 bytes
+Example reference: 4
+.fi
+
+.bp
+.ti 0
+2.5 Command Syntax
+
+Esta es la sintaxis de los comandos (using ABNF notation) [1]. Todas los comandos que utilicen caracteres o cadenas de caracteres seguiran ASCII [2]
+
+.in 8
+.nf
+;basic structures
+numdp = "0" / "1" / "2" / "3" / "4" / "5" / "6"
+digit = %x30-39
+dir = "L" / "R"
+char = %x01-7F
+string = string char
+int = %x00-FFFF
+
+;El orden del numero importa, es el orden como se
+;ponen las fichas, sin invertir
+tile = numdp numdp
+movement = [tile dir] / "NT "
+errorid = %x00-04
+
+;Este es el tamaño de una cadena de caracteres.
+;The size of this field is voiced in character sequence.
+;For example: "5" to say "hello"
+;In this case this sequence shouldn't exceed 140 characters
+;So this should be three digits
+midamsg = 3*digit
+errormsg = midamsg string
+restserver = int
+winner = %x00-02
+scoreserver =  int
+.fi
+.in 3
 
 .ti 0
-2.3 STEAL
+2.6 Examples DP
 
 .ti 0
-2.3.1 Send to server
+2.6.1 Terminology
+.nf
+
+This is the terminology used in the next examples:
+.in 6
+C  -> Client-DP
+S  -> Server-DP
+|  -> Visual separator
+"  -> Used to represent character sequences
+0x -> Hexadecimal number
+.fi
+.in 3
+
+.bp
+.ti 0
+2.6.2 Examples
+
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of first connection''
+
+.in 6
+.nf
+Either start server:
+
+.in 9
+C: 0x01
+S: 0x02 | "0" "6"
+          "4" "3"
+          "2" "1"
+          "6" "5"
+          "5" "5"
+          "3" "2"
+          "4" "1" | "6" "6"
+
+.ti 6
+Or start client
+
+C: 0x01
+S: 0x02 | "0" "6"
+          "4" "3"
+          "2" "1"
+          "6" "5"
+          "5" "5"
+          "3" "2"
+          "4" "1" | "NT"
+
+.in 3
+.fi
+
+.tl ''Example 1''
+
+.tl ''-------------------------------------------------------------''
+
+./'SECOND EXAMPLE
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of a normal movement''
+
+.in 6
+.nf
+C: 0x03 | "4" "3" "R"
+S: 0x04 | "3" "5" "R" | 0x0006
+C: 0x03 | "5" "5" "R"
+S: 0x04 | "NT " | 0x0006
+C: 0x03 | "1" "4" "L"
+S: 0x04 | "1" "1" "L" | 0x0005
+
+.in 3
+.fi
+
+.tl ''Example 2''
+
+.tl ''-------------------------------------------------------------''
+
+./'THIRD EXAMPLE
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of steal a tile''
+
+.in 6
+.nf
+C: 0x03 | "NT "
+S: 0x05 | "2" "3"
+C: 0x03 | "NT "
+S: 0x05 | "1" "3"
+C: 0x03 | "3" "1" "R"
+S: 0x04 | "1" "6" "R" | 0x0004
+
+.in 3
+.fi
+
+.tl ''Example 3''
+
+.tl ''-------------------------------------------------------------''
+
+./'FOURTH EXAMPLE
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of end game''
+
+.in 9
+.nf
+
+.ti 6
+Subexample 1
+
+C: 0x03 | "3" "2" "R"
+S: 0x06 | 0x00
+
+.ti 6
+Subexample 2
+
+C: 0x03 | "3" "2" "L"
+S: 0x04 | "5" "6" "R" | 0x0000
+S: 0x06 | 0x01
+
+.ti 6
+Subexample 3
+
+C: 0x03 | "NT "
+S: 0x04 | "NT " | 0x0002
+S: 0x06 | 0x01
+
+.ti 6
+Subexample 4
+C: 0x03 | "NT "
+S: 0x04 | "NT " | 0x0001
+S: 0x06 | 0x02 | 0x0005
+
+.in 3
+.fi
+
+.tl ''Example 4''
+
+.tl ''-------------------------------------------------------------''
+
+./'5 EXAMPLE
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of ilegal action''
+
+.in 6
+.nf
+C: 0x10
+S: 0x00 | 0x01 | "024" | "This command don't exist"
+
+.in 3
+.fi
+
+.tl ''Example 5''
+
+.tl ''-------------------------------------------------------------''
+
+./'6 EXAMPLE
+.tl ''-------------------------------------------------------------''
+
+.tl ''Example of syntax error''
+
+.in 6
+.nf
+C: 0x03 | "10" "3" "L"
+S: 0x00 | 0x00 | "032" | "Number should be between 0 and 6"
+
+.in 3
+.fi
+
+.tl ''Example 6''
+
+.tl ''-------------------------------------------------------------''
 
 .ti 0
-2.3.2 Server response
+3 References
+.in 8
 
-.ti
+.ti 3
+[1]   ABNF notation
 
+Augmented Backus-Naur Form (ABNF) is a metalanguage based on Backus-Naur Form (BNF),but consisting of its own syntax and derivation rules. Reference to RFC 5234.
 
+.ti 3
+[2]   ASCII
+
+ASCII is a character-encoding scheme originally based on the English alphabet that encodes 128 specified character (0-9, a-z, A-Z, basic puntuation symbols, code controls and blank space) into 7-bit binary integers.
+
+.in 3
 .ti 0
 Authors' Addresses
 
-.sp
 .nf
 Xavi Moreno Liceras
-Universitat de Barcelona
+University of Barcelona
 EMail: xmorenli7@alumnes.ub.edu
 
 Pablo Martinez Martinez
-Universitat de Barcelona
+University of Barcelona
 EMail: pmartima22@alumnes.ub.edu
-.sp
-
-
 .fi
-
