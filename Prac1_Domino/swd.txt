@@ -17,28 +17,28 @@ Abstract
 
 Table of Contents
 
-   1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  2
-     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  2
-     1.2 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
-   2 DP Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     2.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.1.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.1.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-     2.2 MOVEMENT . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.2.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.2.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-     2.3 STEAL  . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
-       2.3.1 Send to server . . . . . . . . . . . . . . . . . . . . .  3
-       2.3.2 Server response  . . . . . . . . . . . . . . . . . . . .  3
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  3
-
-
-
-
-
-
-
-
+   1 Introduction . . . . . . . . . . . . . . . . . . . . . . . . . .  2
+     1.1 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
+   2 DP Procedure . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     2.1 Introduction . . . . . . . . . . . . . . . . . . . . . . . .  3
+     2.2 Structure of Command . . . . . . . . . . . . . . . . . . . .  3
+     2.3 Model Structure of Commands  . . . . . . . . . . . . . . . .  4
+     2.4 Commands . . . . . . . . . . . . . . . . . . . . . . . . . .  5
+       2.4.1 Client to Server . . . . . . . . . . . . . . . . . . . .  5
+         2.4.1.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . .  5
+         2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C . . . . . . .  5
+       2.4.2 Server to Client . . . . . . . . . . . . . . . . . . . .  6
+         2.4.2.1 ERROR  . . . . . . . . . . . . . . . . . . . . . . .  6
+         2.4.2.2 TILES  . . . . . . . . . . . . . . . . . . . . . . .  7
+         2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S . . . . . . .  7
+         2.4.2.4 STEAL  . . . . . . . . . . . . . . . . . . . . . . .  8
+         2.4.2.5 FINAL  . . . . . . . . . . . . . . . . . . . . . . .  9
+     2.5 Command Syntax . . . . . . . . . . . . . . . . . . . . . . . 10
+     2.6 Examples DP  . . . . . . . . . . . . . . . . . . . . . . . . 10
+       2.6.1 Terminology  . . . . . . . . . . . . . . . . . . . . . . 10
+       2.6.2 Examples . . . . . . . . . . . . . . . . . . . . . . . . 11
+   3 References . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 13
 
 
 
@@ -54,11 +54,11 @@ Table of Contents
 
 
 Dijous2                                                         [Page 1]
+
+Distributed computing   University of Barcelona            February 2014
 
-Distributed computing   University of Barcelona            Febraury 2014
 
-
-1  Introduction
+1 Introduction
 
    Domino Protocol is a protocol designed by the students of 
    Distributed computing at the 'Universitat de Barcelona'. This
@@ -66,29 +66,29 @@ Distributed computing   University of Barcelona            Febraury 2014
    permits play one match of the domino's game. This protocol don't
    control a series of matches and their scores.
 
-1.1  Terminology
-
-   The key words used:
-   	C := Client
-   	S := Server
-   	msg := Message
-
-1.2 Basic Structure
+1.1 Basic Structure
 
    This is the basic structure of DP. Every message will follow this
    structure, the client send a message to the server and the server
    response a client with a error message.
 
- C                                                                     S
- |                                                                     |
- |                                                                     |
- |                            msg to server                            |
- |  --------------------------------------------------------------->   |
- |                        msg to client + ERROR                        |
- |  <---------------------------------------------------------------   |
- |                                                                     |
- |                                                                     |
- |                                                                     |
+   Client                                                         Server
+   |                                                                   |
+   |                                                                   |
+   |                        message to server                          |
+   |------------------------------------------------------------------>|
+   |                    message to client / ERROR                      |
+   |<------------------------------------------------------------------|
+   |                                                                   |
+   |                                                                   |
+   |                                                                   |
+
+                                Figure 1                                
+
+   No todo el protocolo seguira esta estructura, mas abajo ser veran
+   algunas excepciones.
+
+
 
 
 
@@ -110,59 +110,619 @@ Distributed computing   University of Barcelona            Febraury 2014
 
 
 Dijous2                                                         [Page 2]
+
+Distributed computing   University of Barcelona            February 2014
 
-Distributed computing   University of Barcelona            Febraury 2014
 
+2 DP Procedure
 
-2 DP Commands
+2.1 Introduction
 
    In this section will be explain all commands of this protocol. In
    each command explain how to send message to the server, and it
    response.
 
-2.1 HELLO 
+2.2 Structure of Command
 
-2.1.1 Send to server
+   Una comanda esta compuesta por dos partes una cabecera y un cuerpo,
+   tal y como se muestra en la siguiente figura:
 
-2.1.2 Server response
+      +----------------------------------------------------------+
+      |          |                                               |
+      |   HEAD   |                      BODY                     | 
+      |          |                                               |
+      +----------------------------------------------------------+
 
-2.2 MOVEMENT 
+                                Figure 2                                
 
-2.2.1 Send to server
-
-2.2.2 Server response
-
-2.3 STEAL
-
-2.3.1 Send to server
-
-2.3.2 Server response
+   Head size: 1 byte
+   Body size: depends on the command
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 3]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.3 Model Structure of Commands
+
+         +---------------+                        +---------------+
+         |     _____     |----------------------->|               |
+     |-->|     HELLO     |--------|               |     FITXES    |
+     |   |               |<---|   |               |               |
+     |   +---------------+    |   |               +---------------+
+     |                        |   V                   |
+     |                    +---------------+           | 
+     |                    |               |------|    |
+     |                    |     ERROR     |<--|  |    |
+     |                    |               |   |  |    |
+     |                    +---------------+   |  |    |
+     |                                        |  V    V
+     |   +---------------+              +---------------+
+     |   |               |------------->|    ________   |
+     |   |    TIRADA S   |              |    TIRADA C   |<--|
+     |   |               |<-------------|               |   |
+     |   +---------------+              +---------------+   |
+     |          |                      /        |           |
+     |          V                     /         V           |
+     |   +---------------+           /  +---------------+   |
+     |   |               |<---------/   |               |___|  
+     |---|     FINAL     |              |  DONAR FITXA  |
+         |               |              |               |
+         +---------------+              +---------------+
+
+                                Figure 3                                
+
+   Esta es la estructura que siguen las comandas, donde la primera es la
+   comanda HELLO enviada por el cliente, que inicia la partida. Luego
+   hay que seguir el orden de las flechas para determinar el ordenen del
+   protocolo y todas las bifurcaciones que tiene.
+
+   Las comandas que tienen una raya encima son esas que envia el cliente
+   al servidor y el resto son las que envia el servidor al cliente. 
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 4]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.4 Commands
+
+2.4.1 Client to Server
+
+2.4.1.1 HELLO 
+
+   Esta trama da inicio a una partida de domino. Este comando esta
+   compuesto solo por cabecera, no tiene body. Despues de finalizar una
+   partida se puede volver a llamar a este comando de nuevo para iniciar
+   una nueva partida.
+
+      +----------+
+      |          |
+      |   0x01   |
+      |          |
+      +----------+
+
+      Figure 4
+
+   Head information: 0x01
+
+   Total of byte included the header: 1 byte
+   Example reference: 1
+
+2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C
+
+   Este comando sirve para que el cliente pueda hacer un movimiento
+   (definido en la gramatica del DP). Una tirada está compuesta de 3
+   bytes, concretamente 3 chars. El cliente tiene dos posibles tiradas,
+   o bien la tirada de una ficha o bien hacer una no tirada. El orden en
+   el que se tiran las fichas importa, es decir, si en mesa hay un ("3"
+   "2") a la izquierda, i el cliente tiene un: ("3" "4"), éste debe
+   invertir la ficha a: ("4" "3"), y enviarla indicando la dirección
+   como está definido en el apartado 2.5 de la sintaxis del DP. Si no se
+   pone como es debido se enviará un error de tipo: ilegal action 
+
+      +----------+-------------------------------------------+
+      |          |                                           |
+      |   0x03   |                  movement                 |
+      |          |                                           |
+      +----------+-------------------------------------------+
+
+      Figure 5
+
+   Head information: 0x03
+   Body information:
+      movement:   tirada per part del client
+
+ 
+
+
+Dijous2                                                         [Page 5]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+   Total of byte included the header: 4 bytes
+   Example reference: 2, 3, 4, 6
+
+2.4.2 Server to Client
+
+2.4.2.1 ERROR
+
+   The server in any moment can send us a frame of error. There are 5
+   type of error where eachone have a unique identifier (errorid).
+   Followed by the identifier we can define with own words the error
+   type (errormsg). This message don't exceed of 140 characters.
+
+      +----------+-----------+-------------------------------+
+      |          |           |                               |
+      |   0x00   |  errorid  |           errormsg            |
+      |          |           |                               |
+      +----------+-----------+-------------------------------+
+
+      Figure 6
+
+   Head information: 0x00
+   Body information:
+      errorid:    error type (definited above)
+      errormsg:   not exceeding 140 characters message
+
+   Total of byte included the header: 4 bytes + extension message
+   Example reference: 5, 6
+
+   Types of errors:
+      Syntax error:             0x00
+      Ilegal action:            0x01
+      Not enoguht resources:    0x02
+      Internal error server:    0x03
+      Undefined error:          0x04
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 6]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.4.2.2 TILES
+
+   Esta es la trama que el servidor envia al cliente para informar de
+   las fichas iniciales del cliente i quien empieza tirando. Primero se
+   envian 7 fichas (tile), compuesta cada una de dos enteros positivos
+   comprendidos entre 0 i 6. Seguido, se indica que el ervidor tira con
+   la ficha que tira o indicando una no tirada con 2 bytes ('NT'), no
+   confundir con la no tirada definida en la gramatica.
+
+      +----------+------------+-------------------------------+
+      |          |            |                               |
+      |   0x02   |   7*tile   |           tile/'NT'           |
+      |          |            |                               |
+      +----------+------------+-------------------------------+
+
+      Figure 7
+
+   Head information: 0x02
+      7*tile:      conjunto de 7 fichas
+      tile/'NT':   indicador de quien inicia la partida
+
+
+   Total of byte included the header: 17 bytes
+   Example reference: 1
+
+2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S
+
+   When we do a movement, more often the server response us with this
+   frame to indicate his movement. This frame is similar to M/NM C
+   frame, in this frame indicated the movement (movement) and the number
+   of tiles rest of the server (restserver).
+
+      +----------+-------------------+-------------------------------+
+      |          |                   |                               |
+      |   0x04   |      movement     |           restserver          |
+      |          |                   |                               |
+      +----------+-------------------+-------------------------------+
+
+      Figure 8
+
+   Head information: 0x04
+   Body information:
+      movement:     movement of the server
+      restserver:   #tiles rest of the server
+
+   Total of byte included the header: 8 bytes
+   Example reference: 2, 3, 4
+
+ 
+
+
+Dijous2                                                         [Page 7]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.4.2.4 STEAL
+
+   In case that the client do a movement, is possible that the server
+   response with this frame to inform that the tile stole by client. The
+   frame only contains the tile (tile) that it has been stolen. In case
+   that the client wants to steal another, he shall senda 'no movement'
+   so that the server response again with this frame, or the server also
+   response that the game has finished.
+
+      +----------+-----------+
+      |          |           |
+      |   0x05   |    tile   |
+      |          |           |
+      +----------+-----------+
+
+      Figure 9
+
+   Head information: 0x05
+   Body information:
+      tile:   tile stolen
+
+   Total of byte included the header: 3 bytes
+   Example reference: 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 8]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.4.2.5 FINAL
+
+   End of game frame, this is sent by server when the game is finished.
+   The server inform us about who has won, and the final score obtained
+   by server in case of tie. The client have to look to calculate his
+   own hand.
+
+      If draw
+         +----------+------------+---------------+
+         |          |            |               |
+         |   0x06   |   winner   |  scoreserver  |
+         |          |            |               |
+         +----------+------------+---------------+
+      Otherwise
+         +----------+------------+
+         |          |            |
+         |   0x06   |   winner   |
+         |          |            |
+         +----------+------------+
+
+      Figure 10
+
+   Head information: 0x06
+   Body information:
+      winner:        game winner
+      scoreserver:   server score
+
+   Winner:
+      Client:   0x00
+      Server:   0x01
+      Draw:     0x02
+
+   Total of byte included the header: 6 bytes
+   Example reference: 4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                         [Page 9]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.5 Command Syntax
+
+   This is the command syntax (using ABNF notation) [1]. All commands
+   that use character or character sequence should be represented in
+   ASCII [2].
+
+        ;basic structures
+        numdp = "0" / "1" / "2" / "3" / "4" / "5" / "6"
+        digit = %x30-39
+        dir = "L" / "R"
+        char = %x01-7F
+        string = string char
+        int = %x00-FFFF
+
+        ;The order matters, it's the order as the tiles are put,
+        ;without invert them.
+        tile = numdp numdp
+        movement = [tile dir] / "NT "
+        errorid = %x00-04
+
+        ;This is the size of a character sequence.
+        ;Este es el tamaño de una cadena de caracteres.
+        ;The size of this field is voiced in character sequence.
+        ;For example: "5" to say "hello"
+        ;In this case this sequence shouldn't exceed 140 characters
+        ;So this should be three digits
+        midamsg = 3*digit
+        errormsg = midamsg string
+        restserver = int
+        winner = %x00-02
+        scoreserver =  int
+
+2.6 Examples DP
+
+2.6.1 Terminology
+
+   This is the terminology used in the next examples:
+      C  -> Client-DP
+      S  -> Server-DP
+      |  -> Visual separator
+      "  -> Used to represent character sequences
+      0x -> Hexadecimal number
+
+
+
+
+
+
+ 
+
+
+Dijous2                                                        [Page 10]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+2.6.2 Examples
+
+      -------------------------------------------------------------     
+
+                       Example of first connection                      
+
+      Either start server:
+
+         C: 0x01
+         S: 0x02 | "0" "6"
+                   "4" "3"
+                   "2" "1"
+                   "6" "5"
+                   "5" "5"
+                   "3" "2"
+                   "4" "1" | "6" "6"
+
+      Or start client
+
+         C: 0x01
+         S: 0x02 | "0" "6"
+                   "4" "3"
+                   "2" "1"
+                   "6" "5"
+                   "5" "5"
+                   "3" "2"
+                   "4" "1" | "NT"
+
+
+                                Example 1                               
+
+      -------------------------------------------------------------     
+
+      -------------------------------------------------------------     
+
+                      Example of a normal movement                      
+
+      C: 0x03 | "4" "3" "R"
+      S: 0x04 | "3" "5" "R" | 0x0006
+      C: 0x03 | "5" "5" "R"
+      S: 0x04 | "NT " | 0x0006
+      C: 0x03 | "1" "4" "L"
+      S: 0x04 | "1" "1" "L" | 0x0005
+
+
+                                Example 2                               
+
+      -------------------------------------------------------------     
+ 
+
+
+Dijous2                                                        [Page 11]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+      -------------------------------------------------------------     
+
+                         Example of steal a tile                        
+
+      C: 0x03 | "NT "
+      S: 0x05 | "2" "3"
+      C: 0x03 | "NT "
+      S: 0x05 | "1" "3"
+      C: 0x03 | "3" "1" "R"
+      S: 0x04 | "1" "6" "R" | 0x0004
+
+
+                                Example 3                               
+
+      -------------------------------------------------------------     
+
+      -------------------------------------------------------------     
+
+                           Example of end game                          
+
+
+      Subexample 1
+
+         C: 0x03 | "3" "2" "R"
+         S: 0x06 | 0x00
+
+      Subexample 2
+
+         C: 0x03 | "3" "2" "L"
+         S: 0x04 | "5" "6" "R" | 0x0000
+         S: 0x06 | 0x01
+
+      Subexample 3
+
+         C: 0x03 | "NT "
+         S: 0x04 | "NT " | 0x0002
+         S: 0x06 | 0x01
+
+      Subexample 4
+         C: 0x03 | "NT "
+         S: 0x04 | "NT " | 0x0001
+         S: 0x06 | 0x02 | 0x0005
+
+
+                                Example 4                               
+
+      -------------------------------------------------------------     
+
+ 
+
+
+Dijous2                                                        [Page 12]
+
+Distributed computing   University of Barcelona            February 2014
+
+
+      -------------------------------------------------------------     
+
+                        Example of ilegal action                        
+
+      C: 0x10
+      S: 0x00 | 0x01 | "024" | "This command don't exist"
+
+
+                                Example 5                               
+
+      -------------------------------------------------------------     
+
+      -------------------------------------------------------------     
+
+                         Example of syntax error                        
+
+      C: 0x03 | "10" "3" "L"
+      S: 0x00 | 0x00 | "032" | "Number should be between 0 and 6"
+
+
+                                Example 6                               
+
+      -------------------------------------------------------------     
+
+3 References
+
+   [1]   ABNF notation
+
+        Augmented Backus-Naur Form (ABNF) is a metalanguage based on
+        Backus-Naur Form (BNF),but consisting of its own syntax and
+        derivation rules. Reference to RFC 5234.
+
+   [2]   ASCII
+
+        ASCII is a character-encoding scheme originally based on the
+        English alphabet that encodes 128 specified character (0-9, a-z,
+        A-Z, basic puntuation symbols, code controls and blank space)
+        into 7-bit binary integers.
 
 Authors' Addresses
 
-
    Xavi Moreno Liceras
-   Universitat de Barcelona
+   University of Barcelona
    EMail: xmorenli7@alumnes.ub.edu
 
    Pablo Martinez Martinez
-   Universitat de Barcelona
+   University of Barcelona
    EMail: pmartima22@alumnes.ub.edu
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Dijous2                                                         [Page 3]
+Dijous2                                                        [Page 13]
