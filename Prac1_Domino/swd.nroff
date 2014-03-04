@@ -1,4 +1,4 @@
-.pl 10.0i
+﻿.pl 10.0i
 .po 0
 .ll 7.2i
 .lt 7.2i
@@ -27,7 +27,7 @@ Domino's Protocol -- DP/0.1
 .ti 0
 Abstract
 
-Domino is a popular game played for all types of users. Is a easy game that you must throw your tiles on a board and following a set of rules end up leaving your empty hand to win.
+Domino is a popular game which is played by many users. It's an easy game where you must position your tiles on a board and empty your hand following a set of rules.
 
 .\" \# TD4  -- Set TOC depth by altering this value (TD5 = depth 5)
 .\" \# TOC  -- Beginning of auto updated Table of Contents
@@ -67,12 +67,12 @@ Table of Contents
 .ti 0
 1 Introduction
 
-Domino Protocol is a protocol designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define how must play to online domino's game. This protocol permits play one match of the domino's game. This protocol don't control a series of matches and their scores.
+Domino Protocol was designed by the students of  Distributed computing at the 'Universitat de Barcelona'. This protocol define the messages shared betwen client and server in order to control a distributed game of Domino. This is a single-game focused protocol, multiple games and their scores are not expected.
 
 .ti 0
 1.1 Basic Structure
 
-This is the basic structure of DP. Every message will follow this structure, the client send a message to the server and the server response a client with a error message.
+Each message can be summarised as a rquest from the client, followed by a response from the server. The response can be a normal response of the request or an error message, all the possible errors are explained later. 
 
 .tl '   Client''Server'
 .tl '   |''|'
@@ -87,8 +87,6 @@ This is the basic structure of DP. Every message will follow this structure, the
 
 .tl ''Figure 1''
 
-No todo el protocolo seguira esta estructura, mas abajo ser veran algunas excepciones.
-
 .bp
 .ti 0
 2 DP Procedure
@@ -96,7 +94,7 @@ No todo el protocolo seguira esta estructura, mas abajo ser veran algunas excepc
 .ti 0
 2.1 Introduction
 
-In this section will be explain all commands of this protocol. In each command explain how to send message to the server, and it response.
+In this section we'll define all messages of the protocol. For each message we will see the request/response.
 
 .ti 0
 2.2 Structure of Command
@@ -106,17 +104,17 @@ Una comanda esta compuesta por dos partes una cabecera y un cuerpo, tal y como s
 .in 6
 .nf
 .c)
-+----------------------------------------------------------+
-|          |                                               |
-|   HEAD   |                      BODY                     | 
-|          |                                               |
-+----------------------------------------------------------+
++------------------------------------------------------------+
+|            |                                               |
+|   HEADER   |                      BODY                     | 
+|            |                                               |
++------------------------------------------------------------+
 .)c
 .in 3
 
 .tl ''Figure 2''
 
-Head size: 1 byte
+Header size: 1 byte
 Body size: depends on the command
 .fi
 
@@ -127,35 +125,35 @@ Body size: depends on the command
 .nf
       +---------------+                        +---------------+
       |     _____     |----------------------->|               |
-  |-->|     HELLO     |--------|               |     FITXES    |
-  |   |               |<---|   |               |               |
+  +-->|     HELLO     |--------+               |     FITXES    |
+  |   |               |<---+   |               |               |
   |   +---------------+    |   |               +---------------+
   |                        |   V                   |
   |                    +---------------+           | 
-  |                    |               |------|    |
-  |                    |     ERROR     |<--|  |    |
+  |                    |               |------+    |
+  |                    |     ERROR     |<--+  |    |
   |                    |               |   |  |    |
   |                    +---------------+   |  |    |
   |                                        |  V    V
   |   +---------------+              +---------------+
   |   |               |------------->|    ________   |
-  |   |    TIRADA S   |              |    TIRADA C   |<--|
+  |   |    TIRADA S   |              |    TIRADA C   |<--+
   |   |               |<-------------|               |   |
   |   +---------------+              +---------------+   |
   |          |                      /        |           |
   |          V                     /         V           |
   |   +---------------+           /  +---------------+   |
   |   |               |<---------/   |               |___|  
-  |---|     FINAL     |              |  DONAR FITXA  |
+  +---|     FINAL     |              |  DONAR FITXA  |
       |               |              |               |
       +---------------+              +---------------+
 .fi
 
 .tl ''Figure 3''
 
-Esta es la estructura que siguen las comandas, donde la primera es la comanda HELLO enviada por el cliente, que inicia la partida. Luego hay que seguir el orden de las flechas para determinar el ordenen del protocolo y todas las bifurcaciones que tiene.
+This is the model for all commands where the first is 'HELLO' request which starts the game. As soon as game starts we've defined all possible request/response series as a states machine in the figure.
 
-Las comandas que tienen una raya encima son esas que envia el cliente al servidor y el resto son las que envia el servidor al cliente. 
+Those commands which have a line on them are the requests, and the others are responses. 
 
 .bp
 .ti 0
@@ -167,7 +165,7 @@ Las comandas que tienen una raya encima son esas que envia el cliente al servido
 .ti 0
 2.4.1.1 HELLO \" Primera trama
 
-Esta trama da inicio a una partida de domino. Este comando esta compuesto solo por cabecera, no tiene body. Despues de finalizar una partida se puede volver a llamar a este comando de nuevo para iniciar una nueva partida.
+This is the first request. Client must send this in order to start a new game. In this message we only need a header because we don't need any additional information.
 
 .in 6
 .nf
@@ -184,14 +182,14 @@ Figure 4
 .in 3
 Head information: 0x01
 
-Total of byte included the header: 1 byte
+Frame length: 1 byte
 Example reference: 1
 .fi
 
 .ti 0
 2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C
 
-Este comando sirve para que el cliente pueda hacer un movimiento (definido en la gramatica del DP). Una tirada está compuesta de 3 bytes, concretamente 3 chars. El cliente tiene dos posibles tiradas, o bien la tirada de una ficha o bien hacer una no tirada. El orden en el que se tiran las fichas importa, es decir, si en mesa hay un ("3" "2") a la izquierda, i el cliente tiene un: ("3" "4"), éste debe invertir la ficha a: ("4" "3"), y enviarla indicando la dirección como está definido en el apartado 2.5 de la sintaxis del DP. Si no se pone como es debido se enviará un error de tipo: ilegal action 
+This command is used by the client to make a movement. A movement is defined by 3 ASCII bytes, at this point the client has two legal actions: throwing a piece, not thorwing a piece. In order to make a valid movement, pieces must be sent literally to fit the pieces on the table. Wich means that if we have "[3|2][2|1]" and we want to insert a piece in the left side we will need to send that piece as "[N|3]", or if we want to insert a piece in the right side we will have to send the piece as "[1|N]". If pieces sent doesn't fit this model the server will return an error of type 'Illegal Action'. 
 
 .in 6
 .nf
@@ -206,12 +204,12 @@ Este comando sirve para que el cliente pueda hacer un movimiento (definido en la
 Figure 5
 
 .in 3
-Head information: 0x03
+Header information: 0x03
 Body information:
 .ti 6
 movement:   tirada per part del client
 
-Total of byte included the header: 4 bytes
+Frame length: 4 bytes
 Example reference: 2, 3, 4, 6
 .fi
 
@@ -221,7 +219,7 @@ Example reference: 2, 3, 4, 6
 .ti 0
 2.4.2.1 ERROR
 
-The server in any moment can send us a frame of error. There are 5 type of error where eachone have a unique identifier (errorid). Followed by the identifier we can define with own words the error type (errormsg). This message don't exceed of 140 characters.
+There are five different error types, each one of them has a unique identifier (errorid). All error frames will contain also a String defining the error, for example "Piece [N|M] doesn't fit [Q|R].". These messages can contain, as much, 140 characters. 
 
 .in 6
 .nf
@@ -252,7 +250,7 @@ Types of errors:
 .nf
 Syntax error:             0x00
 Ilegal action:            0x01
-Not enoguht resources:    0x02
+Not enoguh resources:    0x02
 Internal error server:    0x03
 Undefined error:          0x04
 .fi
@@ -262,7 +260,7 @@ Undefined error:          0x04
 .ti 0
 2.4.2.2 TILES
 
-Esta es la trama que el servidor envia al cliente para informar de las fichas iniciales del cliente i quien empieza tirando. Primero se envian 7 fichas (tile), compuesta cada una de dos enteros positivos comprendidos entre 0 i 6. Seguido, se indica que el ervidor tira con la ficha que tira o indicando una no tirada con 2 bytes ('NT'), no confundir con la no tirada definida en la gramatica.
+This frame is the one sent by the server with the starting tiles of the client, and who has the first turn. We first send 7 tiles, each one composed by two positive integers betwen 0 and 6. Afer that, two bytes are added as the first movement of the server. If client has the first movement the two bytes will be "NT".
 
 .in 6
 .nf
@@ -277,7 +275,7 @@ Esta es la trama que el servidor envia al cliente para informar de las fichas in
 Figure 7
 
 .in 3
-Head information: 0x02
+Header information: 0x02
 .in 6
 7*tile:      conjunto de 7 fichas
 tile/'NT':   indicador de quien inicia la partida
@@ -291,7 +289,7 @@ Example reference: 1
 .ti 0
 2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S
 
-When we do a movement, more often the server response us with this frame to indicate his movement. This frame is similar to M/NM C frame, in this frame indicated the movement (movement) and the number of tiles rest of the server (restserver).
+The server response from a movement, is usually a frame with his own movement. This frame is similar to M/NM C frame, this frame includes the movement of the computer (movement) and the number of tiles remaining in its hand (restserver).
 
 .in 6
 .nf
@@ -306,7 +304,7 @@ When we do a movement, more often the server response us with this frame to indi
 Figure 8
 
 .in 3
-Head information: 0x04
+Header information: 0x04
 Body information:
 .in 6
 movement:     movement of the server
@@ -320,7 +318,7 @@ Example reference: 2, 3, 4
 .ti 0
 2.4.2.4 STEAL
 
-In case that the client do a movement, is possible that the server response with this frame to inform that the tile stole by client. The frame only contains the tile (tile) that it has been stolen. In case that the client wants to steal another, he shall senda 'no movement' so that the server response again with this frame, or the server also response that the game has finished.
+If the client can't place any tile in the table he will send a 'no movement' tile, so it will try to steal. The frame only contains the tile (tile) that has been stolen. This action will end the turn of the client just if there are no pieces left to steal. 
 
 .in 6
 .nf
@@ -335,7 +333,7 @@ In case that the client do a movement, is possible that the server response with
 Figure 9
 
 .in 3
-Head information: 0x05
+Header information: 0x05
 Body information:
 .ti 6
 tile:   tile stolen
@@ -347,7 +345,7 @@ Example reference: 3
 .ti 0
 2.4.2.5 FINAL
 
-End of game frame, this is sent by server when the game is finished. The server inform us about who has won, and the final score obtained by server in case of tie. The client have to look to calculate his own hand.
+End of game frame, this will be sent when the game is over. It contains the winner, and the final score obtained by the server in case of draw.
 
 .in 6
 .nf
@@ -369,7 +367,7 @@ Otherwise
 Figure 10
 
 .in 3
-Head information: 0x06
+Header information: 0x06
 Body information:
 .in 6
 winner:        game winner
@@ -385,7 +383,7 @@ Server:   0x01
 Draw:     0x02
 
 .in 3
-Total of byte included the header: 6 bytes
+Frame length: 6 bytes
 Example reference: 4
 .fi
 
