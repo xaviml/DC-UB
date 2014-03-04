@@ -39,24 +39,24 @@ Table of Contents
      1.1 Basic Structure  . . . . . . . . . . . . . . . . . . . . . .  2
    2 DP Procedure . . . . . . . . . . . . . . . . . . . . . . . . . .  3
      2.1 Introduction . . . . . . . . . . . . . . . . . . . . . . . .  3
-     2.2 Structure of Command . . . . . . . . . . . . . . . . . . . .  3
+     2.2 Structure of Frame . . . . . . . . . . . . . . . . . . . . .  3
      2.3 Model Structure of Commands  . . . . . . . . . . . . . . . .  4
      2.4 Commands . . . . . . . . . . . . . . . . . . . . . . . . . .  5
        2.4.1 Client to Server . . . . . . . . . . . . . . . . . . . .  5
          2.4.1.1 HELLO  . . . . . . . . . . . . . . . . . . . . . . .  5
-         2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C . . . . . . .  5
-       2.4.2 Server to Client . . . . . . . . . . . . . . . . . . . .  6
-         2.4.2.1 ERROR  . . . . . . . . . . . . . . . . . . . . . . .  6
-         2.4.2.2 TILES  . . . . . . . . . . . . . . . . . . . . . . .  7
-         2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S . . . . . . .  7
-         2.4.2.4 STEAL  . . . . . . . . . . . . . . . . . . . . . . .  8
-         2.4.2.5 FINAL  . . . . . . . . . . . . . . . . . . . . . . .  9
-     2.5 Command Syntax . . . . . . . . . . . . . . . . . . . . . . . 10
-     2.6 Examples DP  . . . . . . . . . . . . . . . . . . . . . . . . 10
-       2.6.1 Terminology  . . . . . . . . . . . . . . . . . . . . . . 10
-       2.6.2 Examples . . . . . . . . . . . . . . . . . . . . . . . . 11
-   3 References . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 13
+         2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C . . . . . . .  6
+       2.4.2 Server to Client . . . . . . . . . . . . . . . . . . . .  7
+         2.4.2.1 ERROR  . . . . . . . . . . . . . . . . . . . . . . .  7
+         2.4.2.2 TILES  . . . . . . . . . . . . . . . . . . . . . . .  8
+         2.4.2.3 MOVEMENT / NO MOVEMENT SERVER - M/NM S . . . . . . .  8
+         2.4.2.4 STEAL  . . . . . . . . . . . . . . . . . . . . . . .  9
+         2.4.2.5 FINAL  . . . . . . . . . . . . . . . . . . . . . . . 10
+     2.5 Command Syntax . . . . . . . . . . . . . . . . . . . . . . . 11
+     2.6 Examples DP  . . . . . . . . . . . . . . . . . . . . . . . . 11
+       2.6.1 Terminology  . . . . . . . . . . . . . . . . . . . . . . 11
+       2.6.2 Examples . . . . . . . . . . . . . . . . . . . . . . . . 12
+   3 References . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 14
 .fi
 .in 3
 
@@ -72,7 +72,7 @@ Domino Protocol was designed by the students of  Distributed computing at the 'U
 .ti 0
 1.1 Basic Structure
 
-Each message can be summarised as a rquest from the client, followed by a response from the server. The response can be a normal response of the request or an error message, all the possible errors are explained later. 
+Each message can be summarised as a request from the client, followed by a response from the server. The response can be a normal response of the request or an error message, all the possible errors are explained later. 
 
 .tl '   Client''Server'
 .tl '   |''|'
@@ -125,7 +125,7 @@ Body size: depends on the command
 .nf
       +---------------+                        +---------------+
       |     _____     |----------------------->|               |
-  +-->|     HELLO     |--------+               |     FITXES    |
+  +-->|     HELLO     |--------+               |      TILES    |
   |   |               |<---+   |               |               |
   |   +---------------+    |   |               +---------------+
   |                        |   V                   |
@@ -136,15 +136,15 @@ Body size: depends on the command
   |                    +---------------+   |  |    |
   |                                        |  V    V
   |   +---------------+              +---------------+
-  |   |               |------------->|    ________   |
-  |   |    TIRADA S   |              |    TIRADA C   |<--+
+  |   |               |------------->|     ______    |
+  |   |     M/NM S    |              |     M/NM C    |<--+
   |   |               |<-------------|               |   |
   |   +---------------+              +---------------+   |
   |          |                      /        |           |
   |          V                     /         V           |
   |   +---------------+           /  +---------------+   |
   |   |               |<---------/   |               |___|  
-  +---|     FINAL     |              |  DONAR FITXA  |
+  +---|     FINAL     |              |     STEAL     |
       |               |              |               |
       +---------------+              +---------------+
 .fi
@@ -177,7 +177,7 @@ This is the first request. Client must send this in order to start a new game. I
 +----------+
 .)c
 
-Figure 4
+.tl ''Figure 4''
 
 .in 3
 Head information: 0x01
@@ -186,6 +186,7 @@ Frame length: 1 byte
 Example reference: 1
 .fi
 
+.bp
 .ti 0
 2.4.1.2 MOVEMENT / NO MOVEMENT CLIENT - M/NM C
 
@@ -201,18 +202,19 @@ This command is used by the client to make a movement. A movement is defined by 
 +----------+-------------------------------------------+
 .)c
 
-Figure 5
+.tl ''Figure 5''
 
 .in 3
 Header information: 0x03
 Body information:
 .ti 6
-movement:   tirada per part del client
+movement:   movement of client definite in command syntax
 
 Frame length: 4 bytes
 Example reference: 2, 3, 4, 6
 .fi
 
+.bp
 .ti 0
 2.4.2 Server to Client
 
@@ -231,7 +233,7 @@ There are five different error types, each one of them has a unique identifier (
 +----------+-----------+-------------------------------+
 .)c
 
-Figure 6
+.tl ''Figure 6''
 
 .in 3
 Head information: 0x00
@@ -241,18 +243,18 @@ errorid:    error type (definited above)
 errormsg:   not exceeding 140 characters message
 .in 3
 
-Total of byte included the header: 4 bytes + extension message
+Frame length: 4 bytes + extension message
 Example reference: 5, 6
 .fi
 
 Types of errors:
 .in 6
 .nf
-Syntax error:             0x00
-Ilegal action:            0x01
+Syntax error:            0x00
+Ilegal action:           0x01
 Not enoguh resources:    0x02
-Internal error server:    0x03
-Undefined error:          0x04
+Internal error server:   0x03
+Undefined error:         0x04
 .fi
 .in 3
 
@@ -272,17 +274,17 @@ This frame is the one sent by the server with the starting tiles of the client, 
 +----------+------------+-------------------------------+
 .)c
 
-Figure 7
+.tl ''Figure 7''
 
 .in 3
 Header information: 0x02
 .in 6
-7*tile:      conjunto de 7 fichas
-tile/'NT':   indicador de quien inicia la partida
+7*tile:      group of 7 tiles
+tile/'NT':   indicator of who starts the game
 .in 3
 
 
-Total of byte included the header: 17 bytes
+Frame length: 17 bytes
 Example reference: 1
 .fi
 
@@ -301,7 +303,7 @@ The server response from a movement, is usually a frame with his own movement. T
 +----------+-------------------+-------------------------------+
 .)c
 
-Figure 8
+.tl ''Figure 8''
 
 .in 3
 Header information: 0x04
@@ -311,7 +313,7 @@ movement:     movement of the server
 restserver:   #tiles rest of the server
 .in 3
 
-Total of byte included the header: 8 bytes
+Frame length: 8 bytes
 Example reference: 2, 3, 4
 .fi
 .bp
@@ -330,7 +332,7 @@ If the client can't place any tile in the table he will send a 'no movement' til
 +----------+-----------+
 .)c
 
-Figure 9
+.tl ''Figure 9''
 
 .in 3
 Header information: 0x05
@@ -338,7 +340,7 @@ Body information:
 .ti 6
 tile:   tile stolen
 
-Total of byte included the header: 3 bytes
+Frame length: 3 bytes
 Example reference: 3
 .fi
 .bp
@@ -364,7 +366,7 @@ Otherwise
    +----------+------------+
 .)c
 
-Figure 10
+.tl ''Figure 10''
 
 .in 3
 Header information: 0x06
@@ -410,8 +412,7 @@ movement = [tile dir] / "NT "
 errorid = %x00-04
 
 ;This is the size of a character sequence.
-;Este es el tamaño de una cadena de caracteres.
-;The size of this field is voiced in character sequence.
+;The size of this field is expressed in character sequence.
 ;For example: "5" to say "hello"
 ;In this case this sequence shouldn't exceed 140 characters
 ;So this should be three digits
