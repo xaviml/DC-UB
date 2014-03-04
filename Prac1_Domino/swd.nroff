@@ -13,7 +13,7 @@
 .in 0
 
 .nf
-.tl 'Dijous2''Pablo M. M.'
+.tl 'Dijous2''Pablo M. M.'	
 .tl 'Internet-Draft''Xavi M. L.'
 .tl 'Intended status: Informational''Universitat de Barcelona'
 .tl '''February 2014'
@@ -97,9 +97,9 @@ Each message can be summarised as a rquest from the client, followed by a respon
 In this section we'll define all messages of the protocol. For each message we will see the request/response.
 
 .ti 0
-2.2 Structure of Command
+2.2 Structure of Frame
 
-Una comanda esta compuesta por dos partes una cabecera y un cuerpo, tal y como se muestra en la siguiente figura:
+A frame is compound of two parts, header and body, as shown in the following figure:
 
 .in 6
 .nf
