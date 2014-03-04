@@ -215,6 +215,7 @@ Total of byte included the header: 4 bytes
 Example reference: 2, 3, 4, 6
 .fi
 
+./'(Pablo, traduce tirada como movement, i 'no tirada' como 'no movement', i ficha como tile)
 .ti 0
 2.4.2 Server to Client
 
