@@ -7,6 +7,7 @@ package view.views;
 
 import java.util.Scanner;
 import view.ViewController;
+import view.menu.Menu;
 
 /**
  *
@@ -14,6 +15,17 @@ import view.ViewController;
  */
 public class PlayView extends View{
 
+    private static enum OpcionsPlayMenu {
+        SEE_BOARD, SEE_HAND, STEAL, SORTIR
+    };
+    
+    private static final String[] descPlayMenu = {
+        "Veure taulell",
+        "Veure la mà",
+        "Robar fitxa",
+        "Sortir"
+    };
+    
     public PlayView(ViewController parent) {
         super(parent);
     }
@@ -25,10 +37,19 @@ public class PlayView extends View{
 
     @Override
     public Class run(Scanner sc) {
-        sc.next();
-        Bundle b = parent.getBundle();
-        b.putString("stats", "Xavii!");
-        return StatsView.class;
+        Menu<OpcionsPlayMenu> menu;
+        menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
+        OpcionsPlayMenu op;
+
+        do {
+            menu.mostrarMenu();
+            op = menu.getOpcio(sc);
+            
+            switch (op) {
+                
+            }
+        } while (op != OpcionsPlayMenu.SORTIR);
+        return null;
     }
     
 }

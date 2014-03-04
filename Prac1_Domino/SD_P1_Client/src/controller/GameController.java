@@ -5,8 +5,6 @@
 
 package controller;
 
-import model.DominoGame;
-
 /**
  *
  * @author Xavi Moreno
@@ -22,7 +20,7 @@ public class GameController {
     
     
     public DominoGame createGame() {
-        return new DominoGame();
+        return null;
     }
     
     public String getUserName() {
