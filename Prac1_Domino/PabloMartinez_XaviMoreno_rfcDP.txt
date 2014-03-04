@@ -54,7 +54,7 @@ Table of Contents
 
 
 Dijous2                                                         [Page 1]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -110,7 +110,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 2]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -166,7 +166,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 3]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -222,7 +222,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 4]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -278,7 +278,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 5]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -334,7 +334,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 6]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -390,7 +390,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 7]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -446,7 +446,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 8]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -502,7 +502,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                         [Page 9]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -537,7 +537,7 @@ Distributed computing   University of Barcelona            February 2014
       Server:   0x01
       Draw:     0x02
 
-   Frame length: 6 bytes
+   Frame length: 6 bytes / 2 bytes
    Example reference: 4
 
 
@@ -558,7 +558,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                        [Page 10]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -614,7 +614,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                        [Page 11]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -670,7 +670,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                        [Page 12]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 
@@ -726,7 +726,7 @@ Distributed computing   University of Barcelona            February 2014
 
 
 Dijous2                                                        [Page 13]
-
+
 Distributed computing   University of Barcelona            February 2014
 
 

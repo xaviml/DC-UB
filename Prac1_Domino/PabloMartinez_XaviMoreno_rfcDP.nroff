@@ -385,7 +385,7 @@ Server:   0x01
 Draw:     0x02
 
 .in 3
-Frame length: 6 bytes
+Frame length: 6 bytes / 2 bytes
 Example reference: 4
 .fi
 
