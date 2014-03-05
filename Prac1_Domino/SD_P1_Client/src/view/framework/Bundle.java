@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package view.views;
+package view.framework;
 
 import java.util.HashMap;
 

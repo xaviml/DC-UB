@@ -5,8 +5,9 @@
 
 package view.views;
 
+import view.framework.View;
 import java.util.Scanner;
-import view.ViewController;
+import view.framework.ViewController;
 import view.menu.Menu;
 
 /**

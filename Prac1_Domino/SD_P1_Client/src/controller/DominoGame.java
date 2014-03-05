@@ -27,11 +27,11 @@ public class DominoGame {
         mBoard.addPiece(t, Pieces.Side.LEFT);
     }
     
-    public void addTileInBoard(DominoPiece t, Pieces.Side dir) {
+    void addTileInBoard(DominoPiece t, Pieces.Side dir) {
         mBoard.addPiece(t, dir);
     }
     
-    public boolean canSteal() {
+    boolean canSteal() {
         for(DominoPiece t : mHand) {
             if(t.getLeftNumber() == mBoard.getLeftSide() || t.getRightNumber() == mBoard.getLeftSide() ||
                t.getLeftNumber() == mBoard.getRightSide()|| t.getRightNumber() == mBoard.getRightSide())
@@ -39,4 +39,7 @@ public class DominoGame {
         }
         return true;
     }
+    
+    public Pieces getHandPieces() { return mHand; }
+    public Pieces getBoardPieces() { return mBoard; }
 }

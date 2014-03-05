@@ -5,11 +5,11 @@
 
 package view.views;
 
-import controller.Controller;
+import view.framework.View;
 import controller.DominoGame;
 import controller.GameController;
 import java.util.Scanner;
-import view.ViewController;
+import view.framework.ViewController;
 import view.menu.Menu;
 
 /**
@@ -19,8 +19,8 @@ import view.menu.Menu;
 public class PlayView extends View{
 
     private DominoGame mGame;
-    private GameController mController;
-    
+    private GameController mGameController;
+
     private static enum OpcionsPlayMenu {
         SEE_BOARD, SEE_HAND, STEAL, SORTIR
     };
@@ -34,7 +34,7 @@ public class PlayView extends View{
     
     public PlayView(ViewController parent) {
         super(parent);
-        mController = parent.getController().createGame();
+        mGameController = parent.getController().createGame();
     }
 
     @Override
@@ -44,6 +44,10 @@ public class PlayView extends View{
 
     @Override
     public Class run(Scanner sc) {
+        if(mGameController == null) {
+            System.out.println("No s'ha pogut establir una connexió amb el servidor");
+            return null;
+        }
         Menu<OpcionsPlayMenu> menu;
         menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
         OpcionsPlayMenu op;
@@ -54,16 +58,21 @@ public class PlayView extends View{
             
             switch (op) {
                 case SEE_BOARD:
+                    seeBoard();
                     break;
                 case SEE_HAND:
                     break;
                 case STEAL:
                     break;
                 case SORTIR:
+                    this.mGameController.closeGame();
                     break;
             }
         } while (op != OpcionsPlayMenu.SORTIR);
         return null;
     }
     
+    private void seeBoard() {
+        System.out.println(mGame.getBoardPieces());
+    }
 }

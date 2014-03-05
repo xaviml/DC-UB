@@ -4,10 +4,9 @@
  */
 
 
-package view.views;
+package view.framework;
 
-import view.ViewController;
-import view.ViewController.IView;
+import view.framework.ViewController.IView;
 
 /**
  *

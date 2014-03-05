@@ -3,7 +3,9 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package view;
+
+
+import view.framework.ViewController;
 
 /**
  *

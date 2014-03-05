@@ -5,10 +5,11 @@
 
 package view.views;
 
+import view.framework.View;
 import controller.Controller;
 import controller.GameController;
 import java.util.Scanner;
-import view.ViewController;
+import view.framework.ViewController;
 
 /**
  *

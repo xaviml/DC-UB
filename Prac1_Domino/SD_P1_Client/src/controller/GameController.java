@@ -7,6 +7,8 @@ package controller;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,7 +31,13 @@ public class GameController {
     
     
     
-    
+    public void closeGame() {
+        try {
+            mSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     public Socket getSocket() {return mSocket; }
     
 

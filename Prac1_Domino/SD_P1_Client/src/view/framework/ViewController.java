@@ -3,12 +3,12 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package view;
+package view.framework;
 
 import controller.Controller;
 import controller.GameController;
 import view.views.MainView;
-import view.views.View;
+import view.framework.View;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +16,7 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import view.views.Bundle;
+import view.framework.Bundle;
 
 /**
  *

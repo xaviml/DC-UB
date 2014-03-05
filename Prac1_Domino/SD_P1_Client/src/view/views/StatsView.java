@@ -5,8 +5,10 @@
 
 package view.views;
 
+import view.framework.View;
+import view.framework.Bundle;
 import java.util.Scanner;
-import view.ViewController;
+import view.framework.ViewController;
 
 /**
  *

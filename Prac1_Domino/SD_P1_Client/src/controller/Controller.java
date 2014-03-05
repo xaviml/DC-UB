@@ -33,12 +33,12 @@ public class Controller {
             try {
                 this.mGameController = new GameController(ip, port);
             } catch (IOException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
         }else{
             this.mGameController = new GameController(this.mGameController.getSocket());
         }
-        return null;
+        return this.mGameController;
     }
     
     public String getUserName() {
