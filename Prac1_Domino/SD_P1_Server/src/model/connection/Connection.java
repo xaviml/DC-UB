@@ -6,6 +6,7 @@
 
 package model.connection;
 
+import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
 import view.Log;

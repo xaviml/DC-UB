@@ -6,6 +6,10 @@
 
 package model.game;
 
+import ub.swd.model.DominoPiece;
+import ub.swd.model.Pieces;
+import ub.swd.model.connection.Turn;
+
 /**
  * This is the main class for the game, will recive petitions from gameController
  * and manage all the data. It will also be responsible of the data missMatch errors
@@ -55,14 +59,14 @@ public class Game {
         if (compBest.isThisBetter(playerBest)){
             // Player Starts
             // Retrive it's basic info
-            t.playerHand = playerHand.getList();
+            t.playerHand = playerHand.getPieces();
             return t;
             
             
         } else{
             // Computer Starts
             t = computerTurn(null);
-            t.playerHand = playerHand.getList();
+            t.playerHand = playerHand.getPieces();
             return t;
         }
         
@@ -101,8 +105,8 @@ public class Game {
                 compHand.removePiece(dp);
                 t.side = Pieces.Side.LEFT;
                 t.serverPiece = dp;
-                t.serverPiecesAmmount = compHand.getSize();
-                t.gameEndFlag = (compHand.getSize() == 0);
+                t.serverPiecesAmmount = compHand.getNumPieces();
+                t.gameEndFlag = (compHand.getNumPieces()== 0);
                 System.out.println("SYSTEM THROW");
                 return t;
             }
@@ -110,8 +114,8 @@ public class Game {
                 compHand.removePiece(dp);
                 t.side = Pieces.Side.RIGHT;
                 t.serverPiece = dp;
-                t.serverPiecesAmmount = compHand.getSize();
-                t.gameEndFlag = (compHand.getSize() == 0);
+                t.serverPiecesAmmount = compHand.getNumPieces();
+                t.gameEndFlag = (compHand.getNumPieces() == 0);
                 System.out.println("SYSTEM THROW");
                 return t;
             }
@@ -120,7 +124,7 @@ public class Game {
         /* Computer can't play, let's steal a piece */
         
         // Check that resto isn't empty
-        if (resto.getSize() == 0){
+        if (resto.getNumPieces()== 0){
             t.computerCantPlayFlag = true;
             System.out.println("CANT STEAL! NO RESTO");
             return t;
@@ -128,7 +132,7 @@ public class Game {
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
-        t.serverPiecesAmmount = compHand.getSize();
+        t.serverPiecesAmmount = compHand.getNumPieces();
         System.out.println("SYSTEM STEAL");
         
         // Another call to the function until server will be able to move, or
@@ -139,7 +143,7 @@ public class Game {
     protected Turn steal() {
         // Check that resto isn't empty
         Turn t = new Turn();
-        if (resto.getSize() == 0){
+        if (resto.getNumPieces()== 0){
             t.playerCantPlayFlag = true;
             return t;
         }
@@ -169,7 +173,7 @@ public class Game {
         
         /* If everything went OK */
         playerHand.removePiece(piece);      
-        if (playerHand.getSize() == 0){
+        if (playerHand.getNumPieces()== 0){
             t.gameEndFlag = true;
         }
         
@@ -177,21 +181,21 @@ public class Game {
     }
 
     int getPlayerScore() {
-        if (playerHand.getSize() == 0) return -1;
+        if (playerHand.getNumPieces() == 0) return -1;
         int score = 0;
         for(Object o: playerHand){
             DominoPiece dp = (DominoPiece) o;
-            score += dp.nl+dp.nr;
+            score += dp.getLeftNumber()+dp.getRightNumber();
         }
         return score;
     }
 
     int getComputerScore() {
-        if (compHand.getSize() == 0) return -1;
+        if (compHand.getNumPieces() == 0) return -1;
         int score = 0;
         for(Object o: compHand){
             DominoPiece dp = (DominoPiece) o;
-            score += dp.nl+dp.nr;
+            score += dp.getLeftNumber()+dp.getRightNumber();
         }
         return score;
     }

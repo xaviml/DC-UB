@@ -7,10 +7,10 @@
 
 
 import java.util.ArrayList;
-import model.game.DominoPiece;
 import model.game.GameController;
-import model.game.Pieces;
-import model.game.Turn;
+import ub.swd.model.DominoPiece;
+import ub.swd.model.Pieces;
+import ub.swd.model.connection.Turn;
 
 /**
  *

@@ -6,6 +6,10 @@
 
 package model.game;
 
+import ub.swd.model.DominoPiece;
+import ub.swd.model.Pieces;
+import ub.swd.model.connection.Turn;
+
 /**
  *
  * @author Pablo

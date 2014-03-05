@@ -5,8 +5,9 @@
 
 package model.connection;
 
+import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
-import model.game.Turn;
+import ub.swd.model.connection.Turn;
 
 /**
  * Protocol. This class will be responsible to get all messages from the socket
