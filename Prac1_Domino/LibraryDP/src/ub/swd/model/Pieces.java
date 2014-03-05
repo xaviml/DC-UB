@@ -65,24 +65,35 @@ public class Pieces implements Iterable<DominoPiece>{
     
     public void prueba() {}
     
-    public void addPiece(DominoPiece piece, Side side) {
+    public boolean addPiece(DominoPiece piece, Side side) {
+        boolean added = false;
         if(listType == ListType.SORTED){
             if(side == Side.LEFT) {
-                this.list.add(0, piece);
-
+                if(list.get(0).getLeftNumber() == piece.getRightNumber()) {
+                    this.list.add(0, piece);
+                    added = true;
+                } else
+                    added = false;
             }else {
-                this.list.add(piece);
+                if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
+                    this.list.add(piece);
+                    added = true;
+                } else
+                    added = false;
             }
-            nl = this.list.get(0).getLeftNumber();
-            nr = this.list.get(this.list.size()-1).getRightNumber();
+            if(added) {
+                nl = this.list.get(0).getLeftNumber();
+                nr = this.list.get(this.list.size()-1).getRightNumber();
+            }
         }
+        return added;
     }
     
     public int getNumPieces(){
         return list.size();
     }
     
-    boolean contains(DominoPiece piece) {
+    public boolean contains(DominoPiece piece) {
         return list.contains(piece);
     }
     
