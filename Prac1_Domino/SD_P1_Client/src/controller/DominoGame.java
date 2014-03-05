@@ -6,34 +6,33 @@
 package controller;
 
 import java.util.ArrayList;
-import model.Board;
-import model.Board.Dir;
-import model.Tile;
+import ub.swd.model.DominoPiece;
+import ub.swd.model.Pieces;
 
 /**
  *
  * @author zenbook
  */
 public class DominoGame {
-    private Board mBoard;
-    private ArrayList<Tile> mHand;
+    private Pieces mBoard;
+    private Pieces mHand;
     
-    public DominoGame(ArrayList<Tile> hand) {
-        this.mHand = hand;
-        mBoard = new Board();
+    public DominoGame(ArrayList<DominoPiece> hand) {
+        this.mHand = new Pieces(Pieces.ListType.UNSORTED);
+        mBoard = new Pieces(Pieces.ListType.SORTED);
     }
     
-    public DominoGame(ArrayList<Tile> hand, Tile t) {
+    public DominoGame(ArrayList<DominoPiece> hand, DominoPiece t) {
         this(hand);
-        mBoard.addTileInBoard(t, Dir.LEFT);
+        mBoard.addPiece(t, Pieces.Side.LEFT);
     }
     
-    public void addTileInBoard(Tile t, Dir dir) {
-        mBoard.addTileInBoard(t, dir);
+    public void addTileInBoard(DominoPiece t, Pieces.Side dir) {
+        mBoard.addPiece(t, dir);
     }
     
     public boolean canSteal() {
-        for(Tile t : mHand) {
+        for(DominoPiece t : mHand) {
             if(t.getLeftNumber() == mBoard.getLeftSide() || t.getRightNumber() == mBoard.getLeftSide() ||
                t.getLeftNumber() == mBoard.getRightSide()|| t.getRightNumber() == mBoard.getRightSide())
                 return false;

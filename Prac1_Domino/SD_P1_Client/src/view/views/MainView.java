@@ -31,7 +31,7 @@ public class MainView extends View{
 
     @Override
     public String getTitle() {
-        return "Benvolgut "+parent.getGameController().getUserName()+ "!";
+        return "Benvolgut "+parent.getController().getUserName()+ "!";
     }
 
     @Override

@@ -5,6 +5,7 @@
 
 package view.views;
 
+import controller.Controller;
 import controller.GameController;
 import java.util.Scanner;
 import view.ViewController;
@@ -26,7 +27,7 @@ public class ChangeNameView extends View{
 
     @Override
     public Class run(Scanner sc) {
-        GameController c = parent.getGameController();
+        Controller c = parent.getController();
         System.out.println("Nom antic: "+c.getUserName());
         System.out.print("Escriu el nou nom d'usuari: ");
         String s = sc.next();

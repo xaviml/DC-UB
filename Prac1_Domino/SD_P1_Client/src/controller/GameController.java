@@ -5,30 +5,32 @@
 
 package controller;
 
+import java.io.IOException;
+import java.net.Socket;
+
 /**
  *
  * @author Xavi Moreno
  */
 public class GameController {
-    String username;
+
+    private Socket mSocket;
+    private DominoGame mGame;
     
+    public GameController(Socket s) {
+        this.mSocket = s;
+    }
     
-    
-    public GameController() {
-        this.username = "Player";
+    public GameController(String ip, int port) throws IOException {
+        this(new Socket(ip, port));
     }
     
     
-    public DominoGame createGame() {
-        return null;
-    }
     
-    public String getUserName() {
-        return this.username;
-    }
     
-    public void setUsername(String username) {
-        this.username = username;
-    }
     
+    
+    public Socket getSocket() {return mSocket; }
+    
+
 }

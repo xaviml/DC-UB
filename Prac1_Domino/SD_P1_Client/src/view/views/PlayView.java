@@ -5,6 +5,9 @@
 
 package view.views;
 
+import controller.Controller;
+import controller.DominoGame;
+import controller.GameController;
 import java.util.Scanner;
 import view.ViewController;
 import view.menu.Menu;
@@ -15,6 +18,9 @@ import view.menu.Menu;
  */
 public class PlayView extends View{
 
+    private DominoGame mGame;
+    private GameController mController;
+    
     private static enum OpcionsPlayMenu {
         SEE_BOARD, SEE_HAND, STEAL, SORTIR
     };
@@ -28,6 +34,7 @@ public class PlayView extends View{
     
     public PlayView(ViewController parent) {
         super(parent);
+        mController = parent.getController().createGame();
     }
 
     @Override
@@ -46,7 +53,14 @@ public class PlayView extends View{
             op = menu.getOpcio(sc);
             
             switch (op) {
-                
+                case SEE_BOARD:
+                    break;
+                case SEE_HAND:
+                    break;
+                case STEAL:
+                    break;
+                case SORTIR:
+                    break;
             }
         } while (op != OpcionsPlayMenu.SORTIR);
         return null;
