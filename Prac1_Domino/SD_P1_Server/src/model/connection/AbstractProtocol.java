@@ -7,54 +7,137 @@ package model.connection;
 
 import java.io.IOException;
 import java.net.Socket;
+import model.game.DominoPiece;
+import model.game.Pieces;
+import model.game.Pieces.Side;
 import model.game.Turn;
 
 /**
- *
+ * AbstracProtocol. This abstract class will transform all messages into readable
+ * objects. All protocols (Client/Server) will extend this class.
  * @author Pablo
  */
 public abstract class AbstractProtocol {
+    public enum ErrorType{SYNTAX_ERR,
+                            ILLEGAL_ACTION_ERR,
+                            NOT_ENOUGH_RESOURCES_ERR,
+                            INTERNAL_SERVER_ERR,
+                            UNDEFINED_ERR,
+                            }
+    public enum ProtocolSide{SERVER_SIDE, CLIENT_SIDE};
+    
+    private ProtocolSide side;
     private Socket socket;
     private ComUtils comUtils;
-    public AbstractProtocol(Socket s) throws IOException{
+    public AbstractProtocol(Socket socket, ProtocolSide side) throws IOException{
         this.comUtils = new ComUtils(socket);
-        this.socket = s;
+        this.socket = socket;
+        this.side = side;
     }
     
-    public void readFrameNumber() throws IOException{
-        comUtils.read_int32();
-    }
-    
-    public void executeFrame(int i){
-        switch (i){
-            case 0:
-                //Error message here
-                errorResponse(null);
+    /**
+     * This function will be called instead of "socket.read()". here we will
+     * determinate the frame we are on and do an action.
+     * example: If server reads the frame num 2, will return a protocolError.
+     * @param i 
+     * @throws java.io.IOException 
+     */
+    public void readFrame(int i) throws IOException{
+        byte b = comUtils.readByte();
+        switch (b){
+            /* ERROR FRAME */
+            case 0x00:
+                // Server cannot recieve this message ever.
+                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                
+                /* Read the err */
+                int type = comUtils.read_int32();
+                String s = comUtils.read_string_variable(140);
+                
+                // TODO: Select error
+                errorResponse(ErrorType.SYNTAX_ERR, s);
+                
+                
                 break;
-            case 1:
-                //Hello Frame
+                
+            /* HELLO FRAME */
+            case 0x01:
+                // Client might not recieve this.
+                // No frame to read.
+                helloFrameRequest();
                 break;
-            case 2:
+                
+            /* HELLO-RESPONSE FRAME */
+            case 0x02:
+                // Server might not recieve this frame.
+                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
                 //--
                 break;
-            case 3:
+                
+            /* TURN FRAME */
+            case 0x03:
                 //--
                 break;
-            case 4:
+                
+            /* TURN-RESPONSE FRAME */
+            case 0x04:
+                // Server might not recieve this frame.
+                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
                 //--
+                break;
+                
+            /* STEAL-RESPONSE FRAME */
+            case 0x05:
+                // Server might not recieve this frame.
+                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                //--
+                break;
+            
+            /* FINAL FRAME */
+            case 0x06:
+                // Server might not recieve this frame.
+                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                //--
+                break;
+            default:
+                //-- PROTOCOL ERROR
                 break;
         }
                     
     }
-    // Client request (Server must implement these)
-    public abstract void helloFrameRequest(Turn t);
-    public abstract void gamePlayRequest(Turn t);
-    public abstract void gameStealRequest(Turn t);
+    //--------------------------------------------------------------------------
+    // R/W Object functions
+    public Pieces readPieces(){
+        // TODO
+        return null;
+    }
+    public void writePieces(Pieces p){
+        // TODO
+    }
+    public DominoPiece readDominoPiece(DominoPiece p){
+        // TODO
+        return null;
+    }
+    public void writeDominoPiece(DominoPiece p){
+        // TODO
+    }
+    //--------------------------------------------------------------------------
     
-    // Server response (Client must implement these)
-    public abstract void helloFrameResponse(Turn t);
+    
+    //--------------------------------------------------------------------------
+    //  Request/Response abstract functions, to be implemented by client and server
+    
+    
+    // Client request
+    public abstract void helloFrameRequest();                       // No parameters
+    public abstract void gamePlayRequest(DominoPiece p, Side s);
+    
+    // Server response
+    public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn);
     public abstract void gamePlayResponse(Turn t);
     public abstract void gameStealResponse(Turn t);
     public abstract void gameFinishedResponse(Turn t);
-    public abstract void errorResponse(Turn t);
+    public abstract void errorResponse(ErrorType e, String s);
+    
+    //--------------------------------------------------------------------------
 }
