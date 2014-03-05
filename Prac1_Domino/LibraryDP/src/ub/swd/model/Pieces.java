@@ -63,11 +63,13 @@ public class Pieces implements Iterable<DominoPiece>{
             list.add(piece);
     }
     
-    public void prueba() {}
-    
     public boolean addPiece(DominoPiece piece, Side side) {
         boolean added = false;
         if(listType == ListType.SORTED){
+            if(list.isEmpty()) { 
+                list.add(piece);
+                return true;
+            }
             if(side == Side.LEFT) {
                 if(list.get(0).getLeftNumber() == piece.getRightNumber()) {
                     this.list.add(0, piece);
@@ -101,4 +103,27 @@ public class Pieces implements Iterable<DominoPiece>{
     public Iterator iterator() {
         return list.iterator();
     }
+
+    @Override
+    public String toString() {
+        String out = "";
+        for (DominoPiece piece : this) {
+            out+=piece.toString();
+        }
+        return out;
+    }
+    
+    public static void main(String[] args) {
+        Pieces pieces = new Pieces(ListType.SORTED);
+        pieces.addPiece(new DominoPiece(4, 3), Side.LEFT);
+        pieces.addPiece(new DominoPiece(3, 4), Side.LEFT);
+        pieces.addPiece(new DominoPiece(6, 3), Side.LEFT);
+        pieces.addPiece(new DominoPiece(6, 6), Side.LEFT);
+        pieces.addPiece(new DominoPiece(5, 6), Side.LEFT);
+        pieces.addPiece(new DominoPiece(5, 5), Side.LEFT);
+        
+        System.out.println(pieces);
+        
+    }
+    
 }
