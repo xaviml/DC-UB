@@ -3,31 +3,82 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package model;
+package ub.swd.model;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  *
  * @author Xavi Moreno
  */
-public class Tile {
-    public int[] mNumbers;
+public class DominoPiece {
+    private int[] n;
     
-    public Tile(int left, int right) {
-        mNumbers = new int[]{left, right};
+    public DominoPiece(int left, int right) {
+        n = new int[]{left, right};
     }
     
     public void revert() {
-        int aux = mNumbers[0];
-        mNumbers[0] = mNumbers[1];
-        mNumbers[1] = aux;
+        int aux = n[0];
+        n[0] = n[1];
+        n[1] = aux;
     }
     
     public int getLeftNumber() {
-        return mNumbers[0];
+        return n[0];
     }
     
     public int getRightNumber() {
-        return mNumbers[1];
+        return n[1];
     }
-
+    
+    /**
+     * Method that gets the best of two pieces at start.
+     * @param piece
+     * @return true if this is better, false if not.
+     */
+    public boolean isThisBetter(DominoPiece piece){
+        if (piece == null){
+            return false;
+        }
+        
+       int scorethis = (this.isDouble())? this.n[0]+100 : this.n[0]+n[1];
+       int scorepiece = (piece.isDouble())? piece.n[0]+100 : piece.n[0]+piece.n[1];
+       
+       return (scorepiece>scorethis);
+    }
+    
+    /**
+     * Tell me if this piece is double
+     * @return 
+     */
+    public boolean isDouble(){
+        return this.n[0] == this.n[1];
+    }
+    
+    @Override
+    public int hashCode() {
+        // With this hashcode each piece will have a unique identifier
+        return max(n[1],n[0])*10+min(n[1],n[0]);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DominoPiece){
+            DominoPiece dp = (DominoPiece) obj;
+            return ((this.n[1] == dp.n[1] && this.n[0] == dp.n[0]) || (this.n[0] == dp.n[1] && this.n[1] == dp.n[0]));
+        }
+        return false;
+    }
+    
+    @Override
+    public String toString(){
+        if (n[1] == n[0]){
+            return " _______\n"+"| "+n[0]+" | "+n[1]+" |"+"\n|___|___|";
+        }
+        else{
+            return " ___\n"+"| "+n[0]+" |\n"+"|___|\n"+"| "+n[1]+" |\n"+"|___|";
+        }
+    }
 }
