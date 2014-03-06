@@ -7,8 +7,6 @@ package ub.swd.model.connection;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
@@ -52,7 +50,7 @@ public abstract class AbstractProtocol {
      * @throws java.io.IOException 
      */
     public void readFrame() throws IOException{
-        byte b = comUtils.read_bytes(1)[0];
+        byte b = comUtils.readByte();
         DominoPiece dp;
         Side dps;
         switch (b){
@@ -60,14 +58,14 @@ public abstract class AbstractProtocol {
             case 0x00:
                 // Server cannot recieve this message ever.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 /* Read the err */
                 ErrorType errorType = readErrorType();
-                String s = comUtils.read_string_variable(3);
+                String s = comUtils.readStringVariable(3);
                 
-                errorResponse(errorType, s);
+                errorResponse(new Error(errorType,s));
                 
                 break;
                 
@@ -82,7 +80,7 @@ public abstract class AbstractProtocol {
             case 0x02:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -115,13 +113,13 @@ public abstract class AbstractProtocol {
             case 0x04:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
                 dp = readDominoPiece();
                 dps = readSide();
-                int rest = comUtils.read_int32();
+                int rest = comUtils.readInt32();
                 
                 gamePlayResponse(dp, dps, rest);
                 
@@ -131,7 +129,7 @@ public abstract class AbstractProtocol {
             case 0x05:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -144,20 +142,22 @@ public abstract class AbstractProtocol {
             case 0x06:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
                 Winner winner = readWinner();
                 int score = -1;
                 if(winner == Winner.DRAW) {
-                    score = comUtils.read_int32();
+                    score = comUtils.readInt32();
                 }
                 
                 gameFinishedResponse(winner, score);
                 break;
             default:
-                //-- PROTOCOL ERROR
+                if(side == ProtocolSide.SERVER_SIDE) {
+                    errorResponse(new Error(ErrorType.SYNTAX_ERR, "Invalid frame ID"));
+                }
                 break;
         }
                     
@@ -184,22 +184,32 @@ public abstract class AbstractProtocol {
     }
     public void writeDominoPiece(DominoPiece p) throws IOException{
         if(p == null)
-            //CUIDADO!
-            comUtils.write_string("NT");
-        comUtils.writeChar((char)(p.getLeftNumber()+30)); //int to ascii
-        comUtils.writeChar((char) (p.getRightNumber()+30));
+            comUtils.writeString("NT");
+        else{
+            comUtils.writeChar((char)(p.getLeftNumber()+30)); //int to ascii
+            comUtils.writeChar((char) (p.getRightNumber()+30));
+        }
     }
     
     public Side readSide() throws IOException {
-        //ESPACIO del: "NT "
-        return (comUtils.readChar() == 'R') ? Side.RIGHT : Side.LEFT;
+        char c = comUtils.readChar();
+        switch (c) {
+            case 'R':
+                return Side.RIGHT;
+            case 'L':
+                return Side.LEFT;
+            case ' ':
+                return null;
+            default:
+                throw new AssertionError();
+        }
     }
     
     public void writeSide(Side s) throws IOException {
         comUtils.writeChar((s == Side.LEFT) ? 'L' : 'R');
     }
     
-    private Winner readWinner() throws IOException {
+    public Winner readWinner() throws IOException {
         switch (comUtils.readByte()) {
             case 0x00:
                 return Winner.CLIENT;
@@ -212,7 +222,7 @@ public abstract class AbstractProtocol {
         }
     }
     
-    private void writeWinner(Winner w) throws IOException {
+    public void writeWinner(Winner w) throws IOException {
         switch (w) {
             case CLIENT:
                 comUtils.writeByte((byte)0x00);
@@ -229,8 +239,8 @@ public abstract class AbstractProtocol {
         
     }
     
-    private ErrorType readErrorType() throws IOException {
-        byte type = comUtils.read_bytes(1)[0];
+    public ErrorType readErrorType() throws IOException {
+        byte type = comUtils.readByte();
         switch (type) {
                     case 0x00:
                         return ErrorType.SYNTAX_ERR;
@@ -287,7 +297,7 @@ public abstract class AbstractProtocol {
     public abstract void gamePlayResponse(DominoPiece p, Side s, int rest);
     public abstract void gameStealResponse(DominoPiece dp);
     public abstract void gameFinishedResponse(Winner winner, int score);
-    public abstract void errorResponse(ErrorType e, String s);
+    public abstract void errorResponse(Error e);
     
     //--------------------------------------------------------------------------
 }

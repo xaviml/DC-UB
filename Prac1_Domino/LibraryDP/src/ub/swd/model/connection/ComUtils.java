@@ -4,20 +4,18 @@ import java.net.*;
 import java.io.*;
 
 public class ComUtils {
-    /* Mida d'una cadena de caracters */
 
-    private final int STRSIZE = 40;
     /* Objectes per escriure i llegir dades */
-    private InputStream dis;
-    private OutputStream dos;
+    private InputStream is;
+    private OutputStream os;
 
     public ComUtils(Socket socket) throws IOException {
-        dis = socket.getInputStream();
-        dos = socket.getOutputStream();
+        is = socket.getInputStream();
+        os = socket.getOutputStream();
     }
 
     /* Llegir un enter de 32 bits */
-    public int read_int32() throws IOException {
+    public int readInt32() throws IOException {
         byte bytes[];
         bytes = read_bytes(4);
 
@@ -25,52 +23,11 @@ public class ComUtils {
     }
 
     /* Escriure un enter de 32 bits */
-    public void write_int32(int number) throws IOException {
+    public void writeInt32(int number) throws IOException {
         byte bytes[] = new byte[4];
 
         int32ToBytes(number, bytes, "be");
-        dos.write(bytes, 0, 4);
-    }
-
-    /* Llegir un string de mida STRSIZE */
-    public String read_string() throws IOException {
-        String str;
-        byte bStr[];
-        char cStr[] = new char[STRSIZE];
-
-        bStr = read_bytes(STRSIZE);
-
-        for (int i = 0; i < STRSIZE; i++) {
-            cStr[i] = (char) bStr[i];
-        }
-
-        str = String.valueOf(cStr);
-
-        return str.trim();
-    }
-
-    /* Escriure un string */
-    public void write_string(String str) throws IOException {
-        int numBytes, lenStr;
-        byte bStr[] = new byte[STRSIZE];
-
-        lenStr = str.length();
-
-        if (lenStr > STRSIZE) {
-            numBytes = STRSIZE;
-        } else {
-            numBytes = lenStr;
-        }
-
-        for (int i = 0; i < numBytes; i++) {
-            bStr[i] = (byte) str.charAt(i);
-        }
-
-        for (int i = numBytes; i < STRSIZE; i++) {
-            bStr[i] = (byte) ' ';
-        }
-
-        dos.write(bStr, 0, STRSIZE);
+        os.write(bytes, 0, 4);
     }
 
     /* Passar d'enters a bytes */
@@ -104,17 +61,17 @@ public class ComUtils {
     }
 
     //llegir bytes.
-    public byte[] read_bytes(int numBytes) throws IOException {
+    private byte[] read_bytes(int numBytes) throws IOException {
         int len = 0;
         byte bStr[] = new byte[numBytes];
         do {
-            len += dis.read(bStr, len, numBytes - len);
+            len += is.read(bStr, len, numBytes - len);
         } while (len < numBytes);
         return bStr;
     }
 
     /* Llegir un string  mida variable size = nombre de bytes especifica la longitud*/
-    public String read_string_variable(int size) throws IOException {
+    public String readStringVariable(int size) throws IOException {
         byte bHeader[];
         char cHeader[] = new char[size];
         int numBytes;
@@ -139,7 +96,7 @@ public class ComUtils {
 
     /* Escriure un string mida variable, size = nombre de bytes especifica la longitud  */
     /* String str = string a escriure.*/
-    public void write_string_variable(int size, String str) throws IOException {
+    public void writeStringVariable(int size, String str) throws IOException {
 
         // Creem una seqüència amb la mida
         byte bHeader[] = new byte[size];
@@ -156,14 +113,19 @@ public class ComUtils {
                 strHeader = "0" + strHeader;
             }
         }
-        System.out.println(strHeader);
-        for (int i = 0; i < size; i++) {
-            bHeader[i] = (byte) strHeader.charAt(i);
-        }
-        // Enviem la capçalera
-        dos.write(bHeader, 0, size);
-        // Enviem l'string writeBytes de DataOutputStrem no envia el byte més alt dels chars.
-        dos.write(str.getBytes(),0,str.getBytes().length);
+        System.out.println(strHeader+" "+str);
+        writeString(strHeader);
+        writeString(str);
+    }
+    
+    public String readString(int size) throws IOException {
+        byte[] b = new byte[size];
+        is.read(b);
+        return new String(b);
+    }
+    
+    public void writeString(String s) throws IOException {
+        os.write(s.getBytes());
     }
     
     public void writeChar(char c) throws IOException {
@@ -175,15 +137,12 @@ public class ComUtils {
     }
     
     public void writeByte(byte b) throws IOException {
-        dos.write(b);
+        os.write(b);
     }
     
     public byte readByte() throws IOException {
         byte b[] = new byte[1];
-        dis.read(b);
+        is.read(b);
         return b[0];
     }
-    
-    
-    //Funcions que necessito: readChar, writeChar, readByte, writeByte
 }
