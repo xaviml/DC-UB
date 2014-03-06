@@ -41,7 +41,7 @@ public abstract class AbstractProtocol {
      * @param i 
      * @throws java.io.IOException 
      */
-    public void readFrame(int i) throws IOException{
+    public void readFrame() throws IOException{
         byte b = comUtils.read_bytes(1)[0];
         switch (b){
             /* ERROR FRAME */
@@ -141,8 +141,8 @@ public abstract class AbstractProtocol {
     // Server response
     public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn, Side s);
     public abstract void gamePlayResponse(DominoPiece p, Side s);
-    public abstract void gameStealResponse();
-    public abstract void gameFinishedResponse();
+    public abstract void gameStealResponse(DominoPiece dp);
+    public abstract void gameFinishedResponse(int sc1, int piecesLeft);
     public abstract void errorResponse(ErrorType e, String s);
     
     //--------------------------------------------------------------------------
