@@ -5,9 +5,13 @@
 
 package controller;
 
+import controller.connection.GameController;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLSocket;
+import ub.swd.model.connection.AbstractProtocol;
 
 /**
  *
@@ -29,14 +33,16 @@ public class Controller {
     
     
     public GameController createGame() {
-        if(mGameController == null) {
-            try {
-                this.mGameController = new GameController(ip, port);
-            } catch (IOException ex) {
-                return null;
+        try {
+            if(mGameController == null) {
+
+                    this.mGameController = new GameController(new Socket(ip,port), AbstractProtocol.ProtocolSide.CLIENT_SIDE);
+
+            }else{
+                this.mGameController = new GameController(this.mGameController.getSocket(), AbstractProtocol.ProtocolSide.CLIENT_SIDE);
             }
-        }else{
-            this.mGameController = new GameController(this.mGameController.getSocket());
+        } catch (IOException ex) {
+                return null;
         }
         return this.mGameController;
     }

@@ -10,6 +10,7 @@ import java.net.Socket;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
+import ub.swd.model.connection.Error.ErrorType;
 
 /**
  * AbstracProtocol. This abstract class will transform all messages into readable
@@ -17,21 +18,27 @@ import ub.swd.model.Pieces.Side;
  * @author Pablo
  */
 public abstract class AbstractProtocol {
-    public enum ErrorType{SYNTAX_ERR,
-                            ILLEGAL_ACTION_ERR,
-                            NOT_ENOUGH_RESOURCES_ERR,
-                            INTERNAL_SERVER_ERR,
-                            UNDEFINED_ERR,
-                            }
+    
     public enum ProtocolSide{SERVER_SIDE, CLIENT_SIDE};
     
-    private ProtocolSide side;
-    private Socket socket;
-    private ComUtils comUtils;
+    protected ProtocolSide side;
+    protected Socket socket;
+    protected ComUtils comUtils;
+    
     public AbstractProtocol(Socket socket, ProtocolSide side) throws IOException{
         this.comUtils = new ComUtils(socket);
         this.socket = socket;
         this.side = side;
+    }
+    
+    public Socket getSocket() { return socket; }
+    
+    public void close() {
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            
+        }
     }
     
     /**
@@ -46,8 +53,10 @@ public abstract class AbstractProtocol {
             /* ERROR FRAME */
             case 0x00:
                 // Server cannot recieve this message ever.
-                if (side == ProtocolSide.SERVER_SIDE) errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
-                
+                if (side == ProtocolSide.SERVER_SIDE) {
+                    errorResponse(ErrorType.SYNTAX_ERR,"Invalid frame ID");
+                    return;
+                }
                 /* Read the err */
                 int type = comUtils.read_int32();
                 String s = comUtils.read_string_variable(140);
