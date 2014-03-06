@@ -7,6 +7,8 @@ package ub.swd.model.connection;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
@@ -29,6 +31,16 @@ public abstract class AbstractProtocol {
         this.comUtils = new ComUtils(socket);
         this.socket = socket;
         this.side = side;
+    }
+    
+    public Socket getSocket() { return socket; }
+    
+    public void close() {
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            
+        }
     }
     
     /**
