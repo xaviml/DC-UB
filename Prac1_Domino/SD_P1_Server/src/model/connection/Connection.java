@@ -9,6 +9,9 @@ package model.connection;
 import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -24,8 +27,9 @@ public class Connection extends Thread{
     private ConnectionState state;
     private ComUtils com;
     private Socket socket;
+    private Protocol protocol;
     private int ID;
-    private Log log;   
+    public Log log;   
      
     public Connection(Socket socket, int id, Log log){
         this.state = ConnectionState.CONNECTED;
@@ -33,32 +37,21 @@ public class Connection extends Thread{
         this.log = log;
         this.ID = id;
         
-        try {
-            this.com = new ComUtils(socket);
-        } catch (IOException ex) {
-            this.log.write(this.getClass().getSimpleName(),"Cannot establish communication with "+this.ID, Log.MessageType.ERROR); 
-        }
+
     }
     @Override
     public void run(){
-        while(state != ConnectionState.FORCEQUIT /*|| state != ConnectionState.FINISHED*/){
+        while(state != ConnectionState.FORCEQUIT && state != ConnectionState.FINISHED){
             try {
-                com.write_int32(ID);
-                try {
-                    this.sleep(1000);
-                } catch (InterruptedException ex1) {
-                }
-            } catch (IOException ex) {
+                protocol.readFrame();
+            } catch (SocketTimeoutException to){
+                this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" timed out. Disconnecting...", Log.MessageType.ERROR);
+                this.state = ConnectionState.FORCEQUIT;
+            }
+            catch (IOException ex) {
                 this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception. Disconnecting...", Log.MessageType.ERROR);
                 this.state = ConnectionState.FORCEQUIT;
-
-            }
-        }
-        try {
-            //Finish connection
-            socket.close();
-        } catch (IOException ex) {
-            //
+            } 
         }
         dcListener.onDisconnect(ID);
     }
@@ -77,6 +70,11 @@ public class Connection extends Thread{
 
     protected void closeConnection() {
         this.state = ConnectionState.FORCEQUIT;
+        try {
+            this.socket.close();
+        } catch (IOException ex) {
+            this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception when was being closed.", Log.MessageType.ERROR);
+        }
         
     }
     

@@ -38,6 +38,7 @@ public class ConnectionListener extends Thread{
             try {
                 // Accept connections
                 Socket s = serverSocket.accept();
+                s.setSoTimeout(Constants.TIMEOUT_MILLIS);
                 listener.onConnect(s);
             } catch (IOException ex) {
                 // Socket was closed, destroy the listener.

@@ -75,6 +75,12 @@ public abstract class AbstractProtocol {
             /* TURN FRAME */
             case 0x03:
                 //--
+                
+                // If the read contains a play -> gamePlayRequest(..)
+                
+                // If the read doesn't contain a play -> gameStealRequest()
+                
+                
                 break;
                 
             /* TURN-RESPONSE FRAME */
@@ -129,12 +135,13 @@ public abstract class AbstractProtocol {
     // Client request
     public abstract void helloFrameRequest();                       // No parameters
     public abstract void gamePlayRequest(DominoPiece p, Side s);
+    public abstract void gameStealRequest();
     
     // Server response
-    public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn);
-    public abstract void gamePlayResponse();
-    public abstract void gameStealResponse();
-    public abstract void gameFinishedResponse();
+    public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn, Side s);
+    public abstract void gamePlayResponse(DominoPiece p, Side s);
+    public abstract void gameStealResponse(DominoPiece dp);
+    public abstract void gameFinishedResponse(int sc1, int piecesLeft);
     public abstract void errorResponse(ErrorType e, String s);
     
     //--------------------------------------------------------------------------

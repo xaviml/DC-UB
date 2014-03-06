@@ -7,10 +7,8 @@
 
 
 import java.util.ArrayList;
-import model.game.GameController;
+import model.game.Game;
 import ub.swd.model.DominoPiece;
-import ub.swd.model.Pieces;
-import ub.swd.model.connection.Turn;
 
 /**
  *
@@ -22,17 +20,13 @@ public class StandAlone_AutoGameTest {
         ArrayList<DominoPiece> table;
         table = new ArrayList<>();
         
-        GameController g = new GameController(null);
-        Turn t = g.initGame();
-        hand = t.playerHand;
-        
-        printHand(hand);
-        
+        Game g = new Game();
+        /*
         if (t.serverPiece != null){
             table.add(t.serverPiece);
-        }
+        }*/
         boolean th,side;
-        while (!t.gameEndFlag){
+        /*while (!t.gameEndFlag){
             th = false;
             side = false;
             for(DominoPiece dp: hand){
@@ -88,6 +82,6 @@ public class StandAlone_AutoGameTest {
         }
         System.out.println("---------------");
         
-    }
+    */}
     
 }

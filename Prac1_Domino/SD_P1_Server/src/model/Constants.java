@@ -13,5 +13,6 @@ package model;
 public class Constants {
     public static int PORT;
     public static final int MAX_CONNECTIONS = 100;
+    public static final int TIMEOUT_MILLIS = 300000;
     
 }

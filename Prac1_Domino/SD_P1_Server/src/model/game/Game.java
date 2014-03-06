@@ -6,7 +6,6 @@
 
 package model.game;
 
-import model.game.GameControllerInterface.GameState;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 
@@ -19,6 +18,7 @@ import ub.swd.model.Pieces;
  * @author Pablo
  */
 public class Game {
+    public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
     private Pieces resto;
     private Pieces compHand;
     private Pieces playerHand;
@@ -28,7 +28,7 @@ public class Game {
         
     public Game(){
         
-        this.gameState = GameControllerInterface.GameState.STARTING;
+        this.gameState = GameState.STARTING;
         resto = new Pieces(Pieces.ListType.UNSORTED);
         playerHand = new Pieces(Pieces.ListType.UNSORTED);
         compHand = new Pieces(Pieces.ListType.UNSORTED);
@@ -36,7 +36,10 @@ public class Game {
         
     }
 
-    protected Pieces initGame(){
+    public void endGame(){
+        this.gameState = GameState.FINISHED;
+    }
+    public Pieces initGame(){
         // First start the resto with all domino pieces
         initResto();
         
@@ -70,23 +73,13 @@ public class Game {
             this.gameState = GameState.COMP_TURN;
             return playerHand;
         }
-        
-        /** =========== Test stuff
-        for (DominoPiece d : compHand.viewPieces()){
-            System.out.println(d);
-        }
-        System.out.println("==============================");
-        for (DominoPiece d : playerHand.viewPieces()){
-            System.out.println(d);
-        }
-        */
     }
     
     
     /**
      * Initialize all Domino pieces
      */
-    protected void initResto(){
+    private void initResto(){
         for (int i = 0; i <= 6; i++) {
             for (int j = i; j <= 6; j++) {
                 resto.addPiece(new DominoPiece(i, j));
@@ -96,7 +89,7 @@ public class Game {
 
     
 
-    protected DominoPiece steal() {
+    public DominoPiece steal() {
         // Check that resto isn't empty
         if (resto.getNumPieces()== 0){
             this.gameState = GameState.COMP_TURN;     //Toggle turn
@@ -109,7 +102,7 @@ public class Game {
         return stealed;
     }
 
-    protected boolean throwing(DominoPiece piece, Pieces.Side side) {
+    public boolean throwing(DominoPiece piece, Pieces.Side side) {
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
             return false;
@@ -128,7 +121,7 @@ public class Game {
         return true;
     }
 
-    int getPlayerScore() {
+    public int getPlayerScore() {
         if (playerHand.getNumPieces() == 0) return -1;
         int score = 0;
         for(Object o: playerHand){
@@ -138,7 +131,7 @@ public class Game {
         return score;
     }
 
-    int getComputerScore() {
+    public int getComputerScore() {
         if (compHand.getNumPieces() == 0) return -1;
         int score = 0;
         for(Object o: compHand){
@@ -157,16 +150,16 @@ public class Game {
             if (game.addPiece(dp, Pieces.Side.LEFT)){
                 compHand.removePiece(dp);
                 o[0] = dp;
-                o[1] = 0;
-                System.out.println("SYSTEM THROW");
+                o[1] = Pieces.Side.LEFT;
+                System.out.println("SYSTEM THROWS "+dp+" on "+0);
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
                 return o;
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
                 compHand.removePiece(dp);
                 o[0] = dp;
-                o[1] = 1;
-                System.out.println("SYSTEM THROW");
+                o[1] = Pieces.Side.RIGHT;
+                System.out.println("SYSTEM THROWS ");
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
                 return o;
             }
@@ -176,18 +169,30 @@ public class Game {
         
         // Check that resto isn't empty
         if (resto.getNumPieces()== 0){
-            System.out.println("CANT STEAL! NO RESTO");
+            System.out.println("SYSTEM CANT STEAL! NO RESTO");
             this.gameState = GameState.PLAYER_TURN;     //Toggle turn
             return new Object[]{null,null};
         }
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
-        System.out.println("SYSTEM STEAL");
+        System.out.println("SYSTEM STEALS " +stealed);
         
         // Another call to the function until server will be able to move, or
         // No pieces left in the resto
         return computerTurn();
     }
-    
+     
+     public boolean isPlayerTurn(){
+         return (gameState == GameState.PLAYER_TURN);
+     }
+     
+     public boolean isComputerTurn(){
+         return (gameState == GameState.COMP_TURN);
+     }
+     
+     public boolean isGameOver(){
+         return (gameState == GameState.FINISHED);
+     }
+
 }
