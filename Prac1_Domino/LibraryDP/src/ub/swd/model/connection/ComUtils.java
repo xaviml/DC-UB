@@ -18,7 +18,7 @@ public class ComUtils {
 
     /* Llegir un enter de 32 bits */
     public int read_int32() throws IOException {
-        byte bytes[] = new byte[4];
+        byte bytes[];
         bytes = read_bytes(4);
 
         return bytesToInt32(bytes, "be");
@@ -35,7 +35,7 @@ public class ComUtils {
     /* Llegir un string de mida STRSIZE */
     public String read_string() throws IOException {
         String str;
-        byte bStr[] = new byte[STRSIZE];
+        byte bStr[];
         char cStr[] = new char[STRSIZE];
 
         bStr = read_bytes(STRSIZE);
@@ -165,4 +165,25 @@ public class ComUtils {
         // Enviem l'string writeBytes de DataOutputStrem no envia el byte més alt dels chars.
         dos.write(str.getBytes(),0,str.getBytes().length);
     }
+    
+    public void writeChar(char c) throws IOException {
+        writeByte((byte) c);
+    }
+    
+    public char readChar() throws IOException {
+        return (char) readByte();
+    }
+    
+    public void writeByte(byte b) throws IOException {
+        dos.write(b);
+    }
+    
+    public byte readByte() throws IOException {
+        byte b[] = new byte[1];
+        dis.read(b);
+        return b[0];
+    }
+    
+    
+    //Funcions que necessito: readChar, writeChar, readByte, writeByte
 }
