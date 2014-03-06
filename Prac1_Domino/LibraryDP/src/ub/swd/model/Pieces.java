@@ -41,10 +41,10 @@ public class Pieces implements Iterable<DominoPiece>{
         }
         return null;
     }
-    
+    /*
     public ArrayList<DominoPiece> getPieces() {
         return list;
-    }
+    }*/
     
     public int getRightSide() {
         return nr;
