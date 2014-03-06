@@ -91,6 +91,10 @@ public class Pieces implements Iterable<DominoPiece>{
         return added;
     }
     
+    public DominoPiece getPiece(int i) {
+        return list.get(i);
+    }
+    
     public int getNumPieces(){
         return list.size();
     }
