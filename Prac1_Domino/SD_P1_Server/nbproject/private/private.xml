@@ -3,11 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/Constants.java</file>
+            <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/test/StandAlone_AutoGameTest.java</file>
             <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/connection/Connection.java</file>
+            <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/connection/ConnectionManager.java</file>
             <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/view/ServerMainWindow.java</file>
             <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/connection/ConnectionListener.java</file>
+            <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/game/Game.java</file>
             <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/connection/Protocol.java</file>
-            <file>file:/C:/Users/Pablo/Documents/GitHub/Dijous2/Prac1_Domino/SD_P1_Server/src/model/connection/AbstractProtocol.java</file>
         </group>
     </open-files>
 </project-private>
