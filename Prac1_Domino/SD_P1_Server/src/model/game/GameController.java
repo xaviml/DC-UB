@@ -8,7 +8,6 @@ package model.game;
 
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
-import ub.swd.model.connection.Turn;
 import view.Log;
 
 /**
@@ -16,57 +15,44 @@ import view.Log;
  * @author Pablo
  */
 public class GameController implements GameControllerInterface{
-    Log log;
-    Game game;
+    private Log log;
+    private Game game;
+    private GameState gameState;
     
     public GameController(Log log){
+
         this.game = new Game();
         this.log = log;
-    }
-
-    @Override
-    public Turn endGame(Turn t) {
-        t.gameEndFlag = true;   //If both cant move this might be false
-        t.scorePlayer = game.getPlayerScore();
-        t.scoreComputer = game.getComputerScore();
-        return t;
-    }
-
-
-    @Override
-    public Turn throwing(DominoPiece piece, Pieces.Side side) {
-        Turn t =  game.throwing(piece, side);   // Player plays
-        if (t.missMatchFlag || t.invalidMovementFlag) return t;
         
-        if (t.gameEndFlag){
-            t = endGame(t);
-        }
-        t = game.computerTurn(t);               // Computer plays
-        if (t.gameEndFlag){
-            t = endGame(t);
-        }
-        return t;
-    }
-
-
-    @Override
-    public Turn steal() {
-        /* Check if game has ended in a Draw*/
-        Turn t = game.steal();      // Player play
-        
-        if (t.playerCantPlayFlag){
-            t = game.computerTurn(t);   // Computer play
-        }
-        if ((t.computerCantPlayFlag && t.playerCantPlayFlag) || t.gameEndFlag){
-            return endGame(t);
-        }
-        
-        return t;
     }
 
     @Override
-    public Turn initGame() {
-        return game.initGame();
+    public boolean isGameOver() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void endGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean throwPiece(DominoPiece piece, Pieces.Side side) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DominoPiece steal() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Pieces initGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    @Override
+    public Object[] computerTurn() {
+        throw new UnsupportedOperationException("Later");
+    }
 }

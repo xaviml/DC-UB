@@ -8,16 +8,19 @@ package model.game;
 
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
-import ub.swd.model.connection.Turn;
 
 /**
  *
  * @author Pablo
  */
 public interface GameControllerInterface {
+    public enum GameState{STARTING, COMP_TURN, PLAYER_TURN, FINISHED};
     
-    abstract Turn endGame(Turn t);
-    abstract Turn throwing(DominoPiece piece, Pieces.Side side);
-    abstract Turn steal();
-    abstract Turn initGame();
+    
+    abstract boolean isGameOver();
+    abstract Object [] computerTurn();
+    abstract void endGame();
+    abstract boolean throwPiece(DominoPiece piece, Pieces.Side side);
+    abstract DominoPiece steal();
+    abstract Pieces initGame();
 }
