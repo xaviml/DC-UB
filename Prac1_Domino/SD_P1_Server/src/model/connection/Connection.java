@@ -9,6 +9,9 @@ package model.connection;
 import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -38,20 +41,17 @@ public class Connection extends Thread{
     }
     @Override
     public void run(){
-        while(state != ConnectionState.FORCEQUIT /*|| state != ConnectionState.FINISHED*/){
+        while(state != ConnectionState.FORCEQUIT && state != ConnectionState.FINISHED){
             try {
                 protocol.readFrame();
-            } catch (IOException ex) {
+            } catch (SocketTimeoutException to){
+                this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" timed out. Disconnecting...", Log.MessageType.ERROR);
+                this.state = ConnectionState.FORCEQUIT;
+            }
+            catch (IOException ex) {
                 this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception. Disconnecting...", Log.MessageType.ERROR);
                 this.state = ConnectionState.FORCEQUIT;
-
-            }
-        }
-        try {
-            //Finish connection
-            socket.close();
-        } catch (IOException ex) {
-            //
+            } 
         }
         dcListener.onDisconnect(ID);
     }
@@ -70,6 +70,11 @@ public class Connection extends Thread{
 
     protected void closeConnection() {
         this.state = ConnectionState.FORCEQUIT;
+        try {
+            this.socket.close();
+        } catch (IOException ex) {
+            this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception when was being closed.", Log.MessageType.ERROR);
+        }
         
     }
     
