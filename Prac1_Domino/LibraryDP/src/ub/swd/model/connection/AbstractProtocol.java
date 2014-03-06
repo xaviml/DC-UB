@@ -133,9 +133,9 @@ public abstract class AbstractProtocol {
     
     // Server response
     public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn);
-    public abstract void gamePlayResponse(Turn t);
-    public abstract void gameStealResponse(Turn t);
-    public abstract void gameFinishedResponse(Turn t);
+    public abstract void gamePlayResponse();
+    public abstract void gameStealResponse();
+    public abstract void gameFinishedResponse();
     public abstract void errorResponse(ErrorType e, String s);
     
     //--------------------------------------------------------------------------
