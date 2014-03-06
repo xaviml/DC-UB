@@ -24,8 +24,9 @@ public class Connection extends Thread{
     private ConnectionState state;
     private ComUtils com;
     private Socket socket;
+    private Protocol protocol;
     private int ID;
-    private Log log;   
+    public Log log;   
      
     public Connection(Socket socket, int id, Log log){
         this.state = ConnectionState.CONNECTED;
@@ -33,21 +34,13 @@ public class Connection extends Thread{
         this.log = log;
         this.ID = id;
         
-        try {
-            this.com = new ComUtils(socket);
-        } catch (IOException ex) {
-            this.log.write(this.getClass().getSimpleName(),"Cannot establish communication with "+this.ID, Log.MessageType.ERROR); 
-        }
+
     }
     @Override
     public void run(){
         while(state != ConnectionState.FORCEQUIT /*|| state != ConnectionState.FINISHED*/){
             try {
-                com.write_int32(ID);
-                try {
-                    this.sleep(1000);
-                } catch (InterruptedException ex1) {
-                }
+                protocol.readFrame();
             } catch (IOException ex) {
                 this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception. Disconnecting...", Log.MessageType.ERROR);
                 this.state = ConnectionState.FORCEQUIT;
