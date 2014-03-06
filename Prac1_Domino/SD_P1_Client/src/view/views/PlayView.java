@@ -9,6 +9,8 @@ import view.framework.View;
 import controller.DominoGame;
 import controller.connection.GameController;
 import java.util.Scanner;
+import ub.swd.model.DominoPiece;
+import ub.swd.model.Pieces;
 import view.framework.ViewController;
 import view.menu.Menu;
 
@@ -47,6 +49,8 @@ public class PlayView extends View{
         if(mGameController == null) {
             System.out.println("No s'ha pogut establir una connexió amb el servidor");
             return null;
+        } else{
+            mGame = mGameController.getGame();
         }
         Menu<OpcionsPlayMenu> menu;
         menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
@@ -61,6 +65,7 @@ public class PlayView extends View{
                     seeBoard();
                     break;
                 case SEE_HAND:
+                    seeHand();
                     break;
                 case STEAL:
                     break;
@@ -74,5 +79,14 @@ public class PlayView extends View{
     
     private void seeBoard() {
         System.out.println(mGame.getBoardPieces());
+    }
+    
+    private void seeHand() {
+        Pieces pieces = mGame.getHandPieces();
+        for (int i = 0; i < pieces.getNumPieces(); i++) {
+            System.out.println(i);
+            System.out.println(pieces.getPiece(i));
+            System.out.println("");
+        }
     }
 }

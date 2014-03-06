@@ -31,6 +31,10 @@ public class GameController extends AbstractProtocol{
         this.listener = l;
     }
 
+    public DominoGame getGame() {
+        return mGame;
+    }
+    
     @Override
     public void helloFrameRequest() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
