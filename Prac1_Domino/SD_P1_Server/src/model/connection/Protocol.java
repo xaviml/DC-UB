@@ -57,12 +57,6 @@ public class Protocol extends AbstractProtocol{
         }
     }
     
-    @Override
-    public void helloFrameResponse(Pieces hand, DominoPiece compTurn, Side s) {
-        // WRITE METHOD!
-    }
-    
-    
 
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
@@ -86,12 +80,6 @@ public class Protocol extends AbstractProtocol{
             
         }
     }
-    @Override
-    public void gamePlayResponse(DominoPiece p, Side s) {
-        // WRITE METHOD!
-    }
-
-
 
     @Override
     public void gameStealRequest() {
@@ -107,7 +95,7 @@ public class Protocol extends AbstractProtocol{
                 gameFinishedResponse(0, 0);
             }
             
-            gamePlayResponse((DominoPiece) o[0], (Side) o[1]);
+            gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
         }
         else{               // Succeed stealing a piece
             gameStealResponse(dp);
@@ -121,16 +109,26 @@ public class Protocol extends AbstractProtocol{
 
     
     
-    @Override
-    public void gameFinishedResponse(int sc1, int piecesLeft) {
-        // WRITE METHOD!
-        
-        // TODO: After this, close the socket! -- =)
-    }
 
     @Override
     public void errorResponse(ErrorType e, String s) {
         // WRITE METHOD!
+    }
+
+    @Override
+    public void helloFrameResponse(Pieces hand, DominoPiece compTurn) {
+        
+    }
+
+    @Override
+    public void gamePlayResponse(DominoPiece p, Side s, int rest) {
+        
+    }
+
+    @Override
+    public void gameFinishedResponse(Winner winner, int score) {
+        
+        // TODO: After this, close the socket! -- =)
     }
 
 }

@@ -198,5 +198,7 @@ public class Game {
      public boolean isGameOver(){
          return (gameState == GameState.FINISHED);
      }
+     
+     public int getNumComputerPieces() { return this.compHand.getNumPieces(); }
 
 }
