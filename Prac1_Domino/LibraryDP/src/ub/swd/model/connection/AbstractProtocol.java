@@ -45,6 +45,7 @@ public abstract class AbstractProtocol {
      * This function will be called instead of "socket.read()". here we will
      * determinate the frame we are on and do an action.
      * example: If server reads the frame num 2, will return a protocolError.
+     * 
      * @throws java.io.IOException 
      */
     public void readFrame() throws IOException{
