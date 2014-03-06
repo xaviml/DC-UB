@@ -30,11 +30,7 @@ public class Protocol extends AbstractProtocol{
     public Protocol (Socket s, Log l) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
         this.log = l;
-        try {
-            this.com = new ComUtils(s);
-        } catch (IOException ex) {
-            System.err.println("BAD");
-        }
+        this.com = new ComUtils(s);
         this.game = new Game();
 
         
@@ -47,13 +43,12 @@ public class Protocol extends AbstractProtocol{
         Pieces p = this.game.initGame();  // Get the starting pieces
         
         if (game.isPlayerTurn()){         // If is player turn, do nothing.
-            helloFrameResponse(p, null, null);
+            helloFrameResponse(p, null);
         }
         else{                                       // If is computer turn, get the first play.
             Object [] o = game.computerTurn();
             DominoPiece d = (DominoPiece) o[0];
-            Side s = (Side) o[1];
-            helloFrameResponse(p, d, s);
+            helloFrameResponse(p, d);
         }
     }
     
@@ -71,12 +66,12 @@ public class Protocol extends AbstractProtocol{
             // Check if the game's over.
             if (game.isGameOver()){
                 // TODO: Get necessary stuff to the response
-                gameFinishedResponse(0, 0);
+                gameFinishedResponse(Winner.CLIENT, 0);
             }
             
             // Let the computer play!
             Object [] o = game.computerTurn();
-            gamePlayResponse((DominoPiece) o[0], (Side) o[1]);
+            gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
             
         }
     }
@@ -92,7 +87,7 @@ public class Protocol extends AbstractProtocol{
                 game.endGame();
                 
                 // TODO: Score and stuff..
-                gameFinishedResponse(0, 0);
+                gameFinishedResponse(Winner.CLIENT, 0);
             }
             
             gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
