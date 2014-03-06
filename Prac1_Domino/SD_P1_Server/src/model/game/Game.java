@@ -39,16 +39,20 @@ public class Game {
     public void endGame(){
         this.gameState = GameState.FINISHED;
     }
+    /**
+     * initGame(). This method is used to initialize server/client hand.
+     * @return Pieces on the client hand.
+     */
     public Pieces initGame(){
         // First start the resto with all domino pieces
         initResto();
         
-        // Give 7 Pieces to the comp, and 7 to the player.
+        
         DominoPiece compBest = null;
         DominoPiece playerBest = null;
         
         DominoPiece dp;
-        
+        // Give 7 Pieces to the comp, and 7 to the player.
         for (int i = 0; i < 7; i++) {
             // While we get pieces we calculate the first turn.
             dp = resto.takeRandomPiece();
@@ -61,18 +65,15 @@ public class Game {
             
         }
         
-        if (compBest.isThisBetter(playerBest)){
-            // Player Starts
-            // Retrive it's basic info
+        // Set the starting turn.
+        if (compBest.isThisBetter(playerBest)){ //<- Nah, this will never be null
             this.gameState = GameState.PLAYER_TURN;
-            return playerHand;
-            
-            
         } else{
-            // Computer Starts
             this.gameState = GameState.COMP_TURN;
-            return playerHand;
         }
+        
+        // Return his hand
+        return playerHand;
     }
     
     
@@ -111,7 +112,7 @@ public class Game {
         /* Check if the movement is possible */
         boolean flag = game.addPiece(piece, side);
         
-        /* Manage the error */
+        /* Check if the piece fits. */
         if (!flag){
             return false;
         }
@@ -141,7 +142,10 @@ public class Game {
         return score;
     }
     
-    
+    /**
+     * IA. This is the method that takes on consideration the turn of the server.
+     * @return 
+     */
      public Object[] computerTurn() {
         Object [] o = new Object[2];                            // [Piece, Side] -0 left, 1 right-
         /* Check if computer can set a piece in the table */

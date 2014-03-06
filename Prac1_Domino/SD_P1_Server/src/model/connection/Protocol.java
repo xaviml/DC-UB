@@ -13,6 +13,8 @@ import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
+import ub.swd.model.connection.Error;
+import ub.swd.model.connection.Error.ErrorType;
 import view.Log;
 
 /**
@@ -21,13 +23,21 @@ import view.Log;
  * @author Pablo
  */
 public class Protocol extends AbstractProtocol{
+    private ComUtils com;
     private Log log;
     private Game game;
     
     public Protocol (Socket s, Log l) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
         this.log = l;
+        try {
+            this.com = new ComUtils(s);
+        } catch (IOException ex) {
+            System.err.println("BAD");
+        }
         this.game = new Game();
+
+        
     }
 
     @Override
@@ -85,9 +95,6 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gameStealRequest() {
-        
-
-        
         // Steal
         DominoPiece dp = game.steal();
         if (dp == null){    // No pieces in the resto!
@@ -125,6 +132,5 @@ public class Protocol extends AbstractProtocol{
     public void errorResponse(ErrorType e, String s) {
         // WRITE METHOD!
     }
-
 
 }
