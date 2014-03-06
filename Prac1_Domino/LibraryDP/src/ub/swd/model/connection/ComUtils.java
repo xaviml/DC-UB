@@ -8,12 +8,12 @@ public class ComUtils {
 
     private final int STRSIZE = 40;
     /* Objectes per escriure i llegir dades */
-    private DataInputStream dis;
-    private DataOutputStream dos;
+    private InputStream dis;
+    private OutputStream dos;
 
     public ComUtils(Socket socket) throws IOException {
-        dis = new DataInputStream(socket.getInputStream());
-        dos = new DataOutputStream(socket.getOutputStream());
+        dis = socket.getInputStream();
+        dos = socket.getOutputStream();
     }
 
     /* Llegir un enter de 32 bits */
@@ -163,6 +163,6 @@ public class ComUtils {
         // Enviem la capçalera
         dos.write(bHeader, 0, size);
         // Enviem l'string writeBytes de DataOutputStrem no envia el byte més alt dels chars.
-        dos.writeBytes(str);
+        dos.write(str.getBytes(),0,str.getBytes().length);
     }
 }
