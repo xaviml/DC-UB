@@ -7,7 +7,7 @@ package view.views;
 
 import view.framework.View;
 import controller.DominoGame;
-import controller.GameController;
+import controller.connection.GameController;
 import java.util.Scanner;
 import view.framework.ViewController;
 import view.menu.Menu;
@@ -65,7 +65,7 @@ public class PlayView extends View{
                 case STEAL:
                     break;
                 case SORTIR:
-                    this.mGameController.closeGame();
+                    this.mGameController.close();
                     break;
             }
         } while (op != OpcionsPlayMenu.SORTIR);
