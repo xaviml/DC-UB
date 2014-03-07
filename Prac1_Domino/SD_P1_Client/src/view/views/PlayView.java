@@ -72,6 +72,21 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             mGameController.helloFrameRequest();
             mGame = mGameController.getGame();
         }
+        
+        //Put a msg tutorial
+        //possible functions:
+        //h -- show this hint
+        //t <idpiece> -- Throw piece
+        //r <idpiece> -- Revert piece
+        //s -- steal a piece
+        
+       /* while(!finalGame) {
+            seeBoard();
+            System.out.println("\n>> ");
+        }
+        
+        
+        */
         Menu<OpcionsPlayMenu> menu;
         menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
         OpcionsPlayMenu op = null;
@@ -97,13 +112,17 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                     this.mGameController.close();
                     break;
             }
-        } 
+        }
         return null;
     }
     
     private void seeBoard() {
-        System.out.println(mGame.getBoardPieces()+"\n");
-        seeLeftRightPieces();
+        System.out.println("Board: "+mGame.getBoardPieces()+"\n");
+        System.out.println("Hand:  "+mGame.getHandPieces());
+        System.out.print("       ");
+        for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
+            System.out.print(" "+(i+1)+"    ");
+        }
     }
     
     private void seeLeftRightPieces() {

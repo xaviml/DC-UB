@@ -36,16 +36,10 @@ public class Controller {
 
     public GameController createGame() {
         try {
-            if(mGameController == null) {
-
-                    Socket s = new Socket();
-                    InetSocketAddress isa = new InetSocketAddress(ip, port);
-                    s.connect(isa, Constants.TIMEOUT);
-                    this.mGameController = new GameController(s, AbstractProtocol.ProtocolSide.CLIENT_SIDE);
-
-            }else{
-                this.mGameController = new GameController(this.mGameController.getSocket(), AbstractProtocol.ProtocolSide.CLIENT_SIDE);
-            }
+            Socket s = new Socket();
+            InetSocketAddress isa = new InetSocketAddress(ip, port);
+            s.connect(isa, Constants.TIMEOUT);
+            this.mGameController = new GameController(s, AbstractProtocol.ProtocolSide.CLIENT_SIDE);
         } catch (IOException ex) {
                 return null;
         }
