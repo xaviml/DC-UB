@@ -198,7 +198,6 @@ public abstract class AbstractProtocol {
     }
     
     public void writeDominoPiece(DominoPiece p) throws IOException{
-        System.out.println("Piece: "+p);
         if(p == null)
             comUtils.writeString("NT");
         else{
