@@ -32,10 +32,15 @@ public class Connection extends Thread{
     public Log log;   
      
     public Connection(Socket socket, int id, Log log){
-        this.state = ConnectionState.CONNECTED;
-        this.socket = socket;
-        this.log = log;
-        this.ID = id;
+        try {
+            this.state = ConnectionState.CONNECTED;
+            this.socket = socket;
+            this.log = log;
+            this.protocol = new Protocol(socket, log);
+            this.ID = id;
+        } catch (IOException ex) {
+            System.err.println("Cannot create Protocol");
+        }
         
 
     }

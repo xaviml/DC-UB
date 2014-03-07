@@ -13,8 +13,8 @@ import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
-import ub.swd.model.connection.Error;
-import ub.swd.model.connection.Error.ErrorType;
+import ub.swd.model.connection.ProtocolError;
+import ub.swd.model.connection.ProtocolError.ErrorType;
 import view.Log;
 
 /**
@@ -36,6 +36,9 @@ public class Protocol extends AbstractProtocol{
         
     }
 
+    //-------------------------------------------------------------------------
+    //-- READING FUNCTIONS
+    //-------------------------------------------------------------------------
     @Override
     public void helloFrameRequest() {
         // This method is called when client wants to start a new game;
@@ -60,7 +63,7 @@ public class Protocol extends AbstractProtocol{
         
         if (!flag){     
             // Something went wrong. Report an issue!
-            errorResponse(ErrorType.ILLEGAL_ACTION_ERR, "That was not a valid action!");
+            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, "That was not a valid action!"));
         }
         else{
             // Check if the game's over.
@@ -97,33 +100,69 @@ public class Protocol extends AbstractProtocol{
         }
     }
 
-    @Override
-    public void gameStealResponse(DominoPiece dp) {
-        // WRITE METHOD!
-    }
-
+    //-------------------------------------------------------------------------
+    //--WRITING FUNCTIONS
+    //-------------------------------------------------------------------------
     
-    
-
-    @Override
-    public void errorResponse(ErrorType e, String s) {
-        // WRITE METHOD!
-    }
-
     @Override
     public void helloFrameResponse(Pieces hand, DominoPiece compTurn) {
-        
+        try {
+            super.comUtils.writeByte((byte)0x02);
+            super.writePieces(hand);
+            super.writeDominoPiece(compTurn);
+        } catch (IOException ex) {
+            
+        }
     }
-
+    
     @Override
     public void gamePlayResponse(DominoPiece p, Side s, int rest) {
-        
+         try {
+            super.comUtils.writeByte((byte)0x04);
+            super.writeDominoPiece(p);
+            super.writeSide(s);
+            super.comUtils.writeInt32(rest);
+            
+        } catch (IOException ex) {
+            System.err.println("Cannot write");
+        }       
     }
+    
+    @Override
+    public void gameStealResponse(DominoPiece dp) {
+        try {
+            super.comUtils.writeByte((byte)0x05);
+            writeDominoPiece(dp);
+        } catch (IOException ex) {
+            System.err.println("Cannot write");
+        }
+    }
+
 
     @Override
     public void gameFinishedResponse(Winner winner, int score) {
+         try {
+            super.comUtils.writeByte((byte)0x06);
+             writeWinner(winner);
+             if (Winner.DRAW == winner){
+                 super.comUtils.writeInt32(score);
+             }
+        } catch (IOException ex) {
+            System.err.println("Cannot write");
+        }       
         
         // TODO: After this, close the socket! -- =)
+    }
+
+    @Override
+    public void errorResponse(ProtocolError e) {
+        try {
+            super.writeErrorType(e.type);
+            super.comUtils.writeString(e.msg);
+        } catch (IOException ex) {
+            System.err.println("Cannot write.");
+        }
+        
     }
 
 }
