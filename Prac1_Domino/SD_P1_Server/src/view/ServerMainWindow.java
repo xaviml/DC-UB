@@ -6,6 +6,7 @@ package view;
 
 import controller.ServerController;
 import java.net.URL;
+import java.util.Random;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import model.Constants;
@@ -57,8 +58,8 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         this.log = log;
         this.listening = false;
         //
-        System.out.println(System.getProperty("user.dir")+"\\res\\fun.png");
-        ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"\\res\\fun.png");
+        System.out.println();
+        ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"\\res\\ee_"+(new Random()).nextInt(4)+".png");
         this.funLabel.setIcon(imgThisImg);
     }
 
@@ -142,7 +143,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
 
         killConnectionButton.setText("Kill connection");
 
-        killAllButton.setText("Kill all");
+        killAllButton.setText("Kill'em all");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);

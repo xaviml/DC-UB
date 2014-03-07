@@ -196,7 +196,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="killAllButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Kill all"/>
+                <Property name="text" type="java.lang.String" value="Kill&apos;em all"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="funLabel">
