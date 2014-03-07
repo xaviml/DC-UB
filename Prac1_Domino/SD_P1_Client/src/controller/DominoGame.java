@@ -27,7 +27,7 @@ public class DominoGame {
         mBoard.addPiece(t, Pieces.Side.LEFT);
     }
     
-    void addTileInBoard(DominoPiece t, Pieces.Side dir) {
+    public void addTileInBoard(DominoPiece t, Pieces.Side dir) {
         mBoard.addPiece(t, dir);
     }
     
@@ -50,7 +50,8 @@ public class DominoGame {
     
     private boolean canJoinToBoard(DominoPiece dp) {
         return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
-               dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide();
+               dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide() ||
+                (mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1);
     }
     
     public Pieces getHandPieces() { return mHand; }

@@ -26,6 +26,8 @@ public class Pieces implements Iterable<DominoPiece>{
     public Pieces(ListType type){
         this.listType = type;
         this.list = new ArrayList<>();
+        nl = -1;
+        nr = -1;
     }
     
     /**
@@ -67,21 +69,20 @@ public class Pieces implements Iterable<DominoPiece>{
         boolean added = false;
         if(listType == ListType.SORTED){
             if(list.isEmpty()) { 
-                list.add(piece);
-                return true;
-            }
-            if(side == Side.LEFT) {
-                if(list.get(0).getLeftNumber() == piece.getRightNumber()) {
-                    this.list.add(0, piece);
-                    added = true;
-                } else
-                    added = false;
-            }else {
-                if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
-                    this.list.add(piece);
-                    added = true;
-                } else
-                    added = false;
+                added = list.add(piece);
+            }else{
+                if(side == Side.LEFT) {
+                    if(list.get(0).getLeftNumber() == piece.getRightNumber()) {
+                        this.list.add(0, piece);
+                        added = true;
+                    } else
+                        added = false;
+                }else {
+                    if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
+                        added = this.list.add(piece);
+                    } else
+                        added = false;
+                }
             }
             if(added) {
                 nl = this.list.get(0).getLeftNumber();

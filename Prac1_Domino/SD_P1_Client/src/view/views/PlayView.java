@@ -28,6 +28,8 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     private DominoGame mGame;
     private GameController mGameController;
     private boolean finalGame;
+    
+    private DominoPiece tmpPiece;
 
     
     private static final String MSG_ERROR_IO = "It hasn't been able to establish a connection to the server.\n"
@@ -145,9 +147,9 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                 do{
                     System.out.println("Choose side (L/R): ");
                     side = sc.next();
-                }while(!side.equals("L") || !side.equals("l") || !side.equals("R") || !side.equals("r"));
-                DominoPiece piecesSelected = mGame.getHandPieces().getPiece(op-1);
-                mGameController.gamePlayRequest(piecesSelected, (side.equals("L") || side.equals("l")) ? Pieces.Side.LEFT : Pieces.Side.RIGHT);
+                }while(!side.equals("L") && !side.equals("l") && !side.equals("R") && !side.equals("r"));
+                DominoPiece pieceSelected = mGame.getHandPieces().getPiece(op-1);
+                mGameController.gamePlayRequest(pieceSelected, (side.equals("L") || side.equals("l")) ? Pieces.Side.LEFT : Pieces.Side.RIGHT);
                 break;
         }
     }
@@ -165,7 +167,11 @@ public class PlayView extends View implements GameController.OnServerResponseLis
 
     @Override
     public void initTiles(Pieces pieces, boolean clientStart) {
-        System.out.println("You can start the game! Press 'See board' on menu to watch yours tiles.");
+        if(clientStart)
+            System.out.println("You start the game");
+        else
+            System.out.println("Computer did the first movement");
+        System.out.println("You can start the game! Press 'To watch board' on menu to watch yours tiles.\n");
     }
 
     @Override
