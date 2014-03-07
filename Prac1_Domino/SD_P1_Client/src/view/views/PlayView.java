@@ -40,10 +40,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     };
     
     private static final String[] descPlayMenu = {
-        "See board",
-        "See Right and left numbers of the board",
-        "See yout hand",
-        "Steal a tile",
+        "To watch board",
+        "To watch right and left numbers of the board",
+        "To throw a tile",
+        "To steal a tile",
         "Exit of this match"
     };
     
