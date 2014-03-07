@@ -9,9 +9,7 @@ import controller.Controller;
 import view.framework.View;
 import controller.DominoGame;
 import controller.connection.GameController;
-import java.util.InputMismatchException;
 import java.util.Scanner;
-import javax.management.MBeanConstructorInfo;
 import model.StatMatch;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
@@ -19,7 +17,6 @@ import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
 import ub.swd.model.connection.ProtocolError;
 import view.framework.ViewController;
-import view.menu.Menu;
 
 /**
  *
@@ -82,49 +79,21 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         //reverse <idpiece> -- Revert piece
         //steal -- steal a piece
         //exit
-        
+        showHelp();
+        showBoard();
         while(!finalGame) {
-            seeBoard();
+            
             System.out.print("\n>> ");
             readCommand(sc);
         }
         
-        
-        /*
-        Menu<OpcionsPlayMenu> menu;
-        menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
-        OpcionsPlayMenu op = null;
-
-        while (op != OpcionsPlayMenu.SORTIR && !finalGame) {
-            menu.mostrarMenu();
-            op = menu.getOpcio(sc);
-            
-            switch (op) {
-                case SEE_BOARD:
-                    seeBoard();
-                    break;
-                case SEE_LEFT_AND_RIGHT:
-                    seeLeftRightPieces();
-                    break;
-                case SEE_HAND:
-                    seeHand(sc);
-                    break;
-                case STEAL:
-                    stealTile();
-                    break;
-                case SORTIR:
-                    this.mGameController.close();
-                    break;
-            }
-        }
-        */
         return null;
     }
     
     
     
     private void readCommand(Scanner sc) {
-        String[] cmdline = sc.next().split(" ");
+        String[] cmdline = sc.nextLine().split(" ");
         String cmd = cmdline[0];
         String[] args = new String[cmdline.length-1];
         for (int i = 1; i < cmdline.length; i++) {
@@ -134,6 +103,9 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         switch (cmd) {
             case "help":
                 showHelp();
+                break;
+            case "board":
+                showBoard();
                 break;
             case "throw":
                 throwTile(args);
@@ -152,6 +124,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                 break;
             case "exit":
                 this.mGameController.close();
+                finalGame = true;
                 break;
             default:
                 System.out.println(INV_COMMAND);
@@ -169,10 +142,11 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         //points
         //exit
         System.out.println("help                  --  Show this text");
+        System.out.println("board                 --  Show board and hand");
         System.out.println("throw <idtile> <R/L>  --  Throw a tile to the board");
         System.out.println("reverse <idtile>      --  Reverse tile");
         System.out.println("steal                 --  Steal a tile");
-        System.out.println("hint                  --  Show possible tiles that you can throw it");
+        System.out.println("hint                  --  Show possible tiles that you can throw");
         System.out.println("points                --  Show current points of client");
     }
 
@@ -185,13 +159,13 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             return;
         }
         try {
-            id = Integer.parseInt(args[1]);
-        }catch(InputMismatchException ex) {
+            id = Integer.parseInt(args[0]);
+        }catch(NumberFormatException ex) {
             System.out.println(INV_COMMAND);
             return;
         }
         s = args[1].charAt(0);
-        if(args[1].length() > 1 || s != 'R' || s != 'L'|| s != 'l' || s != 'r') {
+        if(args[1].length() > 1 || (s != 'R' && s != 'L' && s != 'l' && s != 'r')) {
             System.out.println(INV_COMMAND);
             return;
         }
@@ -203,11 +177,17 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             System.out.println("You can't throw this tile");
             return;
         }
-        
+        /*
+        if(!mGame.canPutTileOnBoard(dp, side)){
+            dp.revert();
+            if(!mGame.canPutTileOnBoard(dp, side)) {
+                System.out.println("You can't throw this tile");
+                return;
+            }
+        }*/
         
         
         this.mGameController.gamePlayRequest(dp, side);
-            
     }
 
     private void reverse(String[] args) {
@@ -217,14 +197,16 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             return;
         }
         try {
-            id = Integer.parseInt(args[1]);
-        }catch(InputMismatchException ex) {
+            id = Integer.parseInt(args[0]);
+        }catch(NumberFormatException ex) {
             System.out.println(INV_COMMAND);
             return;
         }
         
         DominoPiece dp = mGame.getHandPieces().getPiece(id-1);
         dp.revert();
+        
+        showBoard();
     }
 
     private void steal() {
@@ -236,24 +218,32 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     }
     
     private void hint() {
-        System.out.println(mGame.getPossiblePiecesCanThrow());
-        for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
-            if(mGame.canJoinToBoard(mGame.getHandPieces().getPiece(i)))
-                System.out.print(" "+(i+1)+"    ");
+        Pieces pieces = mGame.getPossiblePiecesCanThrow();
+        if(pieces.getNumPieces() == 0) {
+            System.out.println("You should be steal a tile");
+            return;
         }
+        System.out.println(pieces);
+        for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
+            if(mGame.canJoinToBoard(mGame.getHandPieces().getPiece(i))) {
+                System.out.print(" "+(i+1)+"    ");
+            }
+        }
+        
     }
     
     private void points() {
         System.out.println("Your currrent points: "+mGame.getHandPieces().getScore());
     }
     
-    private void seeBoard() {
-        System.out.println("Board: "+mGame.getBoardPieces()+"\n");
+    private void showBoard() {
+        System.out.println("\nBoard: "+mGame.getBoardPieces());
         System.out.println("Hand:  "+mGame.getHandPieces());
         System.out.print("       ");
         for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
             System.out.print(" "+(i+1)+"    ");
         }
+        System.out.println("");
     }
     
     @Override
@@ -278,9 +268,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
 
     @Override
     public void throwResponse(DominoPiece p, int restComp) {
-        System.out.println("The server throw this piece: ");
+        System.out.println("The server throw this tile: ");
         System.out.println(p + "\n");
         System.out.println("Remaining server tiles: "+restComp);
+        showBoard();
     }
 
     @Override

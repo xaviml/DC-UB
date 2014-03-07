@@ -53,7 +53,7 @@ public class Stats {
     }
     
     public void printIPProblems() {
-        System.out.println("IPs that crash the connections");
+        System.out.println("IPs");
         for (String ip : this.problemsIP) {
             System.out.println("\t"+ip);
         }

@@ -26,7 +26,8 @@ public class GameController extends AbstractProtocol{
     private DominoGame mGame;
     private OnServerResponseListener listener;
     
-    private boolean pieceAdded;
+    private DominoPiece tmpPiece;
+    private Side tmpSide;
 
     public GameController(Socket socket, ProtocolSide side) throws IOException {
         super(socket, side);
@@ -69,6 +70,9 @@ public class GameController extends AbstractProtocol{
 
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
+        tmpPiece = p;
+        tmpSide = s;
+        
         try {
             //HEADER
             comUtils.writeByte((byte)0x03);
@@ -77,11 +81,7 @@ public class GameController extends AbstractProtocol{
             writeSide(s);
             
             //Read response
-            pieceAdded = false;
             readFrame();
-            if(pieceAdded)
-                mGame.throwTile(p, s);
-                
         } catch (IOException ex) {
             if(listener != null)
                 listener.errorIO();
@@ -91,7 +91,7 @@ public class GameController extends AbstractProtocol{
     @Override
     public void gamePlayResponse(DominoPiece p, Pieces.Side s, int rest) {
         //Si rest es igual a 0, leer trama
-        pieceAdded = true;
+        mGame.throwTile(tmpPiece, tmpSide);
         mGame.addTileInBoard(p, s);
         if(listener != null)
             listener.throwResponse(p, rest);

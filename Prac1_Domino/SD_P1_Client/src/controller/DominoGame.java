@@ -5,9 +5,9 @@
 
 package controller;
 
-import java.util.ArrayList;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
+import ub.swd.model.Pieces.Side;
 
 /**
  *
@@ -28,7 +28,7 @@ public class DominoGame {
     }
     
     public void addTileInBoard(DominoPiece t, Pieces.Side dir) {
-        mBoard.addPiece(t, dir);
+        mBoard.addPiece(t,dir);
     }
     
     public void throwTile(DominoPiece dp, Pieces.Side dir) {
@@ -45,6 +45,16 @@ public class DominoGame {
         return out;
     }
     
+    public boolean canPutTileOnBoard(DominoPiece dp, Side s) {
+        if(mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1) { //first movement
+            return true;
+        }
+        if(s == Side.LEFT)
+            return dp.getRightNumber() == mBoard.getLeftSide();
+        else
+            return dp.getLeftNumber() == mBoard.getRightSide();
+    }
+    
     public boolean canSteal() {
         for(DominoPiece t : mHand) {
             if(canJoinToBoard(t))
@@ -54,9 +64,12 @@ public class DominoGame {
     }
     
     public boolean canJoinToBoard(DominoPiece dp) {
-        return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
-               dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide() ||
-                (mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1);
+        if(mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1) { //first movement
+            return mHand.getBetterPiece().equals(dp);
+        }else{
+            return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
+                dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide();
+        }
     }
     
     public Pieces getHandPieces() { return mHand; }

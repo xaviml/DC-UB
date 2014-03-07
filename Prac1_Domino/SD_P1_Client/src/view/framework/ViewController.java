@@ -42,14 +42,14 @@ public class ViewController {
      */
     private Controller mController;
     
-    public ViewController(String[] args) {
+    public ViewController(String ip, int port) {
         this.sc = new Scanner(System.in);
         /*View principal: MainView*/
         mCurrentView = getView(MainView.class);
         stackViews = new Stack<>();
         mBundle = new Bundle();
-        String[] ipport = args[1].split(":");
-        mController = new Controller(ipport[0], Integer.parseInt(ipport[1]));
+        
+        mController = new Controller(ip, port);
     }
     
     /**
@@ -62,9 +62,6 @@ public class ViewController {
         /*Call the current view until the current view is null*/
         while(mCurrentView != null) {
             try {
-                /*Clear screen if SO allows it*/
-                clearConsole();
-                
                 /*Show the title*/
                 System.out.println("\n\n\n***************************************");
                 System.out.println("\t"+mCurrentView.getTitle());
@@ -115,20 +112,6 @@ public class ViewController {
     public Bundle getBundle() { return mBundle; }
     public Controller getController() { return mController; }
 
-    public void clearConsole() throws IOException {
-        System.out.print("\u001b[2J");
-        System.out.flush();
-        /*
-        String os = System.getProperty("os.name");
-
-        if (os.contains("Windows")) {
-            Runtime.getRuntime().exec("cls");
-        }
-        else {
-            Runtime.getRuntime().exec("clear");
-        }*/
-    }
-    
     public interface IView {
         
         /**
