@@ -119,6 +119,11 @@ public class Game {
         
         /* If everything went OK */
         playerHand.removePiece(piece);      
+        
+        /* If player hand it's empty, finish the game! */
+        if (playerHand.getNumPieces() == 0){
+            this.gameState = GameState.FINISHED;
+        }
         return true;
     }
 
