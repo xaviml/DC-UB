@@ -31,6 +31,11 @@ public class DominoGame {
         mBoard.addPiece(t, dir);
     }
     
+    public void throwTile(DominoPiece dp, Pieces.Side dir) {
+        mHand.removePiece(dp);
+        addTileInBoard(dp, dir);
+    }
+    
     public Pieces getPossiblePiecesCanThrow() {
         Pieces out = new Pieces(Pieces.ListType.UNSORTED);
         for (DominoPiece dp : mHand) {
