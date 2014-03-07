@@ -360,7 +360,7 @@ Distributed computing   University of Barcelona            February 2014
       errorid:    error type (definited above)
       errormsg:   not exceeding 140 characters message
 
-   Frame length: 4 bytes + extension message
+   Frame length: 5 bytes + extension message
    Example reference: 5, 6
 
    Types of errors:
