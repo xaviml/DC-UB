@@ -104,6 +104,14 @@ public class Pieces implements Iterable<DominoPiece>{
         return list.contains(piece);
     }
     
+    public int getScore() {
+        int out = 0;
+        for (DominoPiece dp : list) {
+            out += dp.getLeftNumber() + dp.getRightNumber();
+        }
+        return out;
+    }
+    
     @Override
     public Iterator iterator() {
         return list.iterator();
