@@ -45,8 +45,12 @@ public class DominoGame {
         return out;
     }
     
+    public boolean isFirstMovement() {
+        return mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1;
+    }
+    
     public boolean canPutTileOnBoard(DominoPiece dp, Side s) {
-        if(mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1) { //first movement
+        if(isFirstMovement()) { //first movement
             return true;
         }
         if(s == Side.LEFT)
@@ -64,7 +68,7 @@ public class DominoGame {
     }
     
     public boolean canJoinToBoard(DominoPiece dp) {
-        if(mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1) { //first movement
+        if(isFirstMovement()) { //first movement
             return mHand.getBetterPiece().equals(dp);
         }else{
             return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||

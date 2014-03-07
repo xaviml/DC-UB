@@ -148,15 +148,22 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         System.out.println("steal                 --  Steal a tile");
         System.out.println("hint                  --  Show possible tiles that you can throw");
         System.out.println("points                --  Show current points of client");
+        System.out.println("exit                  --  Exit the game");
     }
 
     private void throwTile(String[] args) {
         int id;
         char s;
-        
-        if(args.length != 2){
-            System.out.println(INV_COMMAND);
-            return;
+        if(!mGame.isFirstMovement()) {
+            if(args.length != 2){
+                System.out.println(INV_COMMAND);
+                return;
+            }
+        }else{
+            if(args.length != 2 && args.length !=1){
+                System.out.println(INV_COMMAND);
+                return;
+            }
         }
         try {
             id = Integer.parseInt(args[0]);
@@ -164,10 +171,14 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             System.out.println(INV_COMMAND);
             return;
         }
-        s = args[1].charAt(0);
-        if(args[1].length() > 1 || (s != 'R' && s != 'L' && s != 'l' && s != 'r')) {
-            System.out.println(INV_COMMAND);
-            return;
+        if(args.length > 1) {
+            s = args[1].charAt(0);
+            if(args[1].length() > 1 || (s != 'R' && s != 'L' && s != 'l' && s != 'r')) {
+                System.out.println(INV_COMMAND);
+                return;
+            }
+        }else{
+            s = 'L';
         }
         
         DominoPiece dp = mGame.getHandPieces().getPiece(id-1);
@@ -177,14 +188,14 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             System.out.println("You can't throw this tile");
             return;
         }
-        /*
+        
         if(!mGame.canPutTileOnBoard(dp, side)){
             dp.revert();
             if(!mGame.canPutTileOnBoard(dp, side)) {
                 System.out.println("You can't throw this tile");
                 return;
             }
-        }*/
+        }
         
         
         this.mGameController.gamePlayRequest(dp, side);
