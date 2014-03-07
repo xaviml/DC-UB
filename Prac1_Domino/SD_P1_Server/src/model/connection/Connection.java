@@ -10,8 +10,6 @@ import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -21,7 +19,9 @@ import view.Log;
  * 
  * @author Pablo
  */
-public class Connection extends Thread{
+public class Connection extends Thread implements Protocol.onProtocolIOExceptionListener{
+
+
     public static enum ConnectionState{CONNECTED,PLAYING,FINISHED,FORCEQUIT}
     private OnDisconnectListener dcListener;
     private ConnectionState state;
@@ -31,18 +31,12 @@ public class Connection extends Thread{
     private int ID;
     public Log log;   
      
-    public Connection(Socket socket, int id, Log log){
-        try {
+    public Connection(Socket socket, int id, Log log) throws IOException{
             this.state = ConnectionState.CONNECTED;
             this.socket = socket;
             this.log = log;
-            this.protocol = new Protocol(socket, log);
+            this.protocol = new Protocol(socket, log, this);
             this.ID = id;
-        } catch (IOException ex) {
-            System.err.println("Cannot create Protocol");
-        }
-        
-
     }
     @Override
     public void run(){
@@ -89,6 +83,11 @@ public class Connection extends Thread{
         
     }
     
+    @Override
+    public void onProtocolIOException() {
+        log.write(this.getClass().getSimpleName(), "Protocol was unable to write on connection "+this.ID+".", Log.MessageType.CONNECTION);
+        this.dcListener.onDisconnect(ID);
+    }
     
     protected interface OnDisconnectListener{
         public void onDisconnect(int id);

@@ -73,7 +73,7 @@ public class DominoPiece {
     }
     
     @Override
-    public String toString(){
+    public String toString(){/*
         if (isDouble()){
             return "+---------------+\n"
                     + "|       |       |\n"
@@ -90,6 +90,7 @@ public class DominoPiece {
                     + "|  "+n[1]+"  |\n"
                     + "|     |\n"
                     + "+-----+\n";
-        }
+        }*/
+        return "["+n[0]+"|"+n[1]+"]";
     }
 }
