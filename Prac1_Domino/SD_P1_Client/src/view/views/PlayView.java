@@ -11,9 +11,11 @@ import controller.DominoGame;
 import controller.connection.GameController;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import javax.management.MBeanConstructorInfo;
 import model.StatMatch;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
+import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
 import ub.swd.model.connection.ProtocolError;
 import view.framework.ViewController;
@@ -31,12 +33,12 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     
     private DominoPiece tmpPiece;
 
-    
+    private static final String INV_COMMAND = "Invalid command. Put help to show list of commands";
     private static final String MSG_ERROR_IO = "It hasn't been able to establish a connection to the server.\n"
                 + "\tCheck the IP adress and port.\n"
                 + "\tCheck the network connection on your computer.\n"
                 + "\tIf your computer or network is protected by a firewall or proxy, make sure that this application has the permissions enabled.";
-    
+
     private static enum OpcionsPlayMenu {
         SEE_BOARD, SEE_LEFT_AND_RIGHT, SEE_HAND, STEAL, SORTIR
     };
@@ -75,18 +77,20 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         
         //Put a msg tutorial
         //possible functions:
-        //h -- show this hint
-        //t <idpiece> -- Throw piece
-        //r <idpiece> -- Revert piece
-        //s -- steal a piece
+        //help -- show this hint
+        //throw <idpiece> -- Throw piece
+        //reverse <idpiece> -- Revert piece
+        //steal -- steal a piece
+        //exit
         
-       /* while(!finalGame) {
+        while(!finalGame) {
             seeBoard();
-            System.out.println("\n>> ");
+            System.out.print("\n>> ");
+            readCommand(sc);
         }
         
         
-        */
+        /*
         Menu<OpcionsPlayMenu> menu;
         menu = new Menu(OpcionsPlayMenu.values(), descPlayMenu);
         OpcionsPlayMenu op = null;
@@ -113,7 +117,134 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                     break;
             }
         }
+        */
         return null;
+    }
+    
+    
+    
+    private void readCommand(Scanner sc) {
+        String[] cmdline = sc.next().split(" ");
+        String cmd = cmdline[0];
+        String[] args = new String[cmdline.length-1];
+        for (int i = 1; i < cmdline.length; i++) {
+            args[i-1] = cmdline[i];
+        }
+        
+        switch (cmd) {
+            case "help":
+                showHelp();
+                break;
+            case "throw":
+                throwTile(args);
+                break;
+            case "reverse":
+                reverse(args);
+                break;
+            case "steal":
+                steal();
+                break;
+            case "hint":
+                hint();
+                break;
+            case "points":
+                points();
+                break;
+            case "exit":
+                this.mGameController.close();
+                break;
+            default:
+                System.out.println(INV_COMMAND);
+                break;
+        }
+
+    }
+    
+    private void showHelp() {
+        //help -- show this hint
+        //throw <idpiece> -- Throw piece
+        //reverse <idpiece> -- Revert piece
+        //steal -- steal a piece
+        //hint
+        //points
+        //exit
+        System.out.println("help                  --  Show this text");
+        System.out.println("throw <idtile> <R/L>  --  Throw a tile to the board");
+        System.out.println("reverse <idtile>      --  Reverse tile");
+        System.out.println("steal                 --  Steal a tile");
+        System.out.println("hint                  --  Show possible tiles that you can throw it");
+        System.out.println("points                --  Show current points of client");
+    }
+
+    private void throwTile(String[] args) {
+        int id;
+        char s;
+        
+        if(args.length != 2){
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        try {
+            id = Integer.parseInt(args[1]);
+        }catch(InputMismatchException ex) {
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        s = args[1].charAt(0);
+        if(args[1].length() > 1 || s != 'R' || s != 'L'|| s != 'l' || s != 'r') {
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        
+        DominoPiece dp = mGame.getHandPieces().getPiece(id-1);
+        Side side = (s == 'L' || s == 'l') ? Pieces.Side.LEFT : Pieces.Side.RIGHT;
+        
+        if(!mGame.canJoinToBoard(dp)) {
+            System.out.println("You can't throw this tile");
+            return;
+        }
+        
+        
+        
+        this.mGameController.gamePlayRequest(dp, side);
+            
+    }
+
+    private void reverse(String[] args) {
+        int id;
+        if(args.length != 1){
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        try {
+            id = Integer.parseInt(args[1]);
+        }catch(InputMismatchException ex) {
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        
+        DominoPiece dp = mGame.getHandPieces().getPiece(id-1);
+        dp.revert();
+    }
+
+    private void steal() {
+        if(!mGame.canSteal()) {
+            System.out.println("You can't steal a tile");
+            return;
+        }
+        mGameController.gameStealRequest();
+    }
+    
+    private void hint() {
+        System.out.println(mGame.getPossiblePiecesCanThrow());
+        for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
+            if(mGame.canJoinToBoard(mGame.getHandPieces().getPiece(i)))
+                System.out.print(" "+(i+1)+"    ");
+        }
+    }
+    
+    private void points() {
+        System.out.println("Your currrent points: "+mGame.getHandPieces().getScore());
     }
     
     private void seeBoard() {
@@ -122,54 +253,6 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         System.out.print("       ");
         for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
             System.out.print(" "+(i+1)+"    ");
-        }
-    }
-    
-    private void seeLeftRightPieces() {
-        System.out.println("Left: "+mGame.getBoardPieces().getLeftSide());
-        System.out.println("Right: "+mGame.getBoardPieces().getRightSide());
-    }
-    
-    private void stealTile() {
-        if(mGame.canSteal())
-            mGameController.gameStealRequest();
-        else
-            System.out.println("You're forced to throw a tile");
-    }
-    
-    private void seeHand(Scanner sc) {
-        Pieces pieces = mGame.getHandPieces();
-        for (int i = 0; i < pieces.getNumPieces(); i++) {
-            System.out.println(i+1);
-            System.out.println(pieces.getPiece(i));
-            System.out.println("");
-        }
-        
-        int op;
-        System.out.println("-1 if you want to show only the tiles that you can throw");
-        System.out.println("0 if you want back to main menu");
-        do {
-            System.out.print("\nPut the identifier to choose a tile: ");
-            try {
-                op = sc.nextInt();
-            }catch(InputMismatchException ex) {
-                op = -2;
-            }
-        } while (op < -1 || op > pieces.getNumPieces());
-        
-        switch (op) {
-            case -1:
-                System.out.println(mGame.getPossiblePiecesCanThrow());
-                break;
-            default:
-                String side;
-                do{
-                    System.out.println("Choose side (L/R): ");
-                    side = sc.next();
-                }while(!side.equals("L") && !side.equals("l") && !side.equals("R") && !side.equals("r"));
-                DominoPiece pieceSelected = mGame.getHandPieces().getPiece(op-1);
-                mGameController.gamePlayRequest(pieceSelected, (side.equals("L") || side.equals("l")) ? Pieces.Side.LEFT : Pieces.Side.RIGHT);
-                break;
         }
     }
     

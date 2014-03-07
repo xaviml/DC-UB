@@ -53,7 +53,7 @@ public class DominoGame {
         return true;
     }
     
-    private boolean canJoinToBoard(DominoPiece dp) {
+    public boolean canJoinToBoard(DominoPiece dp) {
         return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
                dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide() ||
                 (mBoard.getLeftSide() == -1 && mBoard.getRightSide() == -1);

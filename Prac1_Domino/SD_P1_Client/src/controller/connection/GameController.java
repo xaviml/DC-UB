@@ -77,6 +77,7 @@ public class GameController extends AbstractProtocol{
             writeSide(s);
             
             //Read response
+            pieceAdded = false;
             readFrame();
             if(pieceAdded)
                 mGame.throwTile(p, s);
