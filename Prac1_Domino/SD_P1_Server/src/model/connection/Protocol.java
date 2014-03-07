@@ -26,19 +26,27 @@ public class Protocol extends AbstractProtocol{
     private ComUtils comUtils;
     private Log log;
     private Game game;
+    private onProtocolIOExceptionListener listener;
     
-    public Protocol (Socket s, Log l) throws IOException{
+    public Protocol (Socket s, Log l, onProtocolIOExceptionListener listener) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
         this.log = l;
         this.comUtils = new ComUtils(s);
         this.game = new Game();
+        this.listener = listener;
+
+        
+    }
+    
+    public void setListener(onProtocolIOExceptionListener listener){
+        this.listener = listener;
     }
 
     //-------------------------------------------------------------------------
     //-- READING FUNCTIONS
     //-------------------------------------------------------------------------
     @Override
-    public void helloFrameRequest() throws IOException{
+    public void helloFrameRequest() {
         // This method is called when client wants to start a new game;
         
         Pieces p = this.game.initGame();  // Get the starting pieces
@@ -55,7 +63,7 @@ public class Protocol extends AbstractProtocol{
     
 
     @Override
-    public void gamePlayRequest(DominoPiece p, Pieces.Side s)  throws IOException{
+    public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
         // This method is called when the client wants to play a game.
         
         boolean flag = game.throwing(p, s);
@@ -79,7 +87,7 @@ public class Protocol extends AbstractProtocol{
     }
 
     @Override
-    public void gameStealRequest()  throws IOException{
+    public void gameStealRequest() {
         // Steal
         DominoPiece dp = game.steal();
         if (dp == null){    // No pieces in the resto!
@@ -104,7 +112,7 @@ public class Protocol extends AbstractProtocol{
     //-------------------------------------------------------------------------
     
     @Override
-    public void helloFrameResponse(Pieces hand, DominoPiece compTurn) throws IOException {
+    public void helloFrameResponse(Pieces hand, DominoPiece compTurn) {
         try {
             super.comUtils.writeByte((byte)0x02);
             super.writePieces(hand);
@@ -115,32 +123,63 @@ public class Protocol extends AbstractProtocol{
     }
     
     @Override
-    public void gamePlayResponse(DominoPiece p, Side s, int rest) throws IOException {
-        super.comUtils.writeByte((byte)0x04);
-        super.writeDominoPiece(p);
-        super.writeSide(s);
-        super.comUtils.writeInt32(rest);
+    public void gamePlayResponse(DominoPiece p, Side s, int rest) {
+         try {
+            super.comUtils.writeByte((byte)0x04);
+            super.writeDominoPiece(p);
+            super.writeSide(s);
+            super.comUtils.writeInt32(rest);
+            
+        } catch (IOException ex) {
+            treatException();
+        }       
     }
     
     @Override
-    public void gameStealResponse(DominoPiece dp) throws IOException {
-        super.comUtils.writeByte((byte)0x05);
-        writeDominoPiece(dp);
-    }
-
-
-    @Override
-    public void gameFinishedResponse(Winner winner, int score) throws IOException {
-        super.comUtils.writeByte((byte)0x06);
-        writeWinner(winner);
-        if (Winner.DRAW == winner){
-            super.comUtils.writeInt32(score);
+    public void gameStealResponse(DominoPiece dp) {
+        try {
+            super.comUtils.writeByte((byte)0x05);
+            writeDominoPiece(dp);
+        } catch (IOException ex) {
+            treatException();
         }
     }
 
+
     @Override
-    public void errorResponse(ProtocolError e) throws IOException {
-        super.writeErrorType(e.type);
-        super.comUtils.writeString(e.msg);
+    public void gameFinishedResponse(Winner winner, int score) {
+         try {
+            super.comUtils.writeByte((byte)0x06);
+             writeWinner(winner);
+             if (Winner.DRAW == winner){
+                 super.comUtils.writeInt32(score);
+             }
+        } catch (IOException ex) {
+            treatException();
+        }       
     }
+
+    @Override
+    public void errorResponse(ProtocolError e) {
+        try {
+            super.writeErrorType(e.type);
+            super.comUtils.writeString(e.msg);
+        } catch (IOException ex) {
+            treatException();
+        }
+        
+    }
+    
+    public void treatException(){
+        // -- If you arrive here is because client is gone!
+        // Let's disconnect him ;)
+        listener.onProtocolIOException();
+    }
+    
+    public interface onProtocolIOExceptionListener{
+        public abstract void onProtocolIOException();
+    }
+    
+    
+
 }

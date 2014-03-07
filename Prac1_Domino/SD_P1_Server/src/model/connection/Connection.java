@@ -19,7 +19,7 @@ import view.Log;
  * 
  * @author Pablo
  */
-public class Connection extends Thread {
+public class Connection extends Thread implements Protocol.onProtocolIOExceptionListener{
 
 
     public static enum ConnectionState{CONNECTED,PLAYING,FINISHED,FORCEQUIT}
@@ -35,7 +35,7 @@ public class Connection extends Thread {
             this.state = ConnectionState.CONNECTED;
             this.socket = socket;
             this.log = log;
-            this.protocol = new Protocol(socket, log);
+            this.protocol = new Protocol(socket, log, this);
             this.ID = id;
     }
     @Override
@@ -53,7 +53,7 @@ public class Connection extends Thread {
             } 
         }
         dcListener.onDisconnect(ID);
-        log.write(this.getClass().getSimpleName(), "Connection "+this.ID+" finishing.", Log.MessageType.CONNECTION);
+        log.write(this.getClass().getSimpleName(), "Connection "+this.ID+"."+" finishing.", Log.MessageType.CONNECTION);
     }
 
     protected void setListener(OnDisconnectListener l){
@@ -82,6 +82,13 @@ public class Connection extends Thread {
     public String toString(){
         return this.ID+" : "+this.getIP();
         
+    }
+    
+    @Override
+    public void onProtocolIOException() {
+        log.write(this.getClass().getSimpleName(), "Protocol throwed IOException "+this.ID+".", Log.MessageType.CONNECTION);
+        this.state = ConnectionState.FORCEQUIT;
+        //dcListener.onDisconnect(ID);
     }
     
     protected interface OnDisconnectListener{
