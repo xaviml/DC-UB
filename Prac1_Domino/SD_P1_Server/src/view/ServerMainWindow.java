@@ -5,7 +5,9 @@
 package view;
 
 import controller.ServerController;
+import java.net.URL;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import model.Constants;
 
 /**
@@ -55,6 +57,9 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         this.log = log;
         this.listening = false;
         //
+        System.out.println(System.getProperty("user.dir")+"\\res\\fun.png");
+        ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"\\res\\fun.png");
+        this.funLabel.setIcon(imgThisImg);
     }
 
     public void welcomeMessage(){
@@ -63,6 +68,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         this.log.writePlain("### Developed by: Pablo Martínez && Xavi Moreno");
         this.log.writePlain("### ");
         this.log.writePlain("### Running on port -port "+Constants.PORT);
+        this.log.writePlain("### ");
         this.log.writePlain("");
     }
     public void initServer(){
@@ -91,6 +97,9 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         connectionsList = new javax.swing.JList();
         jLabel1 = new javax.swing.JLabel();
         conNumberLabel = new javax.swing.JLabel();
+        killConnectionButton = new javax.swing.JButton();
+        killAllButton = new javax.swing.JButton();
+        funLabel = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         gameList = new javax.swing.JList();
@@ -124,11 +133,16 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
 
         jTabbedPane1.addTab("Log", jPanel3);
 
+        connectionsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(connectionsList);
 
         jLabel1.setText("Nº Connections:");
 
         conNumberLabel.setText("0");
+
+        killConnectionButton.setText("Kill connection");
+
+        killAllButton.setText("Kill all");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -136,23 +150,34 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(killConnectionButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
+                    .addComponent(killAllButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(conNumberLabel)
-                        .addGap(0, 599, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(funLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(conNumberLabel))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(funLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(conNumberLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(killConnectionButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(killAllButton))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -219,7 +244,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 718, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(listeningToggleButton)
@@ -280,6 +305,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     private javax.swing.JLabel conNumberLabel;
     private javax.swing.JList connectionsList;
     private javax.swing.JCheckBox elCheckbox;
+    private javax.swing.JLabel funLabel;
     private javax.swing.JList gameList;
     private javax.swing.JCheckBox glCheckBox;
     private javax.swing.JLabel jLabel1;
@@ -291,6 +317,8 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton killAllButton;
+    private javax.swing.JButton killConnectionButton;
     private javax.swing.JButton listeningToggleButton;
     private javax.swing.JTextArea logArea;
     // End of variables declaration//GEN-END:variables

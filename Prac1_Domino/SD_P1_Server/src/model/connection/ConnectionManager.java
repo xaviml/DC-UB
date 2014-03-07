@@ -78,15 +78,6 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         }
     }
     
-    /*
-    public ArrayList<String> getConnections() {
-        ArrayList<String> a = new ArrayList<>();
-        for (Connection c: connections.values()){
-            a.add(c.getId()+c.getIP());
-        }
-        return a;
-    }*/
-
     @Override
     public void onDisconnect(int id) {
         Connection c = connections.remove(id);          // Remove it from HashMap.
