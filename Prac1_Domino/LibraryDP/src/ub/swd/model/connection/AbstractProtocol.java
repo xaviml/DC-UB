@@ -297,16 +297,16 @@ public abstract class AbstractProtocol {
     
     
     // Client request
-    public abstract void helloFrameRequest();                       // No parameters
-    public abstract void gamePlayRequest(DominoPiece p, Side s);
-    public abstract void gameStealRequest();
+    public abstract void helloFrameRequest() throws IOException;                       // No parameters
+    public abstract void gamePlayRequest(DominoPiece p, Side s) throws IOException;
+    public abstract void gameStealRequest() throws IOException;
     
     // Server response
-    public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn);
-    public abstract void gamePlayResponse(DominoPiece p, Side s, int rest);
-    public abstract void gameStealResponse(DominoPiece dp);
-    public abstract void gameFinishedResponse(Winner winner, int score);
-    public abstract void errorResponse(ProtocolError e);
+    public abstract void helloFrameResponse(Pieces hand, DominoPiece compTurn) throws IOException;
+    public abstract void gamePlayResponse(DominoPiece p, Side s, int rest) throws IOException;
+    public abstract void gameStealResponse(DominoPiece dp) throws IOException;
+    public abstract void gameFinishedResponse(Winner winner, int score) throws IOException;
+    public abstract void errorResponse(ProtocolError e) throws IOException;
     
     //--------------------------------------------------------------------------
 }
