@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
+import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
 import ub.swd.model.connection.ProtocolError;
 
@@ -24,6 +25,9 @@ public class GameController extends AbstractProtocol{
     
     private DominoGame mGame;
     private OnServerResponseListener listener;
+    
+    private DominoPiece tmpPiece;
+    private Side tmpSide;
 
     public GameController(Socket socket, ProtocolSide side) throws IOException {
         super(socket, side);
@@ -66,6 +70,8 @@ public class GameController extends AbstractProtocol{
 
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
+        tmpPiece = p;
+        tmpSide = s;
         try {
             //HEADER
             comUtils.writeByte((byte)0x03);
@@ -84,7 +90,8 @@ public class GameController extends AbstractProtocol{
     @Override
     public void gamePlayResponse(DominoPiece p, Pieces.Side s, int rest) {
         //Si rest es igual a 0, leer trama
-        mGame.getBoardPieces().addPiece(p, s);
+        mGame.addTileInBoard(tmpPiece, tmpSide);
+        mGame.addTileInBoard(p, s);
         if(listener != null)
             listener.throwResponse(p, rest);
         
