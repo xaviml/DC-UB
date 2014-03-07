@@ -10,7 +10,7 @@ import java.net.Socket;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
-import ub.swd.model.connection.Error.ErrorType;
+import ub.swd.model.connection.ProtocolError.ErrorType;
 
 /**
  * AbstracProtocol. This abstract class will transform all messages into readable
@@ -56,16 +56,17 @@ public abstract class AbstractProtocol {
         switch (b){
             /* ERROR FRAME */
             case 0x00:
+                System.out.println("HOLA XAVI");
                 // Server cannot recieve this message ever.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 /* Read the err */
                 ErrorType errorType = readErrorType();
                 String s = comUtils.readStringVariable(3);
                 
-                errorResponse(new Error(errorType,s));
+                errorResponse(new ProtocolError(errorType,s));
                 
                 break;
                 
@@ -80,7 +81,7 @@ public abstract class AbstractProtocol {
             case 0x02:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -113,7 +114,7 @@ public abstract class AbstractProtocol {
             case 0x04:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -129,7 +130,7 @@ public abstract class AbstractProtocol {
             case 0x05:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -142,7 +143,7 @@ public abstract class AbstractProtocol {
             case 0x06:
                 // Server might not recieve this frame.
                 if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
                     return;
                 }
                 
@@ -156,12 +157,13 @@ public abstract class AbstractProtocol {
                 break;
             default:
                 if(side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new Error(ErrorType.SYNTAX_ERR, "Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Invalid frame ID"));
                 }
                 break;
         }
                     
     }
+    
     //--------------------------------------------------------------------------
     // R/W Object functions
     public Pieces readPieces() throws IOException{
@@ -170,11 +172,13 @@ public abstract class AbstractProtocol {
             pieces.addPiece(readDominoPiece());
         return pieces;
     }
+    
     public void writePieces(Pieces p) throws IOException{
         for (DominoPiece dominoPiece : p) {
             writeDominoPiece(dominoPiece);
         }
     }
+    
     public DominoPiece readDominoPiece() throws IOException{
         char left = comUtils.readChar();
         char right  = comUtils.readChar();
@@ -182,6 +186,11 @@ public abstract class AbstractProtocol {
             return null;
         return new DominoPiece(left, right);
     }
+    
+    public void writeNoMovementFrame() throws IOException {
+        comUtils.writeString("NT ");
+    }
+    
     public void writeDominoPiece(DominoPiece p) throws IOException{
         if(p == null)
             comUtils.writeString("NT");
@@ -297,7 +306,7 @@ public abstract class AbstractProtocol {
     public abstract void gamePlayResponse(DominoPiece p, Side s, int rest);
     public abstract void gameStealResponse(DominoPiece dp);
     public abstract void gameFinishedResponse(Winner winner, int score);
-    public abstract void errorResponse(Error e);
+    public abstract void errorResponse(ProtocolError e);
     
     //--------------------------------------------------------------------------
 }

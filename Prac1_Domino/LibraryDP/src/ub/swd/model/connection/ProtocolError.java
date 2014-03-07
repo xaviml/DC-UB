@@ -10,7 +10,8 @@ package ub.swd.model.connection;
  *
  * @author Xavi Moreno
  */
-public class Error {
+public class ProtocolError {
+    
     public enum ErrorType{SYNTAX_ERR,
                             ILLEGAL_ACTION_ERR,
                             NOT_ENOUGH_RESOURCES_ERR,
@@ -21,7 +22,7 @@ public class Error {
     public ErrorType type;
     public String msg;
     
-    public Error(ErrorType type, String msg) {
+    public ProtocolError(ErrorType type, String msg) {
         this.type = type;
         this.msg = msg;
     }
