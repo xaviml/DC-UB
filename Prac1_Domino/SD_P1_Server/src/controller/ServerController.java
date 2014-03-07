@@ -37,6 +37,10 @@ public class ServerController {
         return conManager.stopListening();
     }
     
+    public void closeConnection(int i){
+        conManager.closeConnection(i);
+    }
+    
     public void closeConnections(){
         conManager.closeConnections();
     }
@@ -54,6 +58,10 @@ public class ServerController {
         log.toggleErrors();
     }
     
+    
+    /**
+     * Not implemented
+     */
     public void toggleBandWidthInfo(){
         
     }

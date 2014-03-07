@@ -78,11 +78,19 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         }
     }
     
+    
+    public void closeConnection(int i){
+        Connection c = connections.get(i);
+        c.closeConnection();
+    }
+    
     @Override
     public void onDisconnect(int id) {
         Connection c = connections.remove(id);          // Remove it from HashMap.
         log.removeConnection(c.toString());             // Remove it from GUI.
     }
+    
+    
 
     @Override
     public void onConnect(Socket s) {

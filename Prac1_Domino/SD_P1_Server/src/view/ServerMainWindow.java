@@ -111,6 +111,8 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         elCheckbox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("SWD Server || Pablo Martinez & Xavi Moreno");
+        setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(718, 376));
         setResizable(false);
 
@@ -135,6 +137,16 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         jTabbedPane1.addTab("Log", jPanel3);
 
         connectionsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        connectionsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                connectionsListValueChanged(evt);
+            }
+        });
+        connectionsList.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                connectionsListFocusLost(evt);
+            }
+        });
         jScrollPane2.setViewportView(connectionsList);
 
         jLabel1.setText("Nº Connections:");
@@ -142,8 +154,19 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         conNumberLabel.setText("0");
 
         killConnectionButton.setText("Kill connection");
+        killConnectionButton.setEnabled(false);
+        killConnectionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                killConnectionButtonActionPerformed(evt);
+            }
+        });
 
         killAllButton.setText("Kill'em all");
+        killAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                killAllButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -298,6 +321,37 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     private void elCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elCheckboxActionPerformed
         controller.toggleErrors();
     }//GEN-LAST:event_elCheckboxActionPerformed
+
+    private void killAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_killAllButtonActionPerformed
+        controller.closeConnections();
+    }//GEN-LAST:event_killAllButtonActionPerformed
+
+    private void killConnectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_killConnectionButtonActionPerformed
+        if (connectionsList.getSelectedValue() == null){
+            killConnectionButton.setEnabled(false);
+            return;
+        }
+        
+        
+        String s = connectionsList.getSelectedValue().toString();
+        int i = ((int)(s.split(":")[0]).charAt(0))-48;
+        System.out.println(i);
+        controller.closeConnection(i);
+
+
+    }//GEN-LAST:event_killConnectionButtonActionPerformed
+
+    private void connectionsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_connectionsListValueChanged
+
+        if (connectionsList.getSelectedValue() != null){
+            killConnectionButton.setEnabled(true);
+        }else{
+            killConnectionButton.setEnabled(true);
+        }
+    }//GEN-LAST:event_connectionsListValueChanged
+
+    private void connectionsListFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_connectionsListFocusLost
+    }//GEN-LAST:event_connectionsListFocusLost
 
 
 
