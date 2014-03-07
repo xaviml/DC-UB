@@ -56,7 +56,6 @@ public abstract class AbstractProtocol {
         switch (b){
             /* ERROR FRAME */
             case 0x00:
-                System.out.println("HOLA XAVI");
                 // Server cannot recieve this message ever.
                 if (side == ProtocolSide.SERVER_SIDE) {
                     errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
@@ -74,6 +73,9 @@ public abstract class AbstractProtocol {
             case 0x01:
                 // Client might not recieve this.
                 // No frame to read.
+                if (side == ProtocolSide.CLIENT_SIDE) {
+                    return;
+                }
                 helloFrameRequest();
                 break;
                 
@@ -98,6 +100,10 @@ public abstract class AbstractProtocol {
                 
             /* TURN FRAME */
             case 0x03:
+                
+                if (side == ProtocolSide.CLIENT_SIDE) {
+                    return;
+                }
                 
                 dp = readDominoPiece();
                 dps = readSide();
@@ -192,6 +198,7 @@ public abstract class AbstractProtocol {
     }
     
     public void writeDominoPiece(DominoPiece p) throws IOException{
+        System.out.println("Piece: "+p);
         if(p == null)
             comUtils.writeString("NT");
         else{

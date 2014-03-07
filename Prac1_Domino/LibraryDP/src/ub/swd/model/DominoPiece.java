@@ -43,10 +43,14 @@ public class DominoPiece {
             return false;
         }
         
-       int scorethis = (this.isDouble())? this.n[0]+100 : this.n[0]+n[1];
-       int scorepiece = (piece.isDouble())? piece.n[0]+100 : piece.n[0]+piece.n[1];
+       int scorethis = getScorePiece();
+       int scorepiece = piece.getScorePiece();
        
        return (scorepiece>scorethis);
+    }
+    
+    public int getScorePiece() {
+        return (this.isDouble())? this.n[0]+100 : this.n[0]+n[1];
     }
     
     /**

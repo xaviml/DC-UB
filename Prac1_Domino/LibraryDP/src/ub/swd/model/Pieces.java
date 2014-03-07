@@ -112,6 +112,18 @@ public class Pieces implements Iterable<DominoPiece>{
         return out;
     }
     
+    public DominoPiece getBetterPiece() {
+        int score = -1;
+        DominoPiece dp = null;
+        for (DominoPiece p : list) {
+            if(p.getScorePiece() > score) {
+                dp = p;
+                score = dp.getScorePiece();
+            }
+        }
+        return dp;
+    }
+    
     @Override
     public Iterator iterator() {
         return list.iterator();
@@ -134,6 +146,8 @@ public class Pieces implements Iterable<DominoPiece>{
         pieces.addPiece(new DominoPiece(6, 6), Side.LEFT);
         pieces.addPiece(new DominoPiece(5, 6), Side.LEFT);
         pieces.addPiece(new DominoPiece(5, 5), Side.LEFT);
+        
+        DominoPiece dp = new DominoPiece(4, 1);
         
         System.out.println(pieces);
         
