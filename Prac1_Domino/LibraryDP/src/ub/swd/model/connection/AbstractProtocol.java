@@ -184,7 +184,7 @@ public abstract class AbstractProtocol {
         char right  = comUtils.readChar();
         if(left == 'N' && right == 'T')
             return null;
-        return new DominoPiece(left, right);
+        return new DominoPiece(left-48, right-48);
     }
     
     public void writeNoMovementFrame() throws IOException {
@@ -195,8 +195,8 @@ public abstract class AbstractProtocol {
         if(p == null)
             comUtils.writeString("NT");
         else{
-            comUtils.writeChar((char)(p.getLeftNumber()+30)); //int to ascii
-            comUtils.writeChar((char) (p.getRightNumber()+30));
+            comUtils.writeChar((char)(p.getLeftNumber()+48)); //int to ascii
+            comUtils.writeChar((char) (p.getRightNumber()+48));
         }
     }
     
