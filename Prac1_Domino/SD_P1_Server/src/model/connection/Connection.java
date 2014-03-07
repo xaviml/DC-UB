@@ -85,8 +85,9 @@ public class Connection extends Thread implements Protocol.onProtocolIOException
     
     @Override
     public void onProtocolIOException() {
-        log.write(this.getClass().getSimpleName(), "Protocol was unable to write on connection "+this.ID+".", Log.MessageType.CONNECTION);
-        this.dcListener.onDisconnect(ID);
+        log.write(this.getClass().getSimpleName(), "Protocol throwed IOException "+this.ID+".", Log.MessageType.CONNECTION);
+        closeConnection();
+        //dcListener.onDisconnect(ID);
     }
     
     protected interface OnDisconnectListener{
