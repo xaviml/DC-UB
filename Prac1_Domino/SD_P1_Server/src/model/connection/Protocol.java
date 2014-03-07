@@ -163,7 +163,7 @@ public class Protocol extends AbstractProtocol{
     public void errorResponse(ProtocolError e) {
         try {
             super.writeErrorType(e.type);
-            super.comUtils.writeString(e.msg);
+            super.comUtils.writeStringVariable(3,e.msg);
         } catch (IOException ex) {
             treatException();
         }
