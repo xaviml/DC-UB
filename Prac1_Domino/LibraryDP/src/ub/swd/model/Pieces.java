@@ -113,7 +113,7 @@ public class Pieces implements Iterable<DominoPiece>{
     public String toString() {
         String out = "";
         for (DominoPiece piece : this) {
-            out+=piece.toString();
+            out+=piece.toString()+" ";
         }
         return out;
     }
