@@ -1,3 +1,5 @@
+package client;
+
 /*
  * Client Side
  * This project is being developed by Pablo Martinez and Xavi Moreno

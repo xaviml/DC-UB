@@ -17,12 +17,12 @@ public class DominoGame {
     private Pieces mBoard;
     private Pieces mHand;
     
-    public DominoGame(ArrayList<DominoPiece> hand) {
-        this.mHand = new Pieces(Pieces.ListType.UNSORTED);
+    public DominoGame(Pieces hand) {
+        this.mHand = hand;
         mBoard = new Pieces(Pieces.ListType.SORTED);
     }
     
-    public DominoGame(ArrayList<DominoPiece> hand, DominoPiece t) {
+    public DominoGame(Pieces hand, DominoPiece t) {
         this(hand);
         mBoard.addPiece(t, Pieces.Side.LEFT);
     }
@@ -31,13 +31,26 @@ public class DominoGame {
         mBoard.addPiece(t, dir);
     }
     
-    boolean canSteal() {
+    public Pieces getPossiblePiecesCanThrow() {
+        Pieces out = new Pieces(Pieces.ListType.UNSORTED);
+        for (DominoPiece dp : mHand) {
+            if(canJoinToBoard(dp))
+                out.addPiece(dp);
+        }
+        return out;
+    }
+    
+    public boolean canSteal() {
         for(DominoPiece t : mHand) {
-            if(t.getLeftNumber() == mBoard.getLeftSide() || t.getRightNumber() == mBoard.getLeftSide() ||
-               t.getLeftNumber() == mBoard.getRightSide()|| t.getRightNumber() == mBoard.getRightSide())
+            if(canJoinToBoard(t))
                 return false;
         }
         return true;
+    }
+    
+    private boolean canJoinToBoard(DominoPiece dp) {
+        return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
+               dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide();
     }
     
     public Pieces getHandPieces() { return mHand; }

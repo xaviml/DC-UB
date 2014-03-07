@@ -17,13 +17,15 @@ import view.menu.Menu;
 public class MainView extends View{
 
     private static enum OpcionsMenuPrincipal {
-        PLAY, CHANGE_NAME, SORTIR
+        PLAY, CHANGE_NAME, CHANGE_IP_PORT, SEE_STATS, SORTIR
     };
     
     private static final String[] descMenuPrincipal = {
-        "Jugar una partida",
-        "Canviar el meu nom d'usuari",
-        "Sortir"
+        "Play a match",
+        "Change your user name",
+        "Change ip and port",
+        "Stats",
+        "Exit application"
     };
 
     public MainView(ViewController parent) {
@@ -32,7 +34,7 @@ public class MainView extends View{
 
     @Override
     public String getTitle() {
-        return "Benvolgut "+parent.getController().getUserName()+ "!";
+        return "You're welcome "+parent.getController().getUserName()+ "!";
     }
 
     @Override
@@ -52,8 +54,14 @@ public class MainView extends View{
                 case CHANGE_NAME:
                     parent.saveView();
                     return ChangeNameView.class;
+                case CHANGE_IP_PORT:
+                    parent.saveView();
+                    return ChangeIPPort.class;
+                case SEE_STATS:
+                    parent.saveView();
+                    return StatsView.class;
                 case SORTIR:
-                    System.out.println("Fins un altre!");
+                    System.out.println("Bye bye!");
                     break;
             }
         } while (op != OpcionsMenuPrincipal.SORTIR);

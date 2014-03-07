@@ -22,14 +22,14 @@ public class ChangeNameView extends View{
 
     @Override
     public String getTitle() {
-        return "Canvia el teu nom aquí";
+        return "Change your user name here";
     }
 
     @Override
     public Class run(Scanner sc) {
         Controller c = parent.getController();
-        System.out.println("Nom antic: "+c.getUserName());
-        System.out.print("Escriu el nou nom d'usuari: ");
+        System.out.println("Old user name: "+c.getUserName());
+        System.out.print("Write here your new user name: ");
         String s = sc.next();
         c.setUsername(s);
         return null;
