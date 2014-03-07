@@ -13,8 +13,8 @@ import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
-import ub.swd.model.connection.Error;
-import ub.swd.model.connection.Error.ErrorType;
+import ub.swd.model.connection.ProtocolError;
+import ub.swd.model.connection.ProtocolError.ErrorType;
 import view.Log;
 
 /**
