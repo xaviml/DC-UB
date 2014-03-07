@@ -53,6 +53,7 @@ public class Connection extends Thread implements Protocol.onProtocolIOException
             } 
         }
         dcListener.onDisconnect(ID);
+        log.write(this.getClass().getSimpleName(), "Connection "+this.ID+"."+" finishing.", Log.MessageType.CONNECTION);
     }
 
     protected void setListener(OnDisconnectListener l){
@@ -86,7 +87,7 @@ public class Connection extends Thread implements Protocol.onProtocolIOException
     @Override
     public void onProtocolIOException() {
         log.write(this.getClass().getSimpleName(), "Protocol throwed IOException "+this.ID+".", Log.MessageType.CONNECTION);
-        closeConnection();
+        this.state = ConnectionState.FORCEQUIT;
         //dcListener.onDisconnect(ID);
     }
     
