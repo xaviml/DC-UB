@@ -77,18 +77,20 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
             c.closeConnection();
         }
     }
-
+    
+    /*
     public ArrayList<String> getConnections() {
         ArrayList<String> a = new ArrayList<>();
         for (Connection c: connections.values()){
             a.add(c.getId()+c.getIP());
         }
         return a;
-    }
+    }*/
 
     @Override
     public void onDisconnect(int id) {
-        log.removeConnection(connections.remove(id).toString());
+        Connection c = connections.remove(id);          // Remove it from HashMap.
+        log.removeConnection(c.toString());             // Remove it from GUI.
     }
 
     @Override
@@ -97,7 +99,21 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         nextUid+=1;
         int id = this.nextUid;
         
-        Connection c = new Connection(s, id, log);
+        Connection c;
+        try {
+            c = new Connection(s, id, log);
+        } catch (IOException ex) {
+            try {
+                // Exception here means that IO data streams could not be created.
+                // Just dont add the connection .. :/
+                s.close();
+            } catch (IOException ex1) {
+                // Maybe the socket was already closed...
+                // If you arrive here just cry.
+                System.err.println("T_T");
+            }
+            return;
+        }
         
         if (connections.size() >= Constants.MAX_CONNECTIONS){
             // TODO: Reject connection

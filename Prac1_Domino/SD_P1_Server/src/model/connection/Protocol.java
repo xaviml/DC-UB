@@ -23,17 +23,23 @@ import view.Log;
  * @author Pablo
  */
 public class Protocol extends AbstractProtocol{
-    private ComUtils com;
+    private ComUtils comUtils;
     private Log log;
     private Game game;
+    private onProtocolIOExceptionListener listener;
     
-    public Protocol (Socket s, Log l) throws IOException{
+    public Protocol (Socket s, Log l, onProtocolIOExceptionListener listener) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
         this.log = l;
-        this.com = new ComUtils(s);
+        this.comUtils = new ComUtils(s);
         this.game = new Game();
+        this.listener = listener;
 
         
+    }
+    
+    public void setListener(onProtocolIOExceptionListener listener){
+        this.listener = listener;
     }
 
     //-------------------------------------------------------------------------
@@ -58,12 +64,13 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
+        // This method is called when the client wants to play a game.
         
         boolean flag = game.throwing(p, s);
         
         if (!flag){     
             // Something went wrong. Report an issue!
-            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, "That was not a valid action!"));
+            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, " INVALID MOVEMENT! Don't do that again :'("));
         }
         else{
             // Check if the game's over.
@@ -124,7 +131,7 @@ public class Protocol extends AbstractProtocol{
             super.comUtils.writeInt32(rest);
             
         } catch (IOException ex) {
-            System.err.println("Cannot write");
+            treatException();
         }       
     }
     
@@ -134,7 +141,7 @@ public class Protocol extends AbstractProtocol{
             super.comUtils.writeByte((byte)0x05);
             writeDominoPiece(dp);
         } catch (IOException ex) {
-            System.err.println("Cannot write");
+            treatException();
         }
     }
 
@@ -148,10 +155,8 @@ public class Protocol extends AbstractProtocol{
                  super.comUtils.writeInt32(score);
              }
         } catch (IOException ex) {
-            System.err.println("Cannot write");
+            treatException();
         }       
-        
-        // TODO: After this, close the socket! -- =)
     }
 
     @Override
@@ -160,9 +165,19 @@ public class Protocol extends AbstractProtocol{
             super.writeErrorType(e.type);
             super.comUtils.writeString(e.msg);
         } catch (IOException ex) {
-            System.err.println("Cannot write.");
+            treatException();
         }
         
+    }
+    
+    public void treatException(){
+        // -- If you arrive here is because client is gone!
+        // Let's disconnect him ;)
+        listener.onProtocolIOException();
+    }
+    
+    public interface onProtocolIOExceptionListener{
+        public abstract void onProtocolIOException();
     }
 
 }

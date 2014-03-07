@@ -41,11 +41,6 @@ public class ServerController {
         conManager.closeConnections();
     }
     
-    public ArrayList<String> retrieveConnections(){
-        return conManager.getConnections();
-    }
-    
-    
     /// LOGGER MANAGEMENT ///
     public void toggleGames(){
         log.toggleGames();
