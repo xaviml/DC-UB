@@ -69,7 +69,7 @@ public class DominoGame {
     
     public boolean canJoinToBoard(DominoPiece dp) {
         if(isFirstMovement()) { //first movement
-            return mHand.getBetterPiece().equals(dp);
+            return mHand.getBestPiece().equals(dp);
         }else{
             return dp.getLeftNumber() == mBoard.getLeftSide() || dp.getRightNumber() == mBoard.getLeftSide() ||
                 dp.getLeftNumber() == mBoard.getRightSide()|| dp.getRightNumber() == mBoard.getRightSide();
