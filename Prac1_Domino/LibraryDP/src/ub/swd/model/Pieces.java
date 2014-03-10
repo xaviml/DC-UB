@@ -66,30 +66,31 @@ public class Pieces implements Iterable<DominoPiece>{
     }
     
     public boolean addPiece(DominoPiece piece, Side side) {
-        boolean added = false;
         if(listType == ListType.SORTED){
             if(list.isEmpty()) { 
-                added = list.add(piece);
+                list.add(piece);
+                this.nr = piece.getRightNumber();
+                this.nl = piece.getLeftNumber();
+                return true;
             }else{
                 if(side == Side.LEFT) {
                     if(list.get(0).getLeftNumber() == piece.getRightNumber()) {
                         this.list.add(0, piece);
-                        added = true;
+                        this.nl = piece.getLeftNumber();
+                        return true;
                     } else
-                        added = false;
+                        return false;
                 }else {
                     if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
-                        added = this.list.add(piece);
+                        this.list.add(piece);
+                        this.nr = piece.getRightNumber();
+                        return true;
                     } else
-                        added = false;
+                        return false;
                 }
             }
-            if(added) {
-                nl = this.list.get(0).getLeftNumber();
-                nr = this.list.get(this.list.size()-1).getRightNumber();
-            }
         }
-        return added;
+        return false;
     }
     
     public DominoPiece getPiece(int i) {
@@ -112,7 +113,7 @@ public class Pieces implements Iterable<DominoPiece>{
         return out;
     }
     
-    public DominoPiece getBetterPiece() {
+    public DominoPiece getBestPiece() {
         int score = -1;
         DominoPiece dp = null;
         for (DominoPiece p : list) {
