@@ -139,12 +139,14 @@ public class ComUtils {
     }
     
     public void writeByte(byte b) throws IOException {
+        System.out.println("BYTE WRITE: "+b);
         os.write(b);
     }
     
     public byte readByte() throws IOException {
         byte b[] = new byte[1];
         is.read(b);
+        System.out.println("BYTE READ: "+b[0]);
         return b[0];
     }
 }

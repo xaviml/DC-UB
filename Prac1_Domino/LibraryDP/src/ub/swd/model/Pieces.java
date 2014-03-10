@@ -67,7 +67,6 @@ public class Pieces implements Iterable<DominoPiece>{
     
     public boolean addPiece(DominoPiece piece, Side side) {
         if (piece == null){
-            System.err.println("YOU ARE ADDING A NULL PIECE!");
             return false;
         }
         if(listType == ListType.SORTED){

@@ -255,7 +255,8 @@ public abstract class AbstractProtocol {
     }
     
     public ErrorType readErrorType() throws IOException {
-        byte type = comUtils.readByte();
+        byte type = (byte)comUtils.readByte();
+        System.out.println(type);
         switch (type) {
                     case 0x00:
                         return ErrorType.SYNTAX_ERR;
