@@ -75,13 +75,16 @@ public class Protocol extends AbstractProtocol{
         else{
             // Check if the game's over.
             if (game.isGameOver()){
-                // TODO: Get necessary stuff to the response
-                System.out.println("GAME FINISHED");
-                gameFinishedResponse(Winner.CLIENT, 0);
+                gameFinishedResponse(game.getWinner(), game.getComputerScore());
             }
             
             // Let the computer play!
             Object [] o = game.computerTurn();
+            
+            // Check if the game's over
+            if (game.isGameOver()){
+                gameFinishedResponse(game.getWinner(), game.getComputerScore());
+            }
             gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
             
         }
@@ -98,7 +101,7 @@ public class Protocol extends AbstractProtocol{
                 game.endGame();
                 
                 // TODO: Score and stuff..
-                gameFinishedResponse(Winner.CLIENT, 0);
+                gameFinishedResponse(game.getWinner(), game.getComputerScore());
             }
             
             gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
@@ -150,6 +153,7 @@ public class Protocol extends AbstractProtocol{
     @Override
     public void gameFinishedResponse(Winner winner, int score) {
         System.out.println("GAME FINISHED!");
+        System.out.println(winner+" : "+score);
          try {
             super.comUtils.writeByte((byte)0x06);
              writeWinner(winner);

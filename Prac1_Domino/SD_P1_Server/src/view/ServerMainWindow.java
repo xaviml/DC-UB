@@ -5,7 +5,6 @@
 package view;
 
 import controller.ServerController;
-import java.net.URL;
 import java.util.Random;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -334,7 +333,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         
         
         String s = connectionsList.getSelectedValue().toString();
-        int i = ((int)(s.split(":")[0]).charAt(0))-48;
+        int i = (Integer.parseInt(s.split(" ")[0]));
         System.out.println(i);
         controller.closeConnection(i);
 

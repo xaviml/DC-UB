@@ -66,8 +66,10 @@ public class Pieces implements Iterable<DominoPiece>{
     }
     
     public boolean addPiece(DominoPiece piece, Side side) {
-        System.out.println(piece+" "+side);
-        try{
+        if (piece == null){
+            System.err.println("YOU ARE ADDING A NULL PIECE!");
+            return false;
+        }
         if(listType == ListType.SORTED){
             if(list.isEmpty()) { 
                 list.add(piece);
@@ -92,10 +94,6 @@ public class Pieces implements Iterable<DominoPiece>{
                 }
             }
         }
-        }catch(NullPointerException ex){
-                return false;
-        }
-        System.out.println("Cannot use this method in unsorted list");
         return false;
     }
     

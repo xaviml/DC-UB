@@ -8,6 +8,7 @@ package model.game;
 
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
+import ub.swd.model.connection.AbstractProtocol.Winner;
 
 /**
  * This is the main class for the game, will recive petitions from gameController
@@ -24,6 +25,7 @@ public class Game {
     private Pieces playerHand;
     private Pieces game;
     private GameState gameState;
+    private Winner winner; 
     
         
     public Game(){
@@ -37,6 +39,12 @@ public class Game {
     }
 
     public void endGame(){
+        if (getComputerScore() == getPlayerScore()){
+            this.winner = Winner.DRAW;
+        }else{
+            this.winner = (getComputerScore() > getPlayerScore()) ? Winner.SERVER : Winner.CLIENT;
+        }
+        
         this.gameState = GameState.FINISHED;
     }
     /**
@@ -104,7 +112,6 @@ public class Game {
     }
 
     public boolean throwing(DominoPiece piece, Pieces.Side side) {
-        System.out.println(game);
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
             // Client doesn't own this piece.
@@ -126,6 +133,7 @@ public class Game {
         /* If player hand it's empty, finish the game! */
         if (playerHand.getNumPieces() == 0){
             this.gameState = GameState.FINISHED;
+            winner = Winner.CLIENT;
         }
         return true;
     }
@@ -164,6 +172,10 @@ public class Game {
                 o[0] = dp;
                 o[1] = Pieces.Side.LEFT;
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
                 return o;
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
@@ -171,6 +183,10 @@ public class Game {
                 o[0] = dp;
                 o[1] = Pieces.Side.RIGHT;
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
                 return o;
             }
             
@@ -201,6 +217,9 @@ public class Game {
      
      public boolean isGameOver(){
          return (gameState == GameState.FINISHED);
+     }
+     public Winner getWinner(){
+         return winner;
      }
      
      public int getNumComputerPieces() { return this.compHand.getNumPieces(); }
