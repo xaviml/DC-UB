@@ -19,7 +19,7 @@ import view.Log;
  * 
  * @author Pablo
  */
-public class Connection extends Thread implements Protocol.onProtocolIOExceptionListener{
+public class Connection implements Runnable, Protocol.onProtocolIOExceptionListener{
 
 
     public static enum ConnectionState{CONNECTED,PLAYING,FINISHED,FORCEQUIT}

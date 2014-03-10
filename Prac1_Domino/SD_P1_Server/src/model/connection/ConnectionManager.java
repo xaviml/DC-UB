@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -39,16 +41,18 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
             // Create a new listener
             this.listener = new ConnectionListener(log);
             this.listener.setListener(this);
-            this.listener.setName("Connection-Listener");
+            Thread conListener = new Thread(this.listener);
+            conListener.setName("Connection-Listener");
             
             // Set on
             listener.startListening();
+            conListener.start();
             this.log.write(this.getClass().getSimpleName(),"Listener started", Log.MessageType.MONITORING);   
             return true;
             
         } catch (IOException ex) {
             // Cannot start ServerSocket
-            this.log.write(this.getClass().getSimpleName(),"Cannot start server socket. Is another istance of the program running?", Log.MessageType.ERROR); 
+            this.log.write(this.getClass().getSimpleName(),"Cannot start server socket. Is another istance of this server running?", Log.MessageType.ERROR); 
             return false;
         }
     }
@@ -95,8 +99,27 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
     @Override
     public void onConnect(Socket s) {
         this.log.write(this.getClass().getSimpleName(),"New connection from "+s.getInetAddress().getHostAddress()+".", Log.MessageType.CONNECTION); 
-        nextUid+=1;
+        
+        /* Reject incoming connections if the limit is reached */
+        if (connections.size() >= Constants.MAX_CONNECTIONS){
+            try {
+                s.close();
+                this.log.write(this.getClass().getSimpleName(), "Connection limit reached.", Log.MessageType.ERROR);
+            } catch (IOException ex) {
+                this.log.write(this.getClass().getSimpleName(), "Socket was already closed. Connection limit reached.", Log.MessageType.ERROR);
+            }
+            return;
+        }
+        // This not a good way to do this.. but it works
+        // TODO: If there are not empty slots, scape the function.
+        // This may jump into an infinite loop, in case that there are 99999 connections
+        // at the same time.
+        nextUid = (nextUid+1%99999);
+        while(connections.contains(nextUid)){
+            nextUid = (nextUid+1%99999);
+        }
         int id = this.nextUid;
+        //
         
         Connection c;
         try {
@@ -114,15 +137,17 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
             return;
         }
         
-        if (connections.size() >= Constants.MAX_CONNECTIONS){
-            // TODO: Reject connection
-        }
+
         c.setListener(this);
         
         this.connections.put(id, c);
         log.addConnection(c.toString());
-        c.setName("Connection-"+id);
-        c.start();
+        
+        
+        Thread t = new Thread(c);
+        // TODO: Save an instance of all threads anywhere.
+        t.setName("Connection-"+id);
+        t.start();
     }
     
     
