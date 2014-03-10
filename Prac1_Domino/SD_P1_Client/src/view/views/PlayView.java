@@ -29,8 +29,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     private boolean finalGame;
     
     private DominoPiece tmpPiece;
+    
+    private String prevCommand;
 
-    private static final String INV_COMMAND = "Invalid command. Put help to show list of commands";
+    private static final String INV_COMMAND = "Invalid command. Put help (or ?) to show list of commands";
     private static final String MSG_ERROR_IO = "It hasn't been able to establish a connection to the server.\n"
                 + "\tCheck the IP adress and port.\n"
                 + "\tCheck the network connection on your computer.\n"
@@ -52,6 +54,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         super(parent);
         mGameController = parent.getController().createGame();
         finalGame=false;
+        prevCommand = null;
     }
 
     @Override
@@ -99,28 +102,44 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         for (int i = 1; i < cmdline.length; i++) {
             args[i-1] = cmdline[i];
         }
+        execCommand(cmd, args);
         
+    }
+    
+    private void execCommand(String cmd, String[] args) {
         switch (cmd) {
+            case "?":
+            case "h":
             case "help":
                 showHelp();
                 break;
+            case "bo":
             case "board":
                 showBoard();
                 break;
+            case "th":
             case "throw":
                 throwTile(args);
                 break;
+            case "re":
             case "reverse":
                 reverse(args);
                 break;
+            case "st":
             case "steal":
                 steal();
                 break;
+            case "hi":
             case "hint":
                 hint();
                 break;
+            case "po":
             case "points":
                 points();
+                break;
+            case "a":
+            case "ant":
+                previousCommand(args);
                 break;
             case "exit":
                 this.mGameController.close();
@@ -130,25 +149,20 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                 System.out.println(INV_COMMAND);
                 break;
         }
-
+        if(!(cmd.equals("a") || cmd.equals("ant")))
+            prevCommand = cmd;
     }
     
     private void showHelp() {
-        //help -- show this hint
-        //throw <idpiece> -- Throw piece
-        //reverse <idpiece> -- Revert piece
-        //steal -- steal a piece
-        //hint
-        //points
-        //exit
-        System.out.println("help                  --  Show this text");
-        System.out.println("board                 --  Show board and hand");
-        System.out.println("throw <idtile> <R/L>  --  Throw a tile to the board");
-        System.out.println("reverse <idtile>      --  Reverse tile");
-        System.out.println("steal                 --  Steal a tile");
-        System.out.println("hint                  --  Show possible tiles that you can throw");
-        System.out.println("points                --  Show current points of client");
-        System.out.println("exit                  --  Exit the game");
+        System.out.println("help                   (?,h)  --  Show this text");
+        System.out.println("board                  (bo)   --  Show board and hand");
+        System.out.println("throw <idtile> <R/L>   (th)   --  Throw a tile to the board");
+        System.out.println("reverse <idtile>       (re)   --  Reverse tile");
+        System.out.println("steal                  (st)   --  Steal a tile");
+        System.out.println("hint                   (hi)   --  Show possible tiles that you can throw");
+        System.out.println("points                 (po)   --  Show current points of client");
+        System.out.println("ant <args>             (a)    --  Previous command used");
+        System.out.println("exit                          --  Exit the game");
     }
 
     private void throwTile(String[] args) {
@@ -171,6 +185,13 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             System.out.println(INV_COMMAND);
             return;
         }
+        
+        if(id<0 || id>=mGame.getHandPieces().getNumPieces()) {
+            System.out.println(INV_COMMAND);
+            return;
+        }
+            
+        
         if(args.length > 1) {
             s = args[1].charAt(0);
             if(args[1].length() > 1 || (s != 'R' && s != 'L' && s != 'l' && s != 'r')) {
@@ -245,6 +266,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     
     private void points() {
         System.out.println("Your currrent points: "+mGame.getHandPieces().getScore());
+    }
+    
+    private void previousCommand(String[] args) {
+        execCommand(prevCommand, args);
     }
     
     private void showBoard() {
