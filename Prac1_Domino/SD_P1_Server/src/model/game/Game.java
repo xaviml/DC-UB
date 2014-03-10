@@ -8,6 +8,7 @@ package model.game;
 
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
+import ub.swd.model.connection.AbstractProtocol.Winner;
 
 /**
  * This is the main class for the game, will recive petitions from gameController
@@ -19,11 +20,13 @@ import ub.swd.model.Pieces;
  */
 public class Game {
     public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
+    public enum ThrowResult{SUCCESS, NOT_FIT, NOT_IN_HAND, NOT_YOUR_BEST};
     private Pieces resto;
     private Pieces compHand;
     private Pieces playerHand;
     private Pieces game;
     private GameState gameState;
+    private Winner winner; 
     
         
     public Game(){
@@ -37,6 +40,12 @@ public class Game {
     }
 
     public void endGame(){
+        if (getComputerScore() == getPlayerScore()){
+            this.winner = Winner.DRAW;
+        }else{
+            this.winner = (getComputerScore() > getPlayerScore()) ? Winner.SERVER : Winner.CLIENT;
+        }
+        
         this.gameState = GameState.FINISHED;
     }
     /**
@@ -103,10 +112,17 @@ public class Game {
         return stealed;
     }
 
-    public boolean throwing(DominoPiece piece, Pieces.Side side) {
+    public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
+        /* Check, if is the first turn, that the piece throwed is the best one */
+        if (game.getNumPieces() == 0)
+            if (!game.getBestPiece().equals(piece)) 
+                return ThrowResult.NOT_YOUR_BEST;
+        
+        
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
-            return false;
+            // Client doesn't own this piece.
+            return ThrowResult.NOT_IN_HAND;
         }
         
         /* Check if the movement is possible */
@@ -114,7 +130,8 @@ public class Game {
         
         /* Check if the piece fits. */
         if (!flag){
-            return false;
+            // The tile doesn't fit the board.
+            return ThrowResult.NOT_FIT;
         }
         
         /* If everything went OK */
@@ -123,8 +140,9 @@ public class Game {
         /* If player hand it's empty, finish the game! */
         if (playerHand.getNumPieces() == 0){
             this.gameState = GameState.FINISHED;
+            winner = Winner.CLIENT;
         }
-        return true;
+        return ThrowResult.SUCCESS;
     }
 
     public int getPlayerScore() {
@@ -160,16 +178,22 @@ public class Game {
                 compHand.removePiece(dp);
                 o[0] = dp;
                 o[1] = Pieces.Side.LEFT;
-                System.out.println("SYSTEM THROWS "+dp+" on "+0);
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
                 return o;
             }
             else if(game.addPiece(dp, Pieces.Side.RIGHT)){
                 compHand.removePiece(dp);
                 o[0] = dp;
                 o[1] = Pieces.Side.RIGHT;
-                System.out.println("SYSTEM THROWS ");
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
                 return o;
             }
             
@@ -178,14 +202,12 @@ public class Game {
         
         // Check that resto isn't empty
         if (resto.getNumPieces()== 0){
-            System.out.println("SYSTEM CANT STEAL! NO RESTO");
             this.gameState = GameState.PLAYER_TURN;     //Toggle turn
             return new Object[]{null,null};
         }
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
-        System.out.println("SYSTEM STEALS " +stealed);
         
         // Another call to the function until server will be able to move, or
         // No pieces left in the resto
@@ -202,6 +224,9 @@ public class Game {
      
      public boolean isGameOver(){
          return (gameState == GameState.FINISHED);
+     }
+     public Winner getWinner(){
+         return winner;
      }
      
      public int getNumComputerPieces() { return this.compHand.getNumPieces(); }

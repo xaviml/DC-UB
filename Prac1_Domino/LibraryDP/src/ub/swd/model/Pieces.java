@@ -19,8 +19,8 @@ public class Pieces implements Iterable<DominoPiece>{
     public static enum ListType{SORTED, UNSORTED};
     public static enum Side{LEFT,RIGHT};
     
-    private ListType listType;
-    private ArrayList<DominoPiece> list;
+    private final ListType listType;
+    private final ArrayList<DominoPiece> list;
     private int nr, nl;
     
     public Pieces(ListType type){
@@ -66,6 +66,10 @@ public class Pieces implements Iterable<DominoPiece>{
     }
     
     public boolean addPiece(DominoPiece piece, Side side) {
+        if (piece == null){
+            System.err.println("YOU ARE ADDING A NULL PIECE!");
+            return false;
+        }
         if(listType == ListType.SORTED){
             if(list.isEmpty()) { 
                 list.add(piece);
@@ -80,8 +84,8 @@ public class Pieces implements Iterable<DominoPiece>{
                         return true;
                     } else
                         return false;
-                }else {
-                    if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
+                }else if (side == Side.RIGHT){
+                    if(list.get(list.size()-1).getRightNumber() == piece.getLeftNumber()) {
                         this.list.add(piece);
                         this.nr = piece.getRightNumber();
                         return true;
@@ -137,21 +141,6 @@ public class Pieces implements Iterable<DominoPiece>{
             out+=piece.toString()+" ";
         }
         return out;
-    }
-    
-    public static void main(String[] args) {
-        Pieces pieces = new Pieces(ListType.SORTED);
-        pieces.addPiece(new DominoPiece(4, 3), Side.LEFT);
-        pieces.addPiece(new DominoPiece(3, 4), Side.LEFT);
-        pieces.addPiece(new DominoPiece(6, 3), Side.LEFT);
-        pieces.addPiece(new DominoPiece(6, 6), Side.LEFT);
-        pieces.addPiece(new DominoPiece(5, 6), Side.LEFT);
-        pieces.addPiece(new DominoPiece(5, 5), Side.LEFT);
-        
-        DominoPiece dp = new DominoPiece(4, 1);
-        
-        System.out.println(pieces);
-        
     }
     
 }

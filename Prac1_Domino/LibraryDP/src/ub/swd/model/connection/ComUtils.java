@@ -6,12 +6,12 @@ import java.io.*;
 public class ComUtils {
 
     /* Objectes per escriure i llegir dades */
-    private InputStream is;
-    private OutputStream os;
+    private DataInputStream is;
+    private DataOutputStream os;
 
     public ComUtils(Socket socket) throws IOException {
-        is = socket.getInputStream();
-        os = socket.getOutputStream();
+        is = new DataInputStream(socket.getInputStream());
+        os = new DataOutputStream(socket.getOutputStream());
     }
 
     /* Llegir un enter de 32 bits */
@@ -70,53 +70,55 @@ public class ComUtils {
         return bStr;
     }
 
-    /* Llegir un string  mida variable size = nombre de bytes especifica la longitud*/
-    public String readStringVariable(int size) throws IOException {
-        byte bHeader[];
-        char cHeader[] = new char[size];
-        int numBytes;
-
-        // Llegim els bytes que indiquen la mida de l'string
-        bHeader = read_bytes(size);
-        // La mida de l'string ve en format text, per tant creem un string i el parsejem
-        for (int i = 0; i < size; i++) {
-            cHeader[i] = (char) bHeader[i];
-        }
-        numBytes = Integer.parseInt(new String(cHeader));
-
-        // Llegim l'string
-        byte bStr[];
-        char cStr[] = new char[numBytes];
-        bStr = read_bytes(numBytes);
-        for (int i = 0; i < numBytes; i++) {
-            cStr[i] = (char) bStr[i];
-        }
-        return String.valueOf(cStr);
-    }
-
-    /* Escriure un string mida variable, size = nombre de bytes especifica la longitud  */
-    /* String str = string a escriure.*/
-    public void writeStringVariable(int size, String str) throws IOException {
-
-        // Creem una seqüència amb la mida
-        byte bHeader[] = new byte[size];
-        String strHeader;
-        int numBytes;
-
-        // Creem la capçalera amb el nombre de bytes que codifiquen la mida
-        numBytes = str.length();
-
-        strHeader = String.valueOf(numBytes);
-        int len;
-        if ((len = strHeader.length()) < size) {
-            for (int i = len; i < size; i++) {
-                strHeader = "0" + strHeader;
-            }
-        }
-        System.out.println(strHeader+" "+str);
-        writeString(strHeader);
-        writeString(str);
-    }
+	/* Llegir un string  mida variable size = nombre de bytes especifica la longitud*/
+	public  String readStringVariable(int size) throws IOException
+	{
+		byte bHeader[]=new byte[size];
+		char cHeader[]=new char[size];
+		int numBytes=0;
+		
+		// Llegim els bytes que indiquen la mida de l'string
+		bHeader = read_bytes(size);
+		// La mida de l'string ve en format text, per tant creem un string i el parsejem
+		for(int i=0;i<size;i++){
+			cHeader[i]=(char)bHeader[i]; }
+		numBytes=Integer.parseInt(new String(cHeader));
+		
+		// Llegim l'string
+		byte bStr[]=new byte[numBytes];
+		char cStr[]=new char[numBytes];
+		bStr = read_bytes(numBytes);
+		for(int i=0;i<numBytes;i++)
+			cStr[i]=(char)bStr[i];
+		return String.valueOf(cStr);
+	}
+	
+	/* Escriure un string mida variable, size = nombre de bytes especifica la longitud  */
+	/* String str = string a escriure.*/
+	public  void writeStringVariable(int size,String str) throws IOException
+	{
+		
+		// Creem una seqüència amb la mida
+		byte bHeader[]=new byte[size];
+		String strHeader;
+		int numBytes=0; 
+		
+		// Creem la capçalera amb el nombre de bytes que codifiquen la mida
+		numBytes=str.length();
+		
+		strHeader=String.valueOf(numBytes);
+	    int len;
+		if ((len=strHeader.length()) < size)
+	    	for (int i =len; i< size;i++){
+	    		strHeader= "0"+strHeader;}
+	    System.out.println(strHeader);
+		for(int i=0;i<size;i++)
+			bHeader[i]=(byte)strHeader.charAt(i);
+		// Enviem la capçalera
+		os.write(bHeader, 0, size);
+		// Enviem l'string writeBytes de DataOutputStrem no envia el byte més alt dels chars.
+		os.writeBytes(str);
+	}
     
     public String readString(int size) throws IOException {
         byte[] b = new byte[size];
