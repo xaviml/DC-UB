@@ -107,7 +107,7 @@ public class Game {
         System.out.println(game);
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
-            System.out.println("YOU DONT HAVE IT");
+            // Client doesn't own this piece.
             return false;
         }
         
@@ -116,7 +116,7 @@ public class Game {
         
         /* Check if the piece fits. */
         if (!flag){
-            System.out.println("DOESNT FIT");
+            // The tile doesn't fit the board.
             return false;
         }
         
@@ -163,7 +163,6 @@ public class Game {
                 compHand.removePiece(dp);
                 o[0] = dp;
                 o[1] = Pieces.Side.LEFT;
-                System.out.println("SYSTEM THROWS "+dp+" on "+0);
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
                 return o;
             }
@@ -171,7 +170,6 @@ public class Game {
                 compHand.removePiece(dp);
                 o[0] = dp;
                 o[1] = Pieces.Side.RIGHT;
-                System.out.println("SYSTEM THROWS ");
                 this.gameState = GameState.PLAYER_TURN;     //Toggle turn
                 return o;
             }
@@ -181,14 +179,12 @@ public class Game {
         
         // Check that resto isn't empty
         if (resto.getNumPieces()== 0){
-            System.out.println("SYSTEM CANT STEAL! NO RESTO");
             this.gameState = GameState.PLAYER_TURN;     //Toggle turn
             return new Object[]{null,null};
         }
         // Steal a piece
         DominoPiece stealed = resto.takeRandomPiece();
         compHand.addPiece(stealed);
-        System.out.println("SYSTEM STEALS " +stealed);
         
         // Another call to the function until server will be able to move, or
         // No pieces left in the resto
