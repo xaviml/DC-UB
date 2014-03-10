@@ -70,7 +70,7 @@ public class Protocol extends AbstractProtocol{
         
         if (!flag){     
             // Something went wrong. Report an issue!
-            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, " INVALID MOVEMENT! Don't do that again :'("));
+            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, " INVALID MOVEMENT! Don't do that again :'("+p));
         }
         else{
             // Check if the game's over.

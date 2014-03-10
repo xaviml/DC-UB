@@ -19,8 +19,8 @@ public class Pieces implements Iterable<DominoPiece>{
     public static enum ListType{SORTED, UNSORTED};
     public static enum Side{LEFT,RIGHT};
     
-    private ListType listType;
-    private ArrayList<DominoPiece> list;
+    private final ListType listType;
+    private final ArrayList<DominoPiece> list;
     private int nr, nl;
     
     public Pieces(ListType type){
@@ -80,8 +80,8 @@ public class Pieces implements Iterable<DominoPiece>{
                         return true;
                     } else
                         return false;
-                }else {
-                    if(list.get(0).getRightNumber() == piece.getLeftNumber()) {
+                }else if (side == Side.RIGHT){
+                    if(list.get(list.size()-1).getRightNumber() == piece.getLeftNumber()) {
                         this.list.add(piece);
                         this.nr = piece.getRightNumber();
                         return true;
@@ -90,6 +90,7 @@ public class Pieces implements Iterable<DominoPiece>{
                 }
             }
         }
+        System.out.println("Cannot use this method in unsorted list");
         return false;
     }
     

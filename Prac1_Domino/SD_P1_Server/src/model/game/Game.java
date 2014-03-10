@@ -104,8 +104,10 @@ public class Game {
     }
 
     public boolean throwing(DominoPiece piece, Pieces.Side side) {
+        System.out.println(game);
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
+            System.out.println("YOU DONT HAVE IT");
             return false;
         }
         
@@ -114,6 +116,7 @@ public class Game {
         
         /* Check if the piece fits. */
         if (!flag){
+            System.out.println("DOESNT FIT");
             return false;
         }
         
