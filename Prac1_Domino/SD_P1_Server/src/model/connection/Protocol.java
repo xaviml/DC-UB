@@ -14,7 +14,6 @@ import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
 import ub.swd.model.connection.AbstractProtocol;
 import ub.swd.model.connection.ProtocolError;
-import ub.swd.model.connection.ProtocolError.ErrorType;
 import view.Log;
 
 /**
@@ -66,11 +65,18 @@ public class Protocol extends AbstractProtocol{
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
         // This method is called when the client wants to play a game.
         
-        boolean flag = game.throwing(p, s);
+        Game.ThrowResult flag = game.throwing(p, s);
         
-        if (!flag){     
+        if (flag != Game.ThrowResult.SUCCESS){     
             // Something went wrong. Report an issue!
-            errorResponse(new ProtocolError(ErrorType.ILLEGAL_ACTION_ERR, " INVALID MOVEMENT! Don't do that again :'("+p));
+            switch(flag){
+                case NOT_FIT:
+                    errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "Piece: "+p+" doesn't fit on "+s+"."));
+                case NOT_IN_HAND:
+                    errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "You don't have the piece "+p+" in your hand."));
+                case NOT_YOUR_BEST:
+                    errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "In the first throw you must place your best piece."));
+            }
         }
         else{
             // Check if the game's over.
@@ -80,12 +86,12 @@ public class Protocol extends AbstractProtocol{
             
             // Let the computer play!
             Object [] o = game.computerTurn();
-            
+            gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
+
             // Check if the game's over
             if (game.isGameOver()){
                 gameFinishedResponse(game.getWinner(), game.getComputerScore());
             }
-            gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
             
         }
     }
@@ -152,8 +158,6 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gameFinishedResponse(Winner winner, int score) {
-        System.out.println("GAME FINISHED!");
-        System.out.println(winner+" : "+score);
          try {
             super.comUtils.writeByte((byte)0x06);
              writeWinner(winner);

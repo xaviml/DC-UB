@@ -20,6 +20,7 @@ import ub.swd.model.connection.AbstractProtocol.Winner;
  */
 public class Game {
     public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
+    public enum ThrowResult{SUCCESS, NOT_FIT, NOT_IN_HAND, NOT_YOUR_BEST};
     private Pieces resto;
     private Pieces compHand;
     private Pieces playerHand;
@@ -111,11 +112,17 @@ public class Game {
         return stealed;
     }
 
-    public boolean throwing(DominoPiece piece, Pieces.Side side) {
+    public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
+        /* Check, if is the first turn, that the piece throwed is the best one */
+        if (game.getNumPieces() == 0)
+            if (!game.getBestPiece().equals(piece)) 
+                return ThrowResult.NOT_YOUR_BEST;
+        
+        
         /* Check if the piece is owned by the client */
         if (!playerHand.contains(piece)){
             // Client doesn't own this piece.
-            return false;
+            return ThrowResult.NOT_IN_HAND;
         }
         
         /* Check if the movement is possible */
@@ -124,7 +131,7 @@ public class Game {
         /* Check if the piece fits. */
         if (!flag){
             // The tile doesn't fit the board.
-            return false;
+            return ThrowResult.NOT_FIT;
         }
         
         /* If everything went OK */
@@ -135,7 +142,7 @@ public class Game {
             this.gameState = GameState.FINISHED;
             winner = Winner.CLIENT;
         }
-        return true;
+        return ThrowResult.SUCCESS;
     }
 
     public int getPlayerScore() {
