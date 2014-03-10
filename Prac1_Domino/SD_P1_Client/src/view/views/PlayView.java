@@ -97,6 +97,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     
     private void readCommand(Scanner sc) {
         String[] cmdline = sc.nextLine().split(" ");
+        if(cmdline.length == 0) {
+            return;
+        }
+            
         String cmd = cmdline[0];
         String[] args = new String[cmdline.length-1];
         for (int i = 1; i < cmdline.length; i++) {
@@ -186,7 +190,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             return;
         }
         
-        if(id<0 || id>=mGame.getHandPieces().getNumPieces()) {
+        if(id<=0 || id>mGame.getHandPieces().getNumPieces()) {
             System.out.println(INV_COMMAND);
             return;
         }
@@ -235,6 +239,11 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             return;
         }
         
+        if(id<=0 || id>mGame.getHandPieces().getNumPieces()) {
+            System.out.println(INV_COMMAND);
+            return;
+        }
+        
         DominoPiece dp = mGame.getHandPieces().getPiece(id-1);
         dp.revert();
         
@@ -252,7 +261,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     private void hint() {
         Pieces pieces = mGame.getPossiblePiecesCanThrow();
         if(pieces.getNumPieces() == 0) {
-            System.out.println("You should be steal a tile");
+            System.out.println("You must steal a tile");
             return;
         }
         System.out.println(pieces);
@@ -269,7 +278,11 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     }
     
     private void previousCommand(String[] args) {
-        execCommand(prevCommand, args);
+        if(prevCommand != null)
+            execCommand(prevCommand, args);
+        else{
+            System.out.println("No previous command.");
+        }
     }
     
     private void showBoard() {
@@ -290,7 +303,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
 
     @Override
     public void protocolErrorResponse(ProtocolError e) {
-        System.err.println(e.msg);
+        System.err.println(e.type+": "+e.msg);
     }
 
     @Override
@@ -304,8 +317,13 @@ public class PlayView extends View implements GameController.OnServerResponseLis
 
     @Override
     public void throwResponse(DominoPiece p, int restComp) {
-        System.out.println("The server throw this tile: ");
-        System.out.println(p + "\n");
+        if(p == null) {
+            System.out.println("The server couldn't pull.\n");
+        }else{
+            System.out.println("The server has thrown this tile:");
+            System.out.println(p + "\n");
+        }
+        
         System.out.println("Remaining server tiles: "+restComp);
         showBoard();
     }
@@ -325,4 +343,6 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         c.getStats().addStat(stat);
         finalGame = true;
     }
+    
+
 }

@@ -7,7 +7,6 @@ package view.views;
 
 import view.framework.View;
 import controller.Controller;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import view.framework.ViewController;
 
@@ -31,6 +30,7 @@ public class ChangeIPPort extends View{
         Controller c = parent.getController();
         System.out.println("Old IP: "+c.getIp());
         System.out.print("Write the new IP: ");
+        
         String ip = sc.next();
         
         System.out.println("Old port: "+c.getPort());
@@ -39,9 +39,10 @@ public class ChangeIPPort extends View{
         do{
             System.out.print("Write the new port: ");
             try {
-                port = sc.nextInt();
-                flag = true;
-            }catch(InputMismatchException ex) {
+                String input = sc.next();
+                port = Integer.parseInt(input);
+                flag = port <= 65535 && port >= 0;
+            }catch(NumberFormatException ex) {
                 flag = false;
             }
         }while(!flag);

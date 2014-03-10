@@ -35,17 +35,17 @@ public class Stats {
             System.out.println("There aren't results");
             return;
         }
-        String out = "   You   Draw   Comp   IPcomp";
+        String out = "   You   Draw   Comp   IPcomp\n";
         for (int i = 0; i < table.size(); i++) {
             switch (table.get(i).winner) {
                 case CLIENT:
-                    out += i+"   X                  "+table.get(i).ipServer;
+                    out += (i+1)+"   X                  "+table.get(i).ipServer;
                     break;
                 case SERVER:
-                    out += i+"               X      "+table.get(i).ipServer;
+                    out += (i+1)+"               X      "+table.get(i).ipServer;
                     break;
                 case DRAW:
-                    out += i+"         X            "+table.get(i).ipServer;
+                    out += (i+1)+"         X            "+table.get(i).ipServer;
                     break;
             }
         }
@@ -54,8 +54,12 @@ public class Stats {
     
     public void printIPProblems() {
         System.out.println("IPs");
+        for (int i = 0; i < this.problemsIP.size(); i++) {
+           System.out.println("\t"+(i+1)+".- "+this.problemsIP.get(i));
+            
+        }
         for (String ip : this.problemsIP) {
-            System.out.println("\t"+ip);
+            
         }
     }
     

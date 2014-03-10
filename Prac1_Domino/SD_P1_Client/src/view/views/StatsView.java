@@ -50,14 +50,14 @@ public class StatsView extends View {
             op = menu.getOpcio(sc);
             switch (op) {
                 case GAME_STATS:
-                    System.out.println("");
+                    System.out.println();
                     controller.getStats().printStatsGames();
-                    System.out.println("");
+                    System.out.println();
                     break;
                 case PROBLEM_IPS:
-                    System.out.println("");
+                    System.out.println();
                     controller.getStats().printIPProblems();
-                    System.out.println("");
+                    System.out.println();
                     break;
             }
         } while (op != OptionsStats.BACK);
