@@ -115,7 +115,7 @@ public class Game {
     public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
         /* Check, if is the first turn, that the piece throwed is the best one */
         if (game.getNumPieces() == 0)
-            if (!game.getBestPiece().equals(piece)) 
+            if (!playerHand.getBestPiece().equals(piece)) 
                 return ThrowResult.NOT_YOUR_BEST;
         
         
@@ -171,6 +171,14 @@ public class Game {
      */
      public Object[] computerTurn() {
         Object [] o = new Object[2];                            // [Piece, Side] -0 left, 1 right-
+        if (game.getNumPieces() == 0){
+            //Play with the best piece.
+            DominoPiece dp = compHand.getBestPiece();
+            compHand.removePiece(dp);
+            o[0] = dp;
+            o[1] = null;  //Irrelevant
+            return o;
+        }
         /* Check if computer can set a piece in the table */
         for (Object obj: compHand){
             DominoPiece dp = (DominoPiece) obj;

@@ -172,6 +172,7 @@ public class Protocol extends AbstractProtocol{
     @Override
     public void errorResponse(ProtocolError e) {
         try {
+            comUtils.writeByte((byte)0x00);
             super.writeErrorType(e.type);
             super.comUtils.writeStringVariable(3,e.msg);
         } catch (IOException ex) {
