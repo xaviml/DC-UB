@@ -9,10 +9,7 @@ package model.connection;
 import model.Constants;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import view.Log;
 
 /**
@@ -100,16 +97,6 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
     public void onConnect(Socket s) {
         this.log.write(this.getClass().getSimpleName(),"New connection from "+s.getInetAddress().getHostAddress()+".", Log.MessageType.CONNECTION); 
         
-        /* Reject incoming connections if the limit is reached */
-        if (connections.size() >= Constants.MAX_CONNECTIONS){
-            try {
-                s.close();
-                this.log.write(this.getClass().getSimpleName(), "Connection limit reached.", Log.MessageType.ERROR);
-            } catch (IOException ex) {
-                this.log.write(this.getClass().getSimpleName(), "Socket was already closed. Connection limit reached.", Log.MessageType.ERROR);
-            }
-            return;
-        }
         // This not a good way to do this.. but it works
         // TODO: If there are not empty slots, scape the function.
         // This may jump into an infinite loop, in case that there are 99999 connections
@@ -123,7 +110,10 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         
         Connection c;
         try {
-            c = new Connection(s, id, log);
+            // The statement connections.size() >= Constants.MAX_CONNECTIONS check
+            // if it's possible to serve the new connection.
+            // a 'false' result will be treated in Protocol.
+            c = new Connection(s, id,(connections.size() < Constants.MAX_CONNECTIONS), log);
         } catch (IOException ex) {
             try {
                 // Exception here means that IO data streams could not be created.

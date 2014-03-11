@@ -7,6 +7,8 @@ package ub.swd.model.connection;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import ub.swd.Constants;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
 import ub.swd.model.Pieces.Side;
@@ -51,123 +53,134 @@ public abstract class AbstractProtocol {
      */
     public void readFrame() throws IOException{
         byte b = comUtils.readByte();
-        DominoPiece dp;
-        Side dps;
-        switch (b){
-            /* ERROR FRAME */
-            case 0x00:
-                // Server cannot recieve this message ever.
-                if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
-                    return;
-                }
-                /* Read the err */
-                ErrorType errorType = readErrorType();
-                String s = comUtils.readStringVariable(3);
-                
-                errorResponse(new ProtocolError(errorType,s));
-                
-                break;
-                
-            /* HELLO FRAME */
-            case 0x01:
-                // Client might not recieve this.
-                // No frame to read.
-                if (side == ProtocolSide.CLIENT_SIDE) {
-                    return;
-                }
-                helloFrameRequest();
-                break;
-                
-            /* HELLO-RESPONSE FRAME */
-            case 0x02:
-                // Server might not recieve this frame.
-                if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
-                    return;
-                }
-                
-                Pieces pieces = readPieces();
-                dp = readDominoPiece();
-                if(dp == null) {
-                    //El cliente coloca la primera prieza
-                }else{
-                    //El servidor ha colocado la primera pieza
-                }
-                
-                helloFrameResponse(pieces, dp);
-                break;
-                
-            /* TURN FRAME */
-            case 0x03:
-                
-                if (side == ProtocolSide.CLIENT_SIDE) {
-                    return;
-                }
-                
-                dp = readDominoPiece();
-                dps = readSide();
-                
-                if(dp == null) {        // If the read doesn't contain a play -> gameStealRequest()
-                    this.gameStealRequest();
-                } else {                // If the read contains a play -> gamePlayRequest(..)
-                    this.gamePlayRequest(dp, dps);
-                }
-                
-                break;
-                
-            /* TURN-RESPONSE FRAME */
-            case 0x04:
-                // Server might not recieve this frame.
-                if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
-                    return;
-                }
-                
-                dp = readDominoPiece();
-                dps = readSide();
-                int rest = comUtils.readInt32();
-                
-                gamePlayResponse(dp, dps, rest);
-                
-                break;
-                
-            /* STEAL-RESPONSE FRAME */
-            case 0x05:
-                // Server might not recieve this frame.
-                if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
-                    return;
-                }
-                
-                dp = readDominoPiece();
-                gameStealResponse(dp);
-                
-                break;
-            
-            /* FINAL FRAME */
-            case 0x06:
-                // Server might not recieve this frame.
-                if (side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
-                    return;
-                }
-                
-                Winner winner = readWinner();
-                int score = -1;
-                if(winner == Winner.DRAW) {
-                    score = comUtils.readInt32();
-                }
-                
-                gameFinishedResponse(winner, score);
-                break;
-            default:
-                if(side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Invalid frame ID"));
-                }
-                break;
+        
+        /* Set a readFrame timeout */
+        int oldTimeout = socket.getSoTimeout();
+        socket.setSoTimeout(Constants.SOCKET_TO_WHILE_READING);
+        
+        try{
+            DominoPiece dp;
+            Side dps;
+            switch (b){
+                /* ERROR FRAME */
+                case 0x00:
+                    // Server cannot recieve this message ever.
+                    if (side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                        return;
+                    }
+                    /* Read the err */
+                    ErrorType errorType = readErrorType();
+                    String s = comUtils.readStringVariable(3);
+
+                    errorResponse(new ProtocolError(errorType,s));
+
+                    break;
+
+                /* HELLO FRAME */
+                case 0x01:
+                    // Client might not recieve this.
+                    // No frame to read.
+                    if (side == ProtocolSide.CLIENT_SIDE) {
+                        return;
+                    }
+                    helloFrameRequest();
+                    break;
+
+                /* HELLO-RESPONSE FRAME */
+                case 0x02:
+                    // Server might not recieve this frame.
+                    if (side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                        return;
+                    }
+
+                    Pieces pieces = readPieces();
+                    dp = readDominoPiece();
+                    if(dp == null) {
+                        //El cliente coloca la primera prieza
+                    }else{
+                        //El servidor ha colocado la primera pieza
+                    }
+
+                    helloFrameResponse(pieces, dp);
+                    break;
+
+                /* TURN FRAME */
+                case 0x03:
+
+                    if (side == ProtocolSide.CLIENT_SIDE) {
+                        return;
+                    }
+
+                    dp = readDominoPiece();
+                    dps = readSide();
+
+                    if(dp == null) {        // If the read doesn't contain a play -> gameStealRequest()
+                        this.gameStealRequest();
+                    } else {                // If the read contains a play -> gamePlayRequest(..)
+                        this.gamePlayRequest(dp, dps);
+                    }
+
+                    break;
+
+                /* TURN-RESPONSE FRAME */
+                case 0x04:
+                    // Server might not recieve this frame.
+                    if (side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                        return;
+                    }
+
+                    dp = readDominoPiece();
+                    dps = readSide();
+                    int rest = comUtils.readInt32();
+
+                    gamePlayResponse(dp, dps, rest);
+
+                    break;
+
+                /* STEAL-RESPONSE FRAME */
+                case 0x05:
+                    // Server might not recieve this frame.
+                    if (side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                        return;
+                    }
+
+                    dp = readDominoPiece();
+                    gameStealResponse(dp);
+
+                    break;
+
+                /* FINAL FRAME */
+                case 0x06:
+                    // Server might not recieve this frame.
+                    if (side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR,"Invalid frame ID"));
+                        return;
+                    }
+
+                    Winner winner = readWinner();
+                    int score = -1;
+                    if(winner == Winner.DRAW) {
+                        score = comUtils.readInt32();
+                    }
+
+                    gameFinishedResponse(winner, score);
+                    break;
+                default:
+                    if(side == ProtocolSide.SERVER_SIDE) {
+                        errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Header: '"+(byte)b+"' is not defined"));
+                    }
+                    break;
+            }
+        }catch(SocketTimeoutException ex){
+            errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Reading function timed out. Are you sure you are sending the full frame?"));
+        }finally{
+            /* Reset the timeouts */
+            socket.setSoTimeout(oldTimeout);
         }
-                    
     }
     
     //--------------------------------------------------------------------------
