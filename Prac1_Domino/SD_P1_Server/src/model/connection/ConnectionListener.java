@@ -17,7 +17,7 @@ import view.Log;
  * a connection for each one.
  * @author Pablo
  */
-public class ConnectionListener extends Thread{
+public class ConnectionListener implements Runnable{
     private boolean listening;
     private OnConnectListener listener;
     private ServerSocket serverSocket;
@@ -53,7 +53,6 @@ public class ConnectionListener extends Thread{
     public void startListening() throws IOException{
         this.listening = true;
         this.serverSocket = new ServerSocket(Constants.PORT);
-        this.start();
     }
     
     public void endListening() throws IOException{
