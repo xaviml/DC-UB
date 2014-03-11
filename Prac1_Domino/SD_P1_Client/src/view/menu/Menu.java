@@ -39,14 +39,19 @@ public class Menu<E extends Enum<E>> {
         int op = 0;
         boolean sortir = false;
         while(!sortir) {
-            System.out.print("\nEscull una opció: ");
-            op = sc.nextInt();
-            sc.nextLine();
-            if(op>getMaxLen() || op<=0) {
-                System.err.println("Aquest nombre no està en aquest menú");
-            }else{
-                sortir = true;
+            System.out.print("\nChoose an option: ");
+            String opS = sc.nextLine();
+            try{
+                op = Integer.parseInt(opS);
+                if(op>getMaxLen() || op<=0) {
+                    System.out.println("This options doesn't exist.");
+                }else{
+                    sortir = true;
+                }
+            }catch(NumberFormatException ex) {
+                System.out.println("Write a number option please.");
             }
+            
         }
         return llistaOpcions[op-1];
         

@@ -32,7 +32,8 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     
     private String prevCommand;
 
-    private static final String INV_COMMAND = "Invalid command. Put help (or ?) to show list of commands";
+    private static final String INV_COMMAND = "Invalid command. Put help (or ?) to show list of commands.";
+    private static final String IDTILE_INVALID = "idtile must be an integer between 1 and size of hand.";
     private static final String MSG_ERROR_IO = "It hasn't been able to establish a connection to the server.\n"
                 + "\tCheck the IP adress and port.\n"
                 + "\tCheck the network connection on your computer.\n"
@@ -84,7 +85,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         //exit
         showHelp();
         showBoard();
-        while(!finalGame) {
+        while(!finalGame && mGame != null) {
             
             System.out.print("\n>> ");
             readCommand(sc);
@@ -160,7 +161,8 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     private void showHelp() {
         System.out.println("help                   (?,h)  --  Show this text");
         System.out.println("board                  (bo)   --  Show board and hand");
-        System.out.println("throw <idtile> <R/L>   (th)   --  Throw a tile to the board");
+        System.out.println("throw <idtile> <R/L>   (th)   --  Throw a tile to the board. In first movement,"
+                         + "\n                                  you can omit the second argument.");
         System.out.println("reverse <idtile>       (re)   --  Reverse tile");
         System.out.println("steal                  (st)   --  Steal a tile");
         System.out.println("hint                   (hi)   --  Show possible tiles that you can throw");
@@ -186,12 +188,12 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         try {
             id = Integer.parseInt(args[0]);
         }catch(NumberFormatException ex) {
-            System.out.println(INV_COMMAND);
+            System.out.println(IDTILE_INVALID);
             return;
         }
         
         if(id<=0 || id>mGame.getHandPieces().getNumPieces()) {
-            System.out.println(INV_COMMAND);
+            System.out.println(IDTILE_INVALID);
             return;
         }
             
@@ -199,7 +201,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         if(args.length > 1) {
             s = args[1].charAt(0);
             if(args[1].length() > 1 || (s != 'R' && s != 'L' && s != 'l' && s != 'r')) {
-                System.out.println(INV_COMMAND);
+                System.out.println("The side of movement must be 'R' or 'L'");
                 return;
             }
         }else{
@@ -217,7 +219,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         if(!mGame.canPutTileOnBoard(dp, side)){
             dp.revert();
             if(!mGame.canPutTileOnBoard(dp, side)) {
-                System.out.println("You can't throw this tile");
+                System.out.println("You can't throw this tile in this side");
                 return;
             }
         }
@@ -235,12 +237,12 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         try {
             id = Integer.parseInt(args[0]);
         }catch(NumberFormatException ex) {
-            System.out.println(INV_COMMAND);
+            System.out.println(IDTILE_INVALID);
             return;
         }
         
         if(id<=0 || id>mGame.getHandPieces().getNumPieces()) {
-            System.out.println(INV_COMMAND);
+            System.out.println(IDTILE_INVALID);
             return;
         }
         
@@ -286,24 +288,26 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     }
     
     private void showBoard() {
-        System.out.println("\nBoard: "+mGame.getBoardPieces());
-        System.out.println("Hand:  "+mGame.getHandPieces());
-        System.out.print("       ");
-        for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
-            System.out.print(" "+(i+1)+"    ");
+        if(mGame != null) {
+            System.out.println("\nBoard: "+mGame.getBoardPieces());
+            System.out.println("Hand:  "+mGame.getHandPieces());
+            System.out.print("       ");
+            for (int i = 0; i < mGame.getHandPieces().getNumPieces(); i++) {
+                System.out.print(" "+(i+1)+"    ");
+            }
+            System.out.println("");
         }
-        System.out.println("");
     }
     
     @Override
     public void stealResponse(DominoPiece p) {
-        System.out.println("The tile stealed is this.\n");
-        System.out.println(p);
+        System.out.println("The tile stealed:\n");
+        System.out.println(p+"\n");
     }
 
     @Override
     public void protocolErrorResponse(ProtocolError e) {
-        System.err.println(e.type+": "+e.msg);
+        System.out.println("\n"+e.type+": "+e.msg);
     }
 
     @Override
@@ -312,13 +316,13 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             System.out.println("You start the game");
         else
             System.out.println("Computer did the first movement");
-        System.out.println("You can start the game! Press 'To watch board' on menu to watch yours tiles.\n");
+        System.out.println("You can start the game!\n");
     }
 
     @Override
     public void throwResponse(DominoPiece p, int restComp) {
         if(p == null) {
-            System.out.println("The server couldn't pull.\n");
+            System.out.println("The server couldn't throw.\n");
         }else{
             System.out.println("The server has thrown this tile:");
             System.out.println(p + "\n");
@@ -338,9 +342,28 @@ public class PlayView extends View implements GameController.OnServerResponseLis
     
     @Override
     public void gameFinished(AbstractProtocol.Winner winner, int scoreComp) {
+        
+        switch (winner) {
+            case CLIENT:
+                System.out.println("You win!");
+                break;
+            case SERVER:
+                System.out.println("You're a loser!");
+                break;
+            case DRAW:
+                System.out.println("Draw! Points: "+scoreComp);
+                break;
+            default:
+                System.out.println("Not defined.");
+        }
+        
+        /*Save stats game*/
+        
         Controller c = parent.getController();
         StatMatch stat = new StatMatch(winner, c.getIp());
         c.getStats().addStat(stat);
+        
+        /*Change flag of game*/
         finalGame = true;
     }
     

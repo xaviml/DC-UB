@@ -7,7 +7,6 @@ package view.views;
 
 import controller.Controller;
 import view.framework.View;
-import view.framework.Bundle;
 import java.util.Scanner;
 import view.framework.ViewController;
 import view.menu.Menu;
@@ -24,7 +23,7 @@ public class StatsView extends View {
     
     private static final String[] descStats = {
         "Game stats",
-        "Problematics IPs",
+        "Problematic IPs",
         "Go to back"
     };
     

@@ -29,17 +29,17 @@ public class ChangeIPPort extends View{
     public Class run(Scanner sc) {
         Controller c = parent.getController();
         System.out.println("Old IP: "+c.getIp());
-        System.out.print("Write the new IP: ");
+        System.out.print("New IP: ");
         
-        String ip = sc.next();
+        String ip = sc.nextLine();
         
         System.out.println("Old port: "+c.getPort());
         boolean flag;
         int port = c.getPort();
         do{
-            System.out.print("Write the new port: ");
+            System.out.print("New port: ");
             try {
-                String input = sc.next();
+                String input = sc.nextLine();
                 port = Integer.parseInt(input);
                 flag = port <= 65535 && port >= 0;
             }catch(NumberFormatException ex) {
