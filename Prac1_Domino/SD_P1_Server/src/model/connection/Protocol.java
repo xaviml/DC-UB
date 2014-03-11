@@ -8,6 +8,7 @@ package model.connection;
 import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
+import model.Constants;
 import model.game.Game;
 import ub.swd.model.DominoPiece;
 import ub.swd.model.Pieces;
@@ -25,27 +26,28 @@ public class Protocol extends AbstractProtocol{
     private ComUtils comUtils;
     private Log log;
     private Game game;
-    private onProtocolIOExceptionListener listener;
+    private int errorMargin = 0;
     
-    public Protocol (Socket s, Log l, onProtocolIOExceptionListener listener) throws IOException{
+    public Protocol (Socket s, Log l) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
         this.log = l;
         this.comUtils = new ComUtils(s);
         this.game = new Game();
-        this.listener = listener;
 
         
     }
     
-    public void setListener(onProtocolIOExceptionListener listener){
-        this.listener = listener;
-    }
 
     //-------------------------------------------------------------------------
     //-- READING FUNCTIONS
     //-------------------------------------------------------------------------
     @Override
-    public void helloFrameRequest() {
+    public void helloFrameRequest() throws IOException{
+        
+        /* Check if this message is expected */
+        if (this.game.getSate() != Game.GameState.STARTING)
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
+
         // This method is called when client wants to start a new game;
         
         Pieces p = this.game.initGame();  // Get the starting pieces
@@ -62,9 +64,13 @@ public class Protocol extends AbstractProtocol{
     
 
     @Override
-    public void gamePlayRequest(DominoPiece p, Pieces.Side s) {
+    public void gamePlayRequest(DominoPiece p, Pieces.Side s) throws IOException{
+        /* Check if this message is expected */
+        if (this.game.getSate() != Game.GameState.PLAYER_TURN)
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
+
         // This method is called when the client wants to play a game.
-        
+    
         Game.ThrowResult flag = game.throwing(p, s);
         
         if (flag != Game.ThrowResult.SUCCESS){     
@@ -72,10 +78,13 @@ public class Protocol extends AbstractProtocol{
             switch(flag){
                 case NOT_FIT:
                     errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "Piece: "+p+" doesn't fit on "+s+"."));
+                    break;
                 case NOT_IN_HAND:
                     errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "You don't have the piece "+p+" in your hand."));
+                    break;
                 case NOT_YOUR_BEST:
                     errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "In the first throw you must place your best piece."));
+                    break;
             }
         }
         else{
@@ -97,7 +106,12 @@ public class Protocol extends AbstractProtocol{
     }
 
     @Override
-    public void gameStealRequest() {
+    public void gameStealRequest() throws IOException{
+        
+        /* Check if this message is expected */
+        if (this.game.getSate() != Game.GameState.PLAYER_TURN)
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
+
         // Steal
         DominoPiece dp = game.steal();
         if (dp == null){    // No pieces in the resto!
@@ -122,75 +136,54 @@ public class Protocol extends AbstractProtocol{
     //-------------------------------------------------------------------------
     
     @Override
-    public void helloFrameResponse(Pieces hand, DominoPiece compTurn) {
-        try {
-            super.comUtils.writeByte((byte)0x02);
-            super.writePieces(hand);
-            super.writeDominoPiece(compTurn);
-        } catch (IOException ex) {
-            
-        }
+    public void helloFrameResponse(Pieces hand, DominoPiece compTurn) throws IOException{
+        super.comUtils.writeByte((byte)0x02);
+        super.writePieces(hand);
+        super.writeDominoPiece(compTurn);
     }
     
     @Override
-    public void gamePlayResponse(DominoPiece p, Side s, int rest) {
-         try {
-            super.comUtils.writeByte((byte)0x04);
-            super.writeDominoPiece(p);
-            super.writeSide(s);
-            super.comUtils.writeInt32(rest);
-            
-        } catch (IOException ex) {
-            treatException();
-        }       
+    public void gamePlayResponse(DominoPiece p, Side s, int rest) throws IOException{
+        super.comUtils.writeByte((byte)0x04);
+        super.writeDominoPiece(p);
+        super.writeSide(s);
+        super.comUtils.writeInt32(rest);
     }
     
     @Override
-    public void gameStealResponse(DominoPiece dp) {
-        try {
-            super.comUtils.writeByte((byte)0x05);
-            writeDominoPiece(dp);
-        } catch (IOException ex) {
-            treatException();
-        }
+    public void gameStealResponse(DominoPiece dp) throws IOException{
+        super.comUtils.writeByte((byte)0x05);
+        writeDominoPiece(dp);
     }
 
 
     @Override
-    public void gameFinishedResponse(Winner winner, int score) {
-         try {
-            super.comUtils.writeByte((byte)0x06);
-             writeWinner(winner);
-             if (Winner.DRAW == winner){
-                 super.comUtils.writeInt32(score);
-             }
-        } catch (IOException ex) {
-            treatException();
-        }       
+    public void gameFinishedResponse(Winner winner, int score) throws IOException{
+        super.comUtils.writeByte((byte)0x06);
+         writeWinner(winner);
+         if (Winner.DRAW == winner){
+             super.comUtils.writeInt32(score);
+         }
     }
 
     @Override
-    public void errorResponse(ProtocolError e) {
-        try {
+    public void errorResponse(ProtocolError e) throws IOException{
+        
+        /* Check if the client has reached the max ammount of protocol errors*/
+        errorMargin+=1;
+        if (errorMargin >= Constants.PROTOCOL_ERRORS_PER_CONNECTION){
+            /* Notify and disconnect */
             comUtils.writeByte((byte)0x00);
-            super.writeErrorType(e.type);
-            super.comUtils.writeStringVariable(3,e.msg);
-        } catch (IOException ex) {
-            treatException();
+            super.writeErrorType(ProtocolError.ErrorType.UNDEFINED_ERR);
+            super.comUtils.writeStringVariable(3,"You have reached the limit of protocol errors per connection. You are being disconnected.");            
+            
+            /* We might create a new Exception, anyway no info is needed, so its ok with IOEx */
+            throw new IOException();
         }
+        comUtils.writeByte((byte)0x00);
+        super.writeErrorType(e.type);
+        super.comUtils.writeStringVariable(3,e.msg);
         
     }
-    
-    public void treatException(){
-        // -- If you arrive here is because client is gone!
-        // Let's disconnect him ;)
-        listener.onProtocolIOException();
-    }
-    
-    public interface onProtocolIOExceptionListener{
-        public abstract void onProtocolIOException();
-    }
-    
-    
 
 }

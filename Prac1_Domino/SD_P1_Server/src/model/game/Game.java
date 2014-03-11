@@ -19,6 +19,7 @@ import ub.swd.model.connection.AbstractProtocol.Winner;
  * @author Pablo
  */
 public class Game {
+
     public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
     public enum ThrowResult{SUCCESS, NOT_FIT, NOT_IN_HAND, NOT_YOUR_BEST};
     private Pieces resto;
@@ -113,10 +114,9 @@ public class Game {
     }
 
     public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
-        /* Check, if is the first turn, that the piece throwed is the best one */
-        if (game.getNumPieces() == 0)
-            if (!playerHand.getBestPiece().equals(piece)) 
-                return ThrowResult.NOT_YOUR_BEST;
+        
+        if (game.getNumPieces() == 0 && !playerHand.getBestPiece().equals(piece))
+            return ThrowResult.NOT_YOUR_BEST;
         
         
         /* Check if the piece is owned by the client */
@@ -238,5 +238,9 @@ public class Game {
      }
      
      public int getNumComputerPieces() { return this.compHand.getNumPieces(); }
-
+    
+     public GameState getSate() {
+        return this.gameState;
+    
+     }
 }

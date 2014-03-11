@@ -19,7 +19,7 @@ import view.Log;
  * 
  * @author Pablo
  */
-public class Connection implements Runnable, Protocol.onProtocolIOExceptionListener{
+public class Connection implements Runnable{
 
 
     public static enum ConnectionState{CONNECTED,PLAYING,FINISHED,FORCEQUIT}
@@ -35,7 +35,7 @@ public class Connection implements Runnable, Protocol.onProtocolIOExceptionListe
             this.state = ConnectionState.CONNECTED;
             this.socket = socket;
             this.log = log;
-            this.protocol = new Protocol(socket, log, this);
+            this.protocol = new Protocol(socket, log);
             this.ID = id;
     }
     @Override
@@ -82,13 +82,6 @@ public class Connection implements Runnable, Protocol.onProtocolIOExceptionListe
     public String toString(){
         return this.ID+" : "+this.getIP();
         
-    }
-    
-    @Override
-    public void onProtocolIOException() {
-        log.write(this.getClass().getSimpleName(), "Protocol throwed IOException "+this.ID+".", Log.MessageType.CONNECTION);
-        this.state = ConnectionState.FORCEQUIT;
-        //dcListener.onDisconnect(ID);
     }
     
     protected interface OnDisconnectListener{
