@@ -89,6 +89,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             
             System.out.print("\n>> ");
             readCommand(sc);
+            //Comprovar que el socket segueix obert
         }
         
         return null;
