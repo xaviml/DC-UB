@@ -111,7 +111,6 @@ public class ComUtils {
 		if ((len=strHeader.length()) < size)
 	    	for (int i =len; i< size;i++){
 	    		strHeader= "0"+strHeader;}
-	    System.out.println(strHeader);
 		for(int i=0;i<size;i++)
 			bHeader[i]=(byte)strHeader.charAt(i);
 		// Enviem la capçalera

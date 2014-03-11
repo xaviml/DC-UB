@@ -22,20 +22,19 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     DefaultListModel games;
 
      
-    public static void main(String[] args) {/*
+    public static void main(String[] args) {
         if (args.length != 2 ){
             System.err.println("Usage: Server -port <port_num>");
             System.exit(1);
         }
         try{
-            int port = Integer.parseInt(args[1]);
+            Constants.PORT = Integer.parseInt(args[1]);
         }catch(NumberFormatException ex){
             System.err.println("Port must be a number!!");
             System.exit(1);
-        }*/
+        }
         
-        Constants.PORT = 8080;                                          //Must change later
-        ServerMainWindow server = new ServerMainWindow(new Log());      //Createa the server
+        ServerMainWindow server = new ServerMainWindow(new Log());      //Create a the server
         
         server.initServer();                                            //Start server
     }   
