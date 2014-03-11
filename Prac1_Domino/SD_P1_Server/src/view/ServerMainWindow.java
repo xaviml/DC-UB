@@ -58,6 +58,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         //
         System.out.println();
         ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"\\res\\ee_"+(new Random()).nextInt(4)+".png");
+        if (imgThisImg == null) imgThisImg = new ImageIcon(System.getProperty("user.dir")+"/res/ee_"+(new Random()).nextInt(4)+".png");
         this.funLabel.setIcon(imgThisImg);
     }
 
