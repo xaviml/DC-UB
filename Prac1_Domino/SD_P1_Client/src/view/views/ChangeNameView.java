@@ -29,7 +29,7 @@ public class ChangeNameView extends View{
     public Class run(Scanner sc) {
         Controller c = parent.getController();
         System.out.println("Old user name: "+c.getUserName());
-        System.out.print("Write here your new user name: ");
+        System.out.print("New user name: ");
         String s = sc.next();
         c.setUsername(s);
         return null;

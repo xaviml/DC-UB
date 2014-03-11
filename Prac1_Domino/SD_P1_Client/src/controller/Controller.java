@@ -27,7 +27,7 @@ public class Controller {
     private Stats stats;
 
     public Controller(String ip, int port) {
-        this.username = "Player";
+        this.username = System.getProperty("user.name");
         this.ip = ip;
         this.port = port;
         this.stats = new Stats();

@@ -39,26 +39,24 @@ public class Stats {
         for (int i = 0; i < table.size(); i++) {
             switch (table.get(i).winner) {
                 case CLIENT:
-                    out += (i+1)+"   X                  "+table.get(i).ipServer;
+                    out += (i+1)+"   X                  ";
                     break;
                 case SERVER:
-                    out += (i+1)+"               X      "+table.get(i).ipServer;
+                    out += (i+1)+"               X      ";
                     break;
                 case DRAW:
-                    out += (i+1)+"         X            "+table.get(i).ipServer;
+                    out += (i+1)+"         X            ";
                     break;
             }
+            out+=table.get(i).ipServer+"\n";
         }
         System.out.println(out);
     }
     
     public void printIPProblems() {
-        System.out.println("IPs");
+        System.out.println("Problematic IPs");
         for (int i = 0; i < this.problemsIP.size(); i++) {
            System.out.println("\t"+(i+1)+".- "+this.problemsIP.get(i));
-            
-        }
-        for (String ip : this.problemsIP) {
             
         }
     }
