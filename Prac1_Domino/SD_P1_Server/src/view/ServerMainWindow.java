@@ -47,7 +47,6 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         // Init GUI Components
         initComponents();
         this.games = new DefaultListModel();
-        this.gameList.setModel(games);
         this.connections = new DefaultListModel();  
         this.connectionsList.setModel(connections);
         //
@@ -57,8 +56,7 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         this.listening = false;
         //
         System.out.println();
-        ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"\\res\\ee_"+(new Random()).nextInt(4)+".png");
-        if (imgThisImg == null) imgThisImg = new ImageIcon(System.getProperty("user.dir")+"/res/ee_"+(new Random()).nextInt(4)+".png");
+        ImageIcon imgThisImg = new ImageIcon(System.getProperty("user.dir")+"/res/ee_"+(new Random()).nextInt(4)+".png");
         this.funLabel.setIcon(imgThisImg);
     }
 
@@ -100,10 +98,6 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         killConnectionButton = new javax.swing.JButton();
         killAllButton = new javax.swing.JButton();
         funLabel = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        gameList = new javax.swing.JList();
-        jLabel2 = new javax.swing.JLabel();
         listeningToggleButton = new javax.swing.JButton();
         clCheckBox = new javax.swing.JCheckBox();
         glCheckBox = new javax.swing.JCheckBox();
@@ -206,31 +200,6 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
 
         jTabbedPane1.addTab("Connections", jPanel4);
 
-        jScrollPane3.setViewportView(gameList);
-
-        jLabel2.setText("jLabel2");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("Games", jPanel5);
-
         listeningToggleButton.setText("Start listening");
         listeningToggleButton.setEnabled(false);
         listeningToggleButton.addActionListener(new java.awt.event.ActionListener() {
@@ -330,15 +299,17 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
             killConnectionButton.setEnabled(false);
             return;
         }
-        
-        
+
         String s = connectionsList.getSelectedValue().toString();
         int i = (Integer.parseInt(s.split(" ")[0]));
         System.out.println(i);
         controller.closeConnection(i);
 
-
     }//GEN-LAST:event_killConnectionButtonActionPerformed
+
+    private void connectionsListFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_connectionsListFocusLost
+
+    }//GEN-LAST:event_connectionsListFocusLost
 
     private void connectionsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_connectionsListValueChanged
 
@@ -349,9 +320,6 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
         }
     }//GEN-LAST:event_connectionsListValueChanged
 
-    private void connectionsListFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_connectionsListFocusLost
-    }//GEN-LAST:event_connectionsListFocusLost
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -360,16 +328,12 @@ public class ServerMainWindow extends javax.swing.JFrame implements Log.OnLogAct
     private javax.swing.JList connectionsList;
     private javax.swing.JCheckBox elCheckbox;
     private javax.swing.JLabel funLabel;
-    private javax.swing.JList gameList;
     private javax.swing.JCheckBox glCheckBox;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton killAllButton;
     private javax.swing.JButton killConnectionButton;
