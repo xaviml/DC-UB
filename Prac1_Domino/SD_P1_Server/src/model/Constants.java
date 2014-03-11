@@ -12,8 +12,9 @@ package model;
  */
 public class Constants {
     public static int PORT;                                     // Port where the server is running
-    public static final int MAX_CONNECTIONS = 100;              // Max connections allowed
+    public static final int MAX_CONNECTIONS = 1;              // Max connections allowed
     public static final int TIMEOUT_MILLIS = 300000;            // 5 minutes
-    public static int PROTOCOL_ERRORS_PER_CONNECTION = 5;       // Errors per connection
+    public static int PROTOCOL_ERRORS_PER_CONNECTION = 15;       // Errors per connection
+    
     
 }

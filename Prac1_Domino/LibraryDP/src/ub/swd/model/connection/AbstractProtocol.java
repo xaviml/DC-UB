@@ -163,7 +163,7 @@ public abstract class AbstractProtocol {
                 break;
             default:
                 if(side == ProtocolSide.SERVER_SIDE) {
-                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Invalid frame ID"));
+                    errorResponse(new ProtocolError(ErrorType.SYNTAX_ERR, "Header: '"+(byte)b+"' is not defined"));
                 }
                 break;
         }

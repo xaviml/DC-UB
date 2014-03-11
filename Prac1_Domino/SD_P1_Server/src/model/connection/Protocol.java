@@ -27,13 +27,15 @@ public class Protocol extends AbstractProtocol{
     private Log log;
     private Game game;
     private int errorMargin = 0;
+    private boolean canPlay;
     
-    public Protocol (Socket s, Log l) throws IOException{
+    public Protocol (Socket s, boolean canPlay, Log l) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
+
+        this.canPlay = canPlay;
         this.log = l;
         this.comUtils = new ComUtils(s);
         this.game = new Game();
-
         
     }
     
@@ -43,11 +45,17 @@ public class Protocol extends AbstractProtocol{
     //-------------------------------------------------------------------------
     @Override
     public void helloFrameRequest() throws IOException{
+        /* Check if we can serve this new connection */
+        if (!canPlay){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.NOT_ENOUGH_RESOURCES_ERR, "Server is full! Try again later."));
+            throw new IOException();
+        }
         
         /* Check if this message is expected */
-        if (this.game.getSate() != Game.GameState.STARTING)
-            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
-
+        if (this.game.getSate() != Game.GameState.STARTING){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "'0x01' is a helloFrameRequest message. you can't send this now."));
+            return;
+        }
         // This method is called when client wants to start a new game;
         
         Pieces p = this.game.initGame();  // Get the starting pieces
@@ -65,10 +73,17 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) throws IOException{
+        /* Check if we can serve this new connection */
+        if (!canPlay){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.NOT_ENOUGH_RESOURCES_ERR, "Server is full! Try again later."));
+            throw new IOException();
+        }        
+    
         /* Check if this message is expected */
-        if (this.game.getSate() != Game.GameState.PLAYER_TURN)
-            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
-
+        if (this.game.getSate() != Game.GameState.PLAYER_TURN){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "'0x03' is a gamePlayRequest message. you can't send this now."));
+            return;
+        }
         // This method is called when the client wants to play a game.
     
         Game.ThrowResult flag = game.throwing(p, s);
@@ -91,12 +106,13 @@ public class Protocol extends AbstractProtocol{
             // Check if the game's over.
             if (game.isGameOver()){
                 gameFinishedResponse(game.getWinner(), game.getComputerScore());
+                return;
             }
             
             // Let the computer play!
             Object [] o = game.computerTurn();
             gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
-
+            
             // Check if the game's over
             if (game.isGameOver()){
                 gameFinishedResponse(game.getWinner(), game.getComputerScore());
@@ -107,11 +123,23 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gameStealRequest() throws IOException{
+        /* Check if we can serve this new connection */
+        if (!canPlay){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.NOT_ENOUGH_RESOURCES_ERR, "Server is full! Try again later."));
+            throw new IOException();
+        }
         
         /* Check if this message is expected */
-        if (this.game.getSate() != Game.GameState.PLAYER_TURN)
-            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "This message was not expected at this point of the game"));
+        if (this.game.getSate() != Game.GameState.PLAYER_TURN){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.SYNTAX_ERR, "'0x03' is a gamePlayRequest message. you can't send this now."));
+            return;
+        }
 
+        /* Check if the player can steal */
+        if (!game.playerCanSteal()){
+            errorResponse(new ProtocolError(ProtocolError.ErrorType.ILLEGAL_ACTION_ERR, "If you have pieces that fit in the game you cannot steal."));
+            return;
+        }
         // Steal
         DominoPiece dp = game.steal();
         if (dp == null){    // No pieces in the resto!
@@ -120,8 +148,8 @@ public class Protocol extends AbstractProtocol{
             if (o[0] == null){ // Finish the game
                 game.endGame();
                 
-                // TODO: Score and stuff..
                 gameFinishedResponse(game.getWinner(), game.getComputerScore());
+                return;
             }
             
             gamePlayResponse((DominoPiece) o[0], (Side) o[1], game.getNumComputerPieces());
@@ -159,6 +187,7 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void gameFinishedResponse(Winner winner, int score) throws IOException{
+        log.write(this.getClass().getSimpleName(), "Game finished. The winner was: "+winner+". The scores were: Pla:"+game.getPlayerScore()+" | Com:"+game.getComputerScore()+".", Log.MessageType.GAME);
         super.comUtils.writeByte((byte)0x06);
          writeWinner(winner);
          if (Winner.DRAW == winner){
@@ -168,22 +197,29 @@ public class Protocol extends AbstractProtocol{
 
     @Override
     public void errorResponse(ProtocolError e) throws IOException{
-        
+        /* Increase the error counter. ILLEGAL_ACTIONS doesn't count as protocol errors*/
+        if (e.type != ProtocolError.ErrorType.ILLEGAL_ACTION_ERR) errorMargin+=1;
+
         /* Check if the client has reached the max ammount of protocol errors*/
-        errorMargin+=1;
         if (errorMargin >= Constants.PROTOCOL_ERRORS_PER_CONNECTION){
             /* Notify and disconnect */
             comUtils.writeByte((byte)0x00);
             super.writeErrorType(ProtocolError.ErrorType.UNDEFINED_ERR);
             super.comUtils.writeStringVariable(3,"You have reached the limit of protocol errors per connection. You are being disconnected.");            
             
+            this.log.write(this.getClass().getSimpleName(), "Force quit due to many protocol errors.", Log.MessageType.CONNECTION);
             /* We might create a new Exception, anyway no info is needed, so its ok with IOEx */
             throw new IOException();
         }
         comUtils.writeByte((byte)0x00);
         super.writeErrorType(e.type);
         super.comUtils.writeStringVariable(3,e.msg);
+        this.log.write(this.getClass().getSimpleName(), "ERROR->msg: "+e.msg, Log.MessageType.ERROR);
         
+    }
+
+    public Game getGame() {
+        return game;
     }
 
 }

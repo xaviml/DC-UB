@@ -20,6 +20,7 @@ import ub.swd.model.connection.AbstractProtocol.Winner;
  */
 public class Game {
 
+
     public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
     public enum ThrowResult{SUCCESS, NOT_FIT, NOT_IN_HAND, NOT_YOUR_BEST};
     private Pieces resto;
@@ -44,7 +45,7 @@ public class Game {
         if (getComputerScore() == getPlayerScore()){
             this.winner = Winner.DRAW;
         }else{
-            this.winner = (getComputerScore() > getPlayerScore()) ? Winner.SERVER : Winner.CLIENT;
+            this.winner = (getComputerScore() < getPlayerScore()) ? Winner.SERVER : Winner.CLIENT;
         }
         
         this.gameState = GameState.FINISHED;
@@ -115,8 +116,12 @@ public class Game {
 
     public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
         
-        if (game.getNumPieces() == 0 && !playerHand.getBestPiece().equals(piece))
-            return ThrowResult.NOT_YOUR_BEST;
+        if (game.getNumPieces() == 0){
+            if (!playerHand.getBestPiece().equals(piece)){
+                    System.out.println(game.getNumPieces());
+                    return ThrowResult.NOT_YOUR_BEST;
+            }
+        }
         
         
         /* Check if the piece is owned by the client */
@@ -174,14 +179,15 @@ public class Game {
         if (game.getNumPieces() == 0){
             //Play with the best piece.
             DominoPiece dp = compHand.getBestPiece();
+            game.addPiece(dp, null);
             compHand.removePiece(dp);
             o[0] = dp;
             o[1] = null;  //Irrelevant
+            this.gameState = GameState.PLAYER_TURN;     //Toggle turn
             return o;
         }
         /* Check if computer can set a piece in the table */
-        for (Object obj: compHand){
-            DominoPiece dp = (DominoPiece) obj;
+        for (DominoPiece dp: compHand){
             if (game.addPiece(dp, Pieces.Side.LEFT)){
                 compHand.removePiece(dp);
                 o[0] = dp;
@@ -204,7 +210,32 @@ public class Game {
                 }
                 return o;
             }
-            
+        }
+        /* Check again with reverted pieces */
+        for (DominoPiece dp: compHand){
+            dp.revert();
+            if (game.addPiece(dp, Pieces.Side.LEFT)){
+                compHand.removePiece(dp);
+                o[0] = dp;
+                o[1] = Pieces.Side.LEFT;
+                this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
+                return o;
+            }
+            else if(game.addPiece(dp, Pieces.Side.RIGHT)){
+                compHand.removePiece(dp);
+                o[0] = dp;
+                o[1] = Pieces.Side.RIGHT;
+                this.gameState = GameState.PLAYER_TURN;     //Toggle turn
+                if (compHand.getNumPieces() == 0){ 
+                    this.gameState = GameState.FINISHED;
+                    this.winner = Winner.SERVER;
+                }
+                return o;
+            }
         }
         /* Computer can't play, let's steal a piece */
         
@@ -221,6 +252,19 @@ public class Game {
         // No pieces left in the resto
         return computerTurn();
     }
+     
+    public boolean playerCanSteal() {
+        for (DominoPiece p: playerHand) {
+            if (p.getLeftNumber() == game.getRightSide() || p.getRightNumber() == game.getRightSide()){
+                return false;
+            }
+            if (p.getLeftNumber() == game.getLeftSide() || p.getRightNumber() == game.getLeftSide()){
+                return false;
+            }
+        }
+        return true;
+    }
+
      
      public boolean isPlayerTurn(){
          return (gameState == GameState.PLAYER_TURN);

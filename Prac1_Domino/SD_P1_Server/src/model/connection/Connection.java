@@ -10,6 +10,7 @@ import ub.swd.model.connection.ComUtils;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import model.game.Game;
 import view.Log;
 
 /**
@@ -29,13 +30,15 @@ public class Connection implements Runnable{
     private Socket socket;
     private Protocol protocol;
     private int ID;
+    private Game game;
     public Log log;   
      
-    public Connection(Socket socket, int id, Log log) throws IOException{
+    public Connection(Socket socket, int id, boolean canPlay, Log log) throws IOException{
             this.state = ConnectionState.CONNECTED;
             this.socket = socket;
             this.log = log;
-            this.protocol = new Protocol(socket, log);
+            this.protocol = new Protocol(socket, canPlay, log);
+            this.game = protocol.getGame();
             this.ID = id;
     }
     @Override
@@ -50,7 +53,10 @@ public class Connection implements Runnable{
             catch (IOException ex) {
                 this.log.write(this.getClass().getSimpleName(),"Connection "+this.ID+" caused an IOexception. Disconnecting...", Log.MessageType.ERROR);
                 this.state = ConnectionState.FORCEQUIT;
-            } 
+            }
+            /* Update the state after processing the message */
+            if (game.getSate() == Game.GameState.FINISHED)
+                this.state = ConnectionState.FINISHED;
         }
         dcListener.onDisconnect(ID);
         log.write(this.getClass().getSimpleName(), "Connection "+this.ID+"."+" finishing.", Log.MessageType.CONNECTION);
