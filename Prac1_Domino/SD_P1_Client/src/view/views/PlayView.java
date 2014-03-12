@@ -143,8 +143,8 @@ public class PlayView extends View implements GameController.OnServerResponseLis
             case "points":
                 points();
                 break;
-            case "a":
-            case "ant":
+            case "p":
+            case "pre":
                 previousCommand(args);
                 break;
             case "exit":
@@ -155,7 +155,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
                 System.out.println(INV_COMMAND);
                 break;
         }
-        if(!(cmd.equals("a") || cmd.equals("ant")))
+        if(!(cmd.equals("p") || cmd.equals("pre")))
             prevCommand = cmd;
     }
     
@@ -168,7 +168,7 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         System.out.println("steal                  (st)   --  Steal a tile");
         System.out.println("hint                   (hi)   --  Show possible tiles that you can throw");
         System.out.println("points                 (po)   --  Show current points of client");
-        System.out.println("ant <args>             (a)    --  Previous command used");
+        System.out.println("pre <args>             (p)    --  Previous command used");
         System.out.println("exit                          --  Exit the game");
     }
 
