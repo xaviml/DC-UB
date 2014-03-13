@@ -5,6 +5,7 @@
 
 package controller.connection;
 
+import client.Constants;
 import controller.DominoGame;
 import java.io.IOException;
 import java.net.Socket;
@@ -28,7 +29,7 @@ public class GameController extends AbstractProtocol{
 
     public GameController(Socket socket, ProtocolSide side) throws IOException {
         super(socket, side);
-        //socket.setSoTimeout(Constants.TIMEOUT); //set 5 seconds oftimeout
+        socket.setSoTimeout(Constants.TIMEOUT); //set 5 seconds oftimeout
     }
     
     public void setOnServerResponseListener(OnServerResponseListener l) {
