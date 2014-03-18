@@ -1,0 +1,29 @@
+Own client to other server
+
+1 NO Error al enviar fitxa vàlida
+2 SI OWN
+3 NO Error al enviar fitxa vàlida
+4 SI
+5 SI
+6 NO fitxas duplicadas
+7 NO Error al enviar una fitxa vàlida
+8 NO lógica, envía movimiento inválido cuando no lo es
+9 NO Error al fi de partida, m'he quedat sense mà i no m'ha dit partida acabada
+10 SI
+11 NO Error al enviar una fitxa vàlida
+12 NO
+
+Other clients to own server
+
+1 SI
+2 SI
+3 SI
+4 SI
+5 SI
+6 SI
+7 SI
+8 SI
+9 SI
+10 SI
+11 -
+12 SI

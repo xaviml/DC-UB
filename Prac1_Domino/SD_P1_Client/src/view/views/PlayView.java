@@ -83,8 +83,10 @@ public class PlayView extends View implements GameController.OnServerResponseLis
         //reverse <idpiece> -- Revert piece
         //steal -- steal a piece
         //exit
-        showHelp();
-        showBoard();
+        if(mGame != null) {
+            showHelp();
+            showBoard();
+        }
         while(!finalGame && mGame != null) {
             
             System.out.print("\n>> ");
