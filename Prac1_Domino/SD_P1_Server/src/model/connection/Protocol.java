@@ -23,18 +23,25 @@ import view.Log;
  * @author Pablo
  */
 public class Protocol extends AbstractProtocol{
-    private ComUtils comUtils;
-    private Log log;
-    private Game game;
+    private final ComUtils com;
+    private final Log log;
+    private final Game game;
     private int errorMargin = 0;
-    private boolean canPlay;
+    private final boolean canPlay;
     
-    public Protocol (Socket s, boolean canPlay, Log l) throws IOException{
+    /**
+     * This is the constructor for Protocol.
+     * @param s         Socket of the client
+     * @param canPlay   Can a new game been started?
+     * @param log       Log to write on
+     * @throws IOException  If IOStreams cannot been created.
+     */
+    public Protocol (Socket s, boolean canPlay, Log log) throws IOException{
         super(s, ProtocolSide.SERVER_SIDE);
 
         this.canPlay = canPlay;
-        this.log = l;
-        this.comUtils = new ComUtils(s);
+        this.log = log;
+        this.com = new ComUtils(s);
         this.game = new Game();
         
     }
@@ -43,6 +50,10 @@ public class Protocol extends AbstractProtocol{
     //-------------------------------------------------------------------------
     //-- READING FUNCTIONS
     //-------------------------------------------------------------------------
+    /**
+     * Client send a helloFrame request.
+     * @throws IOException 
+     */
     @Override
     public void helloFrameRequest() throws IOException{
         /* Check if we can serve this new connection */
@@ -70,7 +81,12 @@ public class Protocol extends AbstractProtocol{
         }
     }
     
-
+    /**
+     * Client sends a gamePlayRequest. 
+     * @param p Piece that client wants to play.
+     * @param s Side that the piece must be set on
+     * @throws IOException 
+     */
     @Override
     public void gamePlayRequest(DominoPiece p, Pieces.Side s) throws IOException{
         /* Check if we can serve this new connection */
@@ -121,6 +137,10 @@ public class Protocol extends AbstractProtocol{
         }
     }
 
+    /**
+     * Client wants to steal a piece. No parameters required
+     * @throws IOException 
+     */
     @Override
     public void gameStealRequest() throws IOException{
         /* Check if we can serve this new connection */
@@ -163,6 +183,12 @@ public class Protocol extends AbstractProtocol{
     //--WRITING FUNCTIONS
     //-------------------------------------------------------------------------
     
+    /**
+     * Response the helloFrame
+     * @param hand          Hand of the client
+     * @param compTurn      Piece that server sets on the board
+     * @throws IOException 
+     */
     @Override
     public void helloFrameResponse(Pieces hand, DominoPiece compTurn) throws IOException{
         super.comUtils.writeByte((byte)0x02);
@@ -170,6 +196,13 @@ public class Protocol extends AbstractProtocol{
         super.writeDominoPiece(compTurn);
     }
     
+    /**
+     * Response a gamePlay
+     * @param p Piece from the server
+     * @param s Side of the piece sent by server.
+     * @param rest  Number of pieces left.
+     * @throws IOException 
+     */
     @Override
     public void gamePlayResponse(DominoPiece p, Side s, int rest) throws IOException{
         super.comUtils.writeByte((byte)0x04);
@@ -178,13 +211,23 @@ public class Protocol extends AbstractProtocol{
         super.comUtils.writeInt32(rest);
     }
     
+    /**
+     * Response a gameStealRequest.
+     * @param dp    Piece stole.
+     * @throws IOException 
+     */
     @Override
     public void gameStealResponse(DominoPiece dp) throws IOException{
         super.comUtils.writeByte((byte)0x05);
         writeDominoPiece(dp);
     }
 
-
+    /**
+     * When a game's over.
+     * @param winner    Who's the winner?
+     * @param score     Server score
+     * @throws IOException 
+     */
     @Override
     public void gameFinishedResponse(Winner winner, int score) throws IOException{
         log.write(this.getClass().getSimpleName(), "Game finished. The winner was: "+winner+". The scores were: Pla:"+game.getPlayerScore()+" | Com:"+game.getComputerScore()+".", Log.MessageType.GAME);
@@ -195,6 +238,11 @@ public class Protocol extends AbstractProtocol{
          }
     }
 
+    /**
+     * Error response. When something has failed.
+     * @param e
+     * @throws IOException 
+     */
     @Override
     public void errorResponse(ProtocolError e) throws IOException{
         /* Increase the error counter. ILLEGAL_ACTIONS doesn't count as protocol errors*/
@@ -203,7 +251,7 @@ public class Protocol extends AbstractProtocol{
         /* Check if the client has reached the max ammount of protocol errors*/
         if (errorMargin >= Constants.PROTOCOL_ERRORS_PER_CONNECTION){
             /* Notify and disconnect */
-            comUtils.writeByte((byte)0x00);
+            com.writeByte((byte)0x00);
             super.writeErrorType(ProtocolError.ErrorType.UNDEFINED_ERR);
             super.comUtils.writeStringVariable(3,"You have reached the limit of protocol errors per connection. You are being disconnected.");            
             
@@ -211,13 +259,17 @@ public class Protocol extends AbstractProtocol{
             /* We might create a new Exception, anyway no info is needed, so its ok with IOEx */
             throw new IOException();
         }
-        comUtils.writeByte((byte)0x00);
+        com.writeByte((byte)0x00);
         super.writeErrorType(e.type);
         super.comUtils.writeStringVariable(3,e.msg);
         this.log.write(this.getClass().getSimpleName(), "ERROR->msg: "+e.msg, Log.MessageType.ERROR);
         
     }
 
+    /**
+     * Get the game
+     * @return game
+     */
     public Game getGame() {
         return game;
     }

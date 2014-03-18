@@ -13,17 +13,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import view.Log;
 
 /**
- *
+ * This class is on the top of the model. Includes all the connections, and
+ * manages all the new connections, and all the disconnections.
  * @author Pablo
  */
 public class ConnectionManager implements Connection.OnDisconnectListener, ConnectionListener.OnConnectListener{
-    private ConcurrentHashMap<Integer,Connection> connections;
+    private final ConcurrentHashMap<Integer,Connection> connections;
     private ConnectionListener listener;
     private int nextUid = 0;
     private Log log;
     
+    /**
+     * Constructor, requires a Log.
+     * @param log 
+     */
     public ConnectionManager(Log log){
-        //this.listener = new ConnectionListener();
         this.connections = new ConcurrentHashMap<>();
         this.log = log;
         this.log.write(this.getClass().getSimpleName(),"Connection manager created", Log.MessageType.MONITORING);      
@@ -33,6 +37,11 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
     }
 
     // LISTENER METHODS //
+    
+    /**
+     * Start the new connection listener.
+     * @return flag. Cant/cannot start the connectionListener.
+     */
     public boolean startListening() {
         try {
             // Create a new listener
@@ -41,7 +50,7 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
             Thread conListener = new Thread(this.listener);
             conListener.setName("Connection-Listener");
             
-            // Set on
+            // Set it on
             listener.startListening();
             conListener.start();
             this.log.write(this.getClass().getSimpleName(),"Listener started", Log.MessageType.MONITORING);   
@@ -54,6 +63,11 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         }
     }
 
+    
+    /**
+     * Stop the new connection listener.
+     * @return flag. Cant/cannot stop the connectionListener.
+     */
     public boolean stopListening() {
         try {
             this.listener.endListening();
@@ -79,31 +93,38 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
         }
     }
     
-    
-    public void closeConnection(int i){
-        Connection c = connections.get(i);
+    /**
+     * Close a single connection.
+     * @param id ID of the connection
+     */
+    public void closeConnection(int id){
+        Connection c = connections.get(id);
         c.closeConnection();
     }
     
+    /**
+     * Action performed when a client is disconnected.
+     * @param id The id of the connection
+     */
     @Override
     public void onDisconnect(int id) {
         Connection c = connections.remove(id);          // Remove it from HashMap.
         log.removeConnection(c.toString());             // Remove it from GUI.
     }
     
-    
 
+    /**
+     * Action performed when a new client gets connected.
+     * @param socket The socket of the client
+     */
     @Override
-    public void onConnect(Socket s) {
-        this.log.write(this.getClass().getSimpleName(),"New connection from "+s.getInetAddress().getHostAddress()+".", Log.MessageType.CONNECTION); 
+    public void onConnect(Socket socket) {
+        this.log.write(this.getClass().getSimpleName(),"New connection from "+socket.getInetAddress().getHostAddress()+".", Log.MessageType.CONNECTION); 
         
         // This not a good way to do this.. but it works
-        // TODO: If there are not empty slots, scape the function.
-        // This may jump into an infinite loop, in case that there are 99999 connections
-        // at the same time.
-        nextUid = (nextUid+1%99999);
+        nextUid = (nextUid+1%Constants.MAX_CONNECTIONS+100);
         while(connections.contains(nextUid)){
-            nextUid = (nextUid+1%99999);
+            nextUid = (nextUid+1%Constants.MAX_CONNECTIONS+100);
         }
         int id = this.nextUid;
         //
@@ -113,12 +134,12 @@ public class ConnectionManager implements Connection.OnDisconnectListener, Conne
             // The statement connections.size() >= Constants.MAX_CONNECTIONS check
             // if it's possible to serve the new connection.
             // a 'false' result will be treated in Protocol.
-            c = new Connection(s, id,(connections.size() < Constants.MAX_CONNECTIONS), log);
+            c = new Connection(socket, id,(connections.size() < Constants.MAX_CONNECTIONS), log);
         } catch (IOException ex) {
             try {
                 // Exception here means that IO data streams could not be created.
                 // Just dont add the connection .. :/
-                s.close();
+                socket.close();
             } catch (IOException ex1) {
                 // Maybe the socket was already closed...
                 // If you arrive here just cry.

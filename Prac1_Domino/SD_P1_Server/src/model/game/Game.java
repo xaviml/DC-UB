@@ -23,14 +23,16 @@ public class Game {
 
     public enum GameState{STARTING, PLAYER_TURN, COMP_TURN, FINISHED};
     public enum ThrowResult{SUCCESS, NOT_FIT, NOT_IN_HAND, NOT_YOUR_BEST};
-    private Pieces resto;
-    private Pieces compHand;
-    private Pieces playerHand;
-    private Pieces game;
+    private final Pieces resto;
+    private final Pieces compHand;
+    private final Pieces playerHand;
+    private final Pieces game;
     private GameState gameState;
     private Winner winner; 
     
-        
+    /**
+     * Default constructor. No parameters required.
+     */
     public Game(){
         
         this.gameState = GameState.STARTING;
@@ -41,6 +43,9 @@ public class Game {
         
     }
 
+    /**
+     * Finish the game. Sets the winner.
+     */
     public void endGame(){
         if (getComputerScore() == getPlayerScore()){
             this.winner = Winner.DRAW;
@@ -100,7 +105,10 @@ public class Game {
     }
 
     
-
+    /**
+     * Client steals
+     * @return piece stole. Null if no pieces left.
+     */
     public DominoPiece steal() {
         // Check that resto isn't empty
         if (resto.getNumPieces()== 0){
@@ -114,6 +122,12 @@ public class Game {
         return stealed;
     }
 
+    /**
+     * Throw a piece
+     * @param piece Pice thrown
+     * @param side  Side of the piece
+     * @return  ThrowResult. This is an enum in order to control what happened.
+     */
     public ThrowResult throwing(DominoPiece piece, Pieces.Side side) {
         
         if (game.getNumPieces() == 0){
@@ -150,6 +164,10 @@ public class Game {
         return ThrowResult.SUCCESS;
     }
 
+    /**
+     * Returns player score
+     * @return player score
+     */
     public int getPlayerScore() {
         if (playerHand.getNumPieces() == 0) return -1;
         int score = 0;
@@ -160,6 +178,10 @@ public class Game {
         return score;
     }
 
+    /**
+     * Returns computer score
+     * @return computer score
+     */
     public int getComputerScore() {
         if (compHand.getNumPieces() == 0) return -1;
         int score = 0;
@@ -251,8 +273,16 @@ public class Game {
         // Another call to the function until server will be able to move, or
         // No pieces left in the resto
         return computerTurn();
+        // This recursivity may never cause an stackOverflow since the max stack
+        // lenght is the number of pieces in resto.
     }
      
+    /**
+     * Returns a boolean flag, true if player can steal a piece. This function
+     * checks the player hand and returns false if it has any possible piece to
+     * throw.
+     * @return 
+     */
     public boolean playerCanSteal() {
         for (DominoPiece p: playerHand) {
             if (p.getLeftNumber() == game.getRightSide() || p.getRightNumber() == game.getRightSide()){
@@ -281,7 +311,9 @@ public class Game {
          return winner;
      }
      
-     public int getNumComputerPieces() { return this.compHand.getNumPieces(); }
+     public int getNumComputerPieces() { 
+         return this.compHand.getNumPieces(); 
+     }
     
      public GameState getSate() {
         return this.gameState;

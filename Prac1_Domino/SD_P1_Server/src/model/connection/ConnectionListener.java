@@ -23,15 +23,26 @@ public class ConnectionListener implements Runnable{
     private ServerSocket serverSocket;
     private Log log;
     
+    /**
+     * Constructor, receives a log object.
+     * @param log 
+     */
     public ConnectionListener(Log log){
         this.listening = false;
         this.log = log;
     }
     
+    /**
+     * Set a connection listener.
+     * @param li 
+     */
     public void setListener(OnConnectListener li){
         this.listener = li;
     }
     
+    /**
+     * Overwritten run method, performs as a thread.
+     */
     @Override
     public void run(){
         while(listening){
@@ -49,16 +60,26 @@ public class ConnectionListener implements Runnable{
         }
     }
     
-    
+    /**
+     * Start listening incoming connections.
+     * @throws IOException When we aren't able to create a ServerSocket.
+     */
     public void startListening() throws IOException{
         this.listening = true;
         this.serverSocket = new ServerSocket(Constants.PORT);
     }
     
+    /**
+     * Stop listening incoming connections
+     * @throws IOException When serverSocket is stuck in a blocking action.
+     */
     public void endListening() throws IOException{
         this.serverSocket.close();
     }
     
+    /**
+     * This interface notify when a new connection is accepted.
+     */
     protected interface OnConnectListener{
         public void onConnect(Socket s);
     }
