@@ -6,7 +6,8 @@ package client;
  */
 
 /**
- *
+ * This class contains constants of aplication
+ * 
  * @author Xavi Moreno
  */
 public class Constants {

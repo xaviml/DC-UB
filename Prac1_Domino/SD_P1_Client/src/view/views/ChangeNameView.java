@@ -11,7 +11,8 @@ import java.util.Scanner;
 import view.framework.ViewController;
 
 /**
- *
+ * This class allows to change the username of player.
+ * 
  * @author Xavi Moreno
  */
 public class ChangeNameView extends View{

@@ -32,9 +32,21 @@ public class GameController extends AbstractProtocol{
         socket.setSoTimeout(Constants.TIMEOUT); //set 5 seconds oftimeout
     }
     
+    /**
+     * Sets the server listener
+     * 
+     * @param l 
+     */
+    
     public void setOnServerResponseListener(OnServerResponseListener l) {
         this.listener = l;
     }
+    
+    /**
+     * Gets the current game.
+     * 
+     * @return 
+     */
 
     public DominoGame getGame() {
         return mGame;
@@ -140,6 +152,11 @@ public class GameController extends AbstractProtocol{
             listener.gameFinished(winner, score);
     }
 
+    /**
+     * This interface allows to know when the server throws a frame.
+     * This interface must be implemented on the view.
+     * 
+     */
 
     public interface OnServerResponseListener {
         public void initTiles(Pieces pieces, boolean clientStart);

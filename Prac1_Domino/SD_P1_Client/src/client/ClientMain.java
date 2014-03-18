@@ -20,6 +20,7 @@ public class ClientMain {
      */
     public static void main(String[] args) {
         
+        /* input parser */
         if(args.length != 2) {
             System.out.println("You must indicate -ip <ip>:<port>");
             return;

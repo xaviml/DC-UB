@@ -9,7 +9,9 @@ package view.framework;
 import view.framework.ViewController.IView;
 
 /**
- *
+ * All View must inherit this class.
+ * This class implements IView interface.
+ * 
  * @author zenbook
  */
 public abstract class View implements IView{

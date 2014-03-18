@@ -11,7 +11,8 @@ import view.framework.ViewController;
 import view.menu.Menu;
 
 /**
- *
+ * This is the main view, i.e. the first view.
+ * 
  * @author zenbook
  */
 public class MainView extends View{
@@ -56,7 +57,7 @@ public class MainView extends View{
                     return ChangeNameView.class;
                 case CHANGE_IP_PORT:
                     parent.saveView();
-                    return ChangeIPPort.class;
+                    return ChangeIPPortView.class;
                 case SEE_STATS:
                     parent.saveView();
                     return StatsView.class;

@@ -12,7 +12,8 @@ import view.framework.ViewController;
 import view.menu.Menu;
 
 /**
- *
+ * This view shown the stats on the screen.
+ * 
  * @author Xavi Moreno
  */
 public class StatsView extends View {

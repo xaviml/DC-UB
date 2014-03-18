@@ -11,12 +11,13 @@ import java.util.Scanner;
 import view.framework.ViewController;
 
 /**
- *
+ * This view allows to change the ip and port.
+ * 
  * @author Xavi Moreno
  */
-public class ChangeIPPort extends View{
+public class ChangeIPPortView extends View{
 
-    public ChangeIPPort(ViewController parent) {
+    public ChangeIPPortView(ViewController parent) {
         super(parent);
     }
 

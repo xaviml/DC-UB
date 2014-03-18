@@ -19,7 +19,8 @@ import ub.swd.model.connection.ProtocolError;
 import view.framework.ViewController;
 
 /**
- *
+ * This is the game view.
+ * 
  * @author zenbook
  */
 public class PlayView extends View implements GameController.OnServerResponseListener{

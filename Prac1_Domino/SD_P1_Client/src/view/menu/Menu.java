@@ -23,15 +23,16 @@ public class Menu<E extends Enum<E>> {
     }
 
     /**
-     * Mètode per mostrar el menú
+     * This function shown the menu on the screen.
      */
     public void mostrarMenu() {
         for (int i = 0; i < getMaxLen(); i++) {
             System.out.println((i+1)+".- "+llistaDescripcions[i]);
         }
     }
+    
     /**
-     * Mètode que retorna la opció escollida
+     * This function returns the options chosen
      * @param sc
      * @return 
      */

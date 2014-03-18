@@ -7,7 +7,6 @@ package view.framework;
 
 import controller.Controller;
 import view.views.MainView;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
@@ -16,7 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * This is the view controller of client side.
+ * 
  * @author Xavi Moreno
  */
 public class ViewController {
@@ -31,7 +31,7 @@ public class ViewController {
     private Stack<View> stackViews;
     
     /**
-     * This HashMap connect a view with another.
+     * This HashMap connect a view with other.
      * 
      */
     private Bundle mBundle;
@@ -81,8 +81,6 @@ public class ViewController {
                     mCurrentView = getView(nextView);
                 }
                 
-            } catch (IOException ex) {
-                Logger.getLogger(ViewController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 Logger.getLogger(ViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -109,7 +107,18 @@ public class ViewController {
         stackViews.push(this.mCurrentView);
     }
     
+    /**
+     * Gets the bundle
+     * 
+     * @return 
+     */
     public Bundle getBundle() { return mBundle; }
+    
+    /**
+     * Gets the controller
+     * 
+     * @return 
+     */
     public Controller getController() { return mController; }
 
     public interface IView {

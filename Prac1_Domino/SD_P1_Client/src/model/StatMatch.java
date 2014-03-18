@@ -8,7 +8,8 @@ package model;
 import ub.swd.model.connection.AbstractProtocol;
 
 /**
- *
+ * This class contains the stats of one game.
+ * 
  * @author Xavi Moreno
  */
 public class StatMatch {

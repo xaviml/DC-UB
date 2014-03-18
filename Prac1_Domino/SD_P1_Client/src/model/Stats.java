@@ -8,7 +8,8 @@ package model;
 import java.util.ArrayList;
 
 /**
- *
+ * This class contains tables of result.
+ * 
  * @author Xavi Moreno
  */
 public class Stats {
@@ -21,14 +22,31 @@ public class Stats {
         problemsIP = new ArrayList<>();
     }
     
+    /**
+     * Allows to add a new stat
+     * 
+     * @param s 
+     */
+    
     public void addStat(StatMatch s) {
         table.add(s);
     }
+    
+    /**
+     * Adds a new problematic IP
+     * 
+     * @param ip 
+     */
     
     public void addProblemIP(String ip) {
         if(!problemsIP.contains(ip))
             problemsIP.add(ip);
     }
+    
+    /**
+     * This function prints a table on the screen.
+     * 
+     */
 
     public void printStatsGames(){
         if(table.isEmpty()) {
@@ -52,6 +70,11 @@ public class Stats {
         }
         System.out.println(out);
     }
+    
+    /**
+     * This function prints a table on the screen.
+     * 
+     */
     
     public void printIPProblems() {
         System.out.println("Problematic IPs");
