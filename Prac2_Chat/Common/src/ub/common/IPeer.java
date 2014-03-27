@@ -1,0 +1,29 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ub.common;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+/**
+ *
+ * @author zenbook
+ */
+public interface IPeer extends Remote {
+    /**
+     * Username of Peer.
+     * 
+     * @return String
+     */
+    public String getUsername() throws RemoteException;
+    public void writeMessage(IPeer peer, String msg) throws RemoteException; //Potser no es necessari passar el peer, sinò només el seu username
+    public void userConnect(IPeer peer) throws RemoteException;
+    public void userDisconnect(IPeer peer) throws RemoteException;
+    public void addGroup(String group, IPeer[] peers) throws RemoteException;
+    public void writeMessageGroup(String group, IPeer peer, String msg) throws RemoteException;
+    //Poriem afegir un: userIsTyping
+}
