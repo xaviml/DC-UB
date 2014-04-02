@@ -18,58 +18,52 @@ import ub.common.IPeer;
 public class Chat {
     public String name; //This is de chat name
     public ArrayList<IPeer> peers;
-    public ArrayList<String> chat; //set of conversations
+    public final ArrayList<Message> chat; //set of conversations
+    public long idChat;
     public boolean groupFlag = false;
+    public ChatListener listener;
     
     
-    public Chat(String name) {
-        this.name = name;
+    public Chat(long idChat){
+        this.idChat = idChat;        
+        this.chat = new ArrayList<>();
+        this.peers = new ArrayList<>();
     }
     
-    
-    
+    public Chat(long idChat, ChatListener chat) {
+        this.idChat = idChat;
+        this.listener = chat;
+        this.chat = new ArrayList<>();
+        this.peers = new ArrayList<>();
+    }
+ 
     public boolean addUser(IPeer peer) {
-        // Check if the peer is already in the list
-        if (peers.contains(peer)) return false;
-        // Add it to the list
         peers.add(peer);
-        // Check if this chat has become a group
-        if (!groupFlag && peers.size()>1){
-            groupFlag = true;
-        }
+        if (listener != null) listener.onClientJoinListener(peer);
         return true;
     }
     
-    /**
-     * This function remove a user and returns true if 
-     * there are users in this chat, otherwise returns false;
-     * 
-     * @param peer
-     * @return boolean
-     */
-    
-    public boolean removeMember(IPeer peer) {
-        peers.remove(peer);
-        return !peers.isEmpty();
-    }
-    
-    public void recieveMessage(){
-        
-    }
-    
-    public void writeMessage(IPeer peer, String message) throws RemoteException{
+
+    public void writeMessage(Message message) throws RemoteException{
         synchronized(chat){
             chat.add(message);
         }
         ExecutorService executor = Executors.newFixedThreadPool(5);
         for (IPeer p : peers) {
             if (p.equals(this)) continue; // Don't send it to yourself
-            executor.execute(new Writer(peer, p, message));
+            executor.execute(new Writer(message.peer, p, message));
         }
     }
+
+    void setListener(ChatListener listener) {
+        this.listener = listener;
+    }
+
     
     
-    public boolean isGroup() {
-        return groupFlag;
+    public interface ChatListener{
+        public void onNewMessageListener(Message m);
+        public void onClientLeaveListener(IPeer peer);
+        public void onClientJoinListener(IPeer peer);
     }
 }

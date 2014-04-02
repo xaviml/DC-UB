@@ -8,6 +8,12 @@ package ub.view;
  
 import java.awt.*;
 import java.awt.event.*;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -64,13 +70,14 @@ public class MainView extends JFrame implements ActionListener {
         //Talk with the other pal.
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SocketException {
         MainView client;
         /*if (args.length!= 2)
             System.out.println("java GuiChat <nickname> <host>");
         else
             client = new MainView(args[0], args[1]);*/
-        System.out.println(System.nanoTime()+ );
-        ChatController c = new ChatController("localhost", "xaviml", null, null);
+
+        ChatController c = new ChatController();
+        
     }
 }

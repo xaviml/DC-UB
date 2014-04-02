@@ -14,9 +14,9 @@ import ub.common.IPeer;
 public class Writer implements Runnable{
     private final IPeer reciever;
     private final IPeer sender;
-    private final String message;
+    private final Message message;
     
-    public Writer(IPeer sender, IPeer reciever, String message){
+    public Writer(IPeer sender, IPeer reciever, Message message){
         this.reciever = reciever;
         this.sender = sender;
         this.message = message;

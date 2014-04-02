@@ -5,16 +5,16 @@
 
 package ub.controller;
 
-import ub.model.Chat;
 import ub.model.Peer;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IServer;
+import ub.model.Chat.ChatListener;
+import ub.model.ChatModel;
+import ub.model.Message;
 
 /**
  *
@@ -22,33 +22,38 @@ import ub.common.IServer;
  */
 public class ChatController {
     private Peer myPeer;
-    private ArrayList<Chat> chats;
     private IServer server;
+    private final ChatModel chatModel;
     
-    private OnPeerListener peerListener;
-    private OnServerListener serverListener;
     
-    public ChatController(String IP, String username, OnPeerListener peerListener, OnServerListener serverListener) {
-        this.peerListener = peerListener;
-        this.serverListener = serverListener;
-        
-        this.chats = new ArrayList<>();
-        //Here we must create and registry a new Peer.
-        try {
-            myPeer = new Peer(username);
-            IServer ser = (IServer) Naming.lookup("rmi://localhost:1099/Server");
-            ser.registryUser(myPeer);
-            //dateServer.registryUser(myPeer);
-        } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public ChatController() {
+        this.chatModel = new ChatModel();
+
     }
     
-    public interface OnPeerListener {
+    public void register(String IP, String username) throws RemoteException, NotBoundException, MalformedURLException {
+        myPeer = new Peer(username,chatModel);
+        server = (IServer) Naming.lookup("rmi://localhost:1099/Server");
+        server.registryUser(myPeer);
+        //dateServer.registryUser(myPeer);
+    }
+    
+    public void disconnect(){
         
     }
     
-    public interface OnServerListener {
-        
+    public String getConnectedPeers(){
+        return server.getUsers();
     }
+    
+    public boolean newChat(String clientName, ChatListener listener){
+        return false;
+    }
+   
+    public ArrayList<Message> retrieveChatMessages(long chatid){
+        return null;
+    }
+    
+    
+    
 }

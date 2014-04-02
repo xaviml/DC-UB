@@ -16,6 +16,6 @@ import java.rmi.RemoteException;
 public interface IServer extends Remote {
     public void registryUser(IPeer peer) throws RemoteException;
     public void unregistryUser(IPeer peer) throws RemoteException;
-    //public IPeer[] getUsers();
     public IPeer getUser(String user) throws RemoteException;
+    public String getUsers();
 }

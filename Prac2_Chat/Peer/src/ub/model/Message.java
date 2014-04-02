@@ -5,18 +5,23 @@
 
 package ub.model;
 
-import ub.common.IPeer;
-
 /**
  *
  * @author Pablo
  */
 public class Message {
-    public String mess;
-    public IPeer peer;
-    public Message(IPeer sender, String message){
+    protected String mess;
+    protected Peer peer;
+    public Message(Peer sender, String message){
         this.mess = message;
         this.peer = sender;
+    }
+    
+    public String getMessage(){
+        return mess;
+    }
+    public String getName(){
+        return peer.getUsername();
     }
     
 }
