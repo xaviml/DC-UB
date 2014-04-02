@@ -5,6 +5,8 @@
 
 package ub.controller;
 
+import ub.model.Chat;
+import ub.model.Peer;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;

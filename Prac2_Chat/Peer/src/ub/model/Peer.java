@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.controller;
+package ub.model;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -48,6 +48,11 @@ public class Peer extends UnicastRemoteObject implements IPeer{
 
     @Override
     public void writeMessageGroup(String group, IPeer peer, String msg) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void userIsTyping() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

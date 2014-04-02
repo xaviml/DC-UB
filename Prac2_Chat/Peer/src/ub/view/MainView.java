@@ -70,7 +70,7 @@ public class MainView extends JFrame implements ActionListener {
             System.out.println("java GuiChat <nickname> <host>");
         else
             client = new MainView(args[0], args[1]);*/
-        
+        System.out.println(System.nanoTime()+ );
         ChatController c = new ChatController("localhost", "xaviml", null, null);
     }
 }
