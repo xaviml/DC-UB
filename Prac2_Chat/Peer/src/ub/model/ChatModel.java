@@ -7,10 +7,9 @@ package ub.model;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ub.common.Message;
+import java.util.concurrent.ConcurrentHashMap;
+import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.model.Chat.ChatListener;
 
@@ -19,65 +18,85 @@ import ub.model.Chat.ChatListener;
  * @author Pablo
  */
 public class ChatModel {
-    public HashMap<IPeer,String> users;
-    public ChatRoomListener chatRoomListener;
-    public IdentityHashMap<Long,Chat> chats;
-    private final Object KEY = new Object();
     
-    public boolean wirteMessage(long idChat, Message m){
-        if (!chats.containsKey(idChat)) return false;
-        return true;
+    private ChatRoomListener listener;
+    private final IPeer myRemotePeer;
+    public ConcurrentHashMap<String,IPeer> members;
+    public ConcurrentHashMap<IPeer, Chat> chats;
+    public ConcurrentHashMap<GroupReference, Group> groups;
+    
+    public ChatModel(ChatRoomListener listener, IPeer myRemotePeer){
+        this.listener = listener;
+        this.myRemotePeer = myRemotePeer;
+        this.members = new ConcurrentHashMap<>();
+        this.chats = new ConcurrentHashMap<>();
+        this.groups = new ConcurrentHashMap<>();
+        
     }
     
-    public void recieveMessage(long idChat, Message m){
-        Chat c = chats.get(idChat);
-        if (c==null){
-            //Create the chat.
-            
-            chatRoomListener.onNewChatListener(idChat);
-            c = new Chat(idChat);
-            try {
-                c.writeMessage(m);
-            } catch (RemoteException ex) {
-                Logger.getLogger(ChatModel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            chats.put(idChat, c);
+    public ArrayList<String> getConnectedClients(){
+        ArrayList<String> a = new ArrayList<>();
+        for (String s : members.keySet()){
+            a.add(s);
         }
+        return a;
+    }
+    
+    
+    /**
+     * For single chats
+     * @param username
+     * @param message
+     * @return 
+     */
+    public boolean writeMessage(String username, String message) throws RemoteException{
+        Message m = new Message(myRemotePeer,message);
+        IPeer adressee = members.get(username);
+        
+        // Check if adressee exists.
+        if (adressee == null) return false;
+        Chat c = chats.get(adressee);
+        
+        // Check if we already have a chat with the client
+        if (c == null){
+            // If not, create a new one.
+            c = createChat(adressee, username);
+        }
+        c.writeMessage(m);
+        return adressee.writeMessage(m);
+    }
+    
+    /**
+     * For single chats
+     * @param m
+     * @return
+     * @throws RemoteException 
+     */
+    public boolean recieveMessage(Message m) throws RemoteException{
+        IPeer sender = m.getIPeer();
+        Chat c = chats.get(sender);
+        if (c == null){
+            // Doesn't exist. Create a new Chat
+            String username = sender.getUsername();
+            c = createChat(sender, username);
+        }
+        c.writeMessage(m);
+        return false;
+    }
+    
+    
+    public Chat createChat(IPeer peer, String username){
+        ChatListener l = listener.onNewChatCreated(username);
+        return new Chat(l, peer);
     }
 
-    public void setListener(long idChat, ChatListener listener){
-        chats.get(idChat).setListener(listener);
+    void userConnected(String username, IPeer peer) {
+        members.put(username, peer);
     }
     
-    
-    public void createChat(ArrayList<String> peers){ // When you want to create a chat.
-        
-    }
-    public void joinChat(long idChat, ArrayList<IPeer> peers){ // When you join a group.
-        
-    }
-    
-    public void leaveChat(long idChat){
-        
-    }
-    
-    
-    private long createIdChat(){
-        long lo;
-        synchronized(KEY){
-            lo = (System.currentTimeMillis()*1000)+(System.nanoTime()%1000); // TimeStamp in nanoseconds   
-        }
-        return 3;
-    }
-    
-    public void userConnected(String userName, IPeer peer){
-        users.put(peer, userName);
-        chatRoomListener.onClientConnectedListener(userName);
-    }
     
     public interface ChatRoomListener{
-        public void onNewChatListener(long chatId);
-        public void onClientDisconnectedCallbackListener(String peerName);
-        public void onClientConnectedListener(String peerName);
+        public ChatListener onNewChatCreated(String username);
     }
+   
 }

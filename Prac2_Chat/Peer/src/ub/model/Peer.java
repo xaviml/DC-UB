@@ -7,10 +7,9 @@ package ub.model;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ub.common.GroupReference;
 import ub.common.IPeer;
-import ub.common.IServer;
+import ub.common.Message;
 
 /**
  *
@@ -47,12 +46,17 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void writeMessage(float idChat, IPeer peer, String message) {
-        
+    public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException {
+    public boolean writeMessage(Message message) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean writeMessageGroup(GroupReference ref, Message message) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

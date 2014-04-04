@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.model;
+package deprecated;
 
 import ub.common.IPeer;
 

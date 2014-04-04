@@ -4,8 +4,9 @@
 *
 *************************************************************************/
  
-package ub.view;
+package deprecated;
  
+import ub.controller.ChatController;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.NetworkInterface;
@@ -18,7 +19,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import ub.controller.ChatController;
  
 public class MainView extends JFrame implements ActionListener {
  
@@ -77,7 +77,7 @@ public class MainView extends JFrame implements ActionListener {
         else
             client = new MainView(args[0], args[1]);*/
 
-        ChatController c = new ChatController();
+        //ChatController c = new ChatController();
         
     }
 }

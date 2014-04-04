@@ -6,7 +6,6 @@
 
 package ub.common;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -22,7 +21,8 @@ public interface IPeer extends Remote {
      * @throws java.rmi.RemoteException
      */
     public String getUsername() throws RemoteException;
-    public void writeMessage(float idChat, IPeer peer, String message);
+    public boolean writeMessage(Message message) throws RemoteException;
+    public boolean writeMessageGroup(GroupReference ref, Message message);
     public void userConnect(String username, IPeer peer) throws RemoteException;
     public void userDisconnect(IPeer peer) throws RemoteException;
     public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException;

@@ -8,6 +8,7 @@ package ub.common;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,5 +18,5 @@ public interface IServer extends Remote {
     public void registryUser(IPeer peer) throws RemoteException;
     public void unregistryUser(IPeer peer) throws RemoteException;
     public IPeer getUser(String user) throws RemoteException;
-    public String getUsers();
+    public ArrayList<IPeer> getUsers();
 }

@@ -5,6 +5,9 @@
 
 package ub.controller;
 
+import ub.model.ChatModel.ChatRoomListener;
+import ub.model.ChatModel;
+import ub.common.Message;
 import ub.model.Peer;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -12,9 +15,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ub.common.IServer;
-import ub.model.Chat.ChatListener;
-import ub.model.ChatModel;
-import ub.model.Message;
 
 /**
  *
@@ -26,8 +26,9 @@ public class ChatController {
     private final ChatModel chatModel;
     
     
-    public ChatController() {
-        this.chatModel = new ChatModel();
+    public ChatController(ChatRoomListener listener) {
+        
+        this.chatModel = new ChatModel(listener, myPeer);
 
     }
     
@@ -42,13 +43,10 @@ public class ChatController {
         
     }
     
-    public String getConnectedPeers(){
-        return server.getUsers();
+    public ArrayList<String> getConnectedPeers(){
+        return chatModel.getConnectedClients();
     }
     
-    public boolean newChat(String clientName, ChatListener listener){
-        return false;
-    }
    
     public ArrayList<Message> retrieveChatMessages(long chatid){
         return null;
