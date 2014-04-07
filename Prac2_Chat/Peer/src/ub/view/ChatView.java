@@ -9,27 +9,38 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import ub.common.InvalidUserNameException;
+import ub.controller.ChatController;
+import ub.model.Chat;
+import ub.model.ChatModel;
 
 /**
  *
  * @author zenbook
  */
-public class ChatView extends JFrame {
+public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
     private ConcurrentHashMap<String, MessageBox> chats;
     private MessageBox currentMessageBox;
+    
+    private ChatController controller;
     
     /**
      * Creates new form ChatView
      */
     public ChatView() {
         initComponents();
+        
+        controller = new ChatController(this);
         
         chats = new ConcurrentHashMap<>();
         
@@ -58,18 +69,15 @@ public class ChatView extends JFrame {
         });
         
         currentMessageBox = null;
-        
-        
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Albert");
-        addUser("Tian");
-        addGroup("Perrillas");
-        addGroup("Playa!");
-        addGroup("Familia");
-        
-        
-        
+    }
+    
+    public boolean registry(String IP, int port, String user) {
+        try {
+            controller.register(IP, port, user);
+            return true;
+        } catch (RemoteException | NotBoundException | MalformedURLException | InvalidUserNameException ex) {
+            return false;
+        }
     }
 
     /**
@@ -181,7 +189,8 @@ public class ChatView extends JFrame {
         DefaultListModel model = (DefaultListModel) list_users.getModel();
         String name = (String) model.get(list_users.getSelectedIndex());
         if(evt.getClickCount() == 2) {
-            openTab(name, false);
+            MessageBox m = new MessageBox(name, controller.getUsername(), new String[] {name});
+            openTab(m, false, true);
         }
     }//GEN-LAST:event_list_usersMousePressed
 
@@ -194,40 +203,36 @@ public class ChatView extends JFrame {
     }//GEN-LAST:event_btn_sendActionPerformed
 
     private void sendMessage() {
-        String msg = tf_send.getText();
+        
+        final String msg = tf_send.getText();
         if(msg.isEmpty()) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                controller.writeMessage(currentMessageBox.getFirstUser(), msg);
+            }
+        }).start();
         tf_send.setText("");
         currentMessageBox.writeMessageMe(msg);
     }
     
-    private void openTab(String name, boolean group) {
+    private void openTab(MessageBox m, boolean group, boolean selectedTab) {
         if(tab_chats.getTabCount() == 0) {
             btn_send.setVisible(true);
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
         }
-        //Gets the MessageBox if exists
-        MessageBox m;
-        if(chats.contains(name)) {
-            m = chats.get(name);
-        }else{ //if MessageBox doesn't exist, then we create it
-            m = new MessageBox("Xavi", new String[]{name});
-            chats.put(name, m);
-        }
-        int idx = tab_chats.indexOfTab(name);
+        int idx = tab_chats.indexOfTab(m.getName());
         if(idx == -1) { //if tab doesn't exist...
-            tab_chats.addTab(name, m);
+            tab_chats.addTab(m.getNameChat(), m);
             idx = tab_chats.getTabCount()-1;
         }
         
         //Select the tab
-        tab_chats.setSelectedIndex(idx);
-        
-        m.writeMessageMe("Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!");
-        m.writeMessageMe("Que tal si quedem demà?");
-        m.writeMessageOther(name, "Ei bones!!");
-        
-        currentMessageBox = m;
+        if(selectedTab) {
+            tab_chats.setSelectedIndex(idx);
+            currentMessageBox = m;
+        }
     }
     
     private void addUser(String user) {
@@ -241,6 +246,19 @@ public class ChatView extends JFrame {
     private void addStringInList(String string, JList list) {
         DefaultListModel model = (DefaultListModel) list.getModel();
         model.addElement(string);
+    }
+    
+    private void removeUser(String user) {
+        addStringInList(user, list_users);
+    }
+    
+    private void removeGroup(String group) {
+        addStringInList(group, list_groups);
+    }
+    
+    private void removeStringInList(String string, JList list) {
+        DefaultListModel model = (DefaultListModel) list.getModel();
+        model.removeElement(string);
     }
     
     
@@ -269,6 +287,7 @@ public class ChatView extends JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new ChatView().setVisible(true);
             }
@@ -285,4 +304,22 @@ public class ChatView extends JFrame {
     private javax.swing.JTabbedPane tab_users;
     private javax.swing.JTextField tf_send;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public Chat.ChatListener onNewChatCreated(String username) {
+        MessageBox msgBox = new MessageBox(username, controller.getUsername(), new String[]{username});
+        this.chats.put(username, msgBox);
+        openTab(msgBox, false, false);
+        return msgBox;
+    }
+
+    @Override
+    public void onMemberConnected(String username) {
+        addUser(username);
+    }
+
+    @Override
+    public void onMemberDisconnected(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

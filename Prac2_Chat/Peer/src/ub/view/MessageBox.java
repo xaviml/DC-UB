@@ -8,7 +8,10 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -17,28 +20,34 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
+import ub.common.Message;
+import ub.model.Chat;
 
 /**
  *
  * @author Xavi Moreno
  */
-public class MessageBox extends JPanel{
+public class MessageBox extends JPanel implements Chat.ChatListener{
 
     private String me; //Color: CYAN
-    private HashMap<String, Color> others;
+    private HashMap<String, Color> colors;
+    private String[] others;
     
+    private String nameChat;
     private String lastUser;
     
     private JTextPane pane;
     
-    public MessageBox(String me, String[] others) {
+    public MessageBox(String name, String me, String[] others) {
         this.me = me;
         this.lastUser = "";
-        this.others = new HashMap<>();
+        this.nameChat = name;
+        this.others = others;
+        this.colors = new HashMap<>();
         
-        Color[] colors = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
+        Color[] c = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
         for (int i = 0; i < others.length; i++) {
-            this.others.put(others[i], colors[i%colors.length]);
+            this.colors.put(others[i], c[i%c.length]);
         }
         
         setLayout(new GridLayout(0, 1));
@@ -58,7 +67,7 @@ public class MessageBox extends JPanel{
     
     public synchronized void writeMessageOther(String user, String msg) {
         if(!lastUser.equals(user))
-            addMessage("\n"+user+"\n", others.get(user), true);
+            addMessage("\n"+user+"\n", colors.get(user), true);
         addMessage(msg+"\n", Color.BLACK, false);
         
         lastUser = user;
@@ -79,5 +88,22 @@ public class MessageBox extends JPanel{
         pane.setCharacterAttributes(aset, false);
         pane.replaceSelection(msg);
         pane.setEditable(false);
+    }
+
+    public String getFirstUser() {
+        return this.others[0];
+    }
+    
+    public String getNameChat() {
+        return nameChat;
+    }
+    
+    @Override
+    public void onNewMessageRecived(final Message m) {
+        try {
+            writeMessageOther(m.getIPeer().getUsername(), m.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(MessageBox.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
