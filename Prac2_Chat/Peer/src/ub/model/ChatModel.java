@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.model.Chat.ChatListener;

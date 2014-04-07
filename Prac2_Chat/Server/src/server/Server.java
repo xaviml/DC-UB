@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import ub.common.IPeer;
 import ub.common.IServer;
+import ub.common.InvalidUserNameException;
 
 /**
  *
@@ -28,7 +29,8 @@ public class Server extends UnicastRemoteObject implements IServer{
     }
     
     @Override
-    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException {
+    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, InvalidUserNameException {
+        if (connections.get(username)!=null) throw new InvalidUserNameException();
         System.out.println(peer.getUsername()+" registred");
         connections.put(username, peer);
         return connections;
@@ -83,8 +85,10 @@ public class Server extends UnicastRemoteObject implements IServer{
     }
 
     @Override
-    public ArrayList<IPeer> getUsers() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<String> getUsers() {
+        ArrayList<String> a = new ArrayList();
+        for (String s : connections.keySet()) a.add(s);
+        return a;
     }
     
 }

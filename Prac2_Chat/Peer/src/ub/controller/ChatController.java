@@ -7,7 +7,6 @@ package ub.controller;
 
 import ub.model.ChatModel.ChatRoomListener;
 import ub.model.ChatModel;
-import ub.common.Message;
 import ub.model.Peer;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -15,10 +14,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.IServer;
+import ub.common.InvalidUserNameException;
 
 /**
  *
@@ -35,7 +33,7 @@ public class ChatController {
 
     }
     
-    public void register(String IP, String username) throws RemoteException, NotBoundException, MalformedURLException {
+    public void register(String IP, String username) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
         myPeer = new Peer(username,chatModel);
         server = (IServer) Naming.lookup("rmi://localhost:1099/Server");
         ConcurrentHashMap<String,IPeer> con = server.registryUser(myPeer.getUsername(), myPeer);
