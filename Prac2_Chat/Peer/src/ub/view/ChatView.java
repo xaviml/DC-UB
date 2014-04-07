@@ -22,7 +22,7 @@ import javax.swing.JList;
  */
 public class ChatView extends JFrame {
 
-    private ConcurrentHashMap<Long, MessageBox> chats;
+    private ConcurrentHashMap<String, MessageBox> chats;
     private MessageBox currentMessageBox;
     
     /**
@@ -30,6 +30,9 @@ public class ChatView extends JFrame {
      */
     public ChatView() {
         initComponents();
+        
+        chats = new ConcurrentHashMap<>();
+        
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((screen.getWidth() - getWidth()) /2);
         int y = (int) ((screen.getHeight() -getHeight()) /2);
@@ -59,30 +62,8 @@ public class ChatView extends JFrame {
         
         addUser("Xavi");
         addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
+        addUser("Albert");
+        addUser("Tian");
         addGroup("Perrillas");
         addGroup("Playa!");
         addGroup("Familia");
@@ -111,8 +92,23 @@ public class ChatView extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
+        setMinimumSize(new java.awt.Dimension(355, 235));
+
+        tab_chats.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        tab_chats.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
 
         btn_send.setText("Send");
+        btn_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sendActionPerformed(evt);
+            }
+        });
+
+        tf_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_sendActionPerformed(evt);
+            }
+        });
 
         tab_users.setBorder(null);
         tab_users.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
@@ -151,7 +147,7 @@ public class ChatView extends JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(tab_chats))
@@ -167,8 +163,8 @@ public class ChatView extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_send)
-                            .addComponent(tf_send, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(tab_users, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
+                            .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(tab_users, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -185,18 +181,53 @@ public class ChatView extends JFrame {
         DefaultListModel model = (DefaultListModel) list_users.getModel();
         String name = (String) model.get(list_users.getSelectedIndex());
         if(evt.getClickCount() == 2) {
-            addTab(name, false);
+            openTab(name, false);
         }
     }//GEN-LAST:event_list_usersMousePressed
 
-    private void addTab(String name, boolean group) {
+    private void tf_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_sendActionPerformed
+        sendMessage();
+    }//GEN-LAST:event_tf_sendActionPerformed
+
+    private void btn_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendActionPerformed
+        sendMessage();
+    }//GEN-LAST:event_btn_sendActionPerformed
+
+    private void sendMessage() {
+        String msg = tf_send.getText();
+        if(msg.isEmpty()) return;
+        tf_send.setText("");
+        currentMessageBox.writeMessageMe(msg);
+    }
+    
+    private void openTab(String name, boolean group) {
         if(tab_chats.getTabCount() == 0) {
             btn_send.setVisible(true);
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
         }
-        tab_chats.addTab(name, new MessageBox("Xavi", name));
-        tab_chats.setSelectedIndex(tab_chats.getTabCount()-1);
+        //Gets the MessageBox if exists
+        MessageBox m;
+        if(chats.contains(name)) {
+            m = chats.get(name);
+        }else{ //if MessageBox doesn't exist, then we create it
+            m = new MessageBox("Xavi", new String[]{name});
+            chats.put(name, m);
+        }
+        int idx = tab_chats.indexOfTab(name);
+        if(idx == -1) { //if tab doesn't exist...
+            tab_chats.addTab(name, m);
+            idx = tab_chats.getTabCount()-1;
+        }
+        
+        //Select the tab
+        tab_chats.setSelectedIndex(idx);
+        
+        m.writeMessageMe("Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!Hola nois! Com esteu!");
+        m.writeMessageMe("Que tal si quedem demà?");
+        m.writeMessageOther(name, "Ei bones!!");
+        
+        currentMessageBox = m;
     }
     
     private void addUser(String user) {
@@ -231,13 +262,7 @@ public class ChatView extends JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
