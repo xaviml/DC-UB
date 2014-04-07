@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.model.Chat.ChatListener;
@@ -45,7 +47,7 @@ public class ChatModel {
      * @return 
      * @throws java.rmi.RemoteException 
      */
-    public boolean writeMessage(String username, String message) throws RemoteException{
+    public boolean writeMessage(String username, String message){
         Message m = new Message(myRemotePeer,message);
         IPeer adressee = members.get(username);
         
@@ -59,7 +61,16 @@ public class ChatModel {
             c = createChat(adressee, username);
         }
         c.writeMessage(m);
-        return adressee.writeMessage(m);
+        boolean b;
+        try {
+            b =  adressee.writeMessage(m);
+        } catch (RemoteException ex) {
+            // Cannot reach the client
+            b = false;
+            listener.onMemberDisconnected(username);
+            members.remove(username);
+        }
+        return b;
     }
     
     /**
@@ -96,7 +107,7 @@ public class ChatModel {
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);
         public void onMemberConnected(String username);
-        public void onMemberDisconnected();
+        public void onMemberDisconnected(String username);
     }
     
     public void setConnections(ConcurrentHashMap<String,IPeer> c){
