@@ -22,9 +22,9 @@ public interface IPeer extends Remote {
      */
     public String getUsername() throws RemoteException;
     public boolean writeMessage(Message message) throws RemoteException;
-    public boolean writeMessageGroup(GroupReference ref, Message message);
+    public boolean writeMessageGroup(GroupReference ref, Message message) throws RemoteException;
     public void userConnect(String username, IPeer peer) throws RemoteException;
     public void userDisconnect(IPeer peer) throws RemoteException;
     public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException;
-    public void userIsTyping();
+    public void userIsTyping() throws RemoteException;
 }
