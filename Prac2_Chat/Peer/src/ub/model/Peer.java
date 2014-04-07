@@ -52,7 +52,7 @@ public class Peer extends UnicastRemoteObject implements IPeer{
 
     @Override
     public boolean writeMessage(Message message) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return chatModel.recieveMessage(message);
     }
 
     @Override

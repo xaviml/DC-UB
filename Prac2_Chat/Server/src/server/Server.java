@@ -11,6 +11,8 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import ub.common.IPeer;
 import ub.common.IServer;
 
@@ -20,23 +22,26 @@ import ub.common.IServer;
  */
 public class Server extends UnicastRemoteObject implements IServer{
 
+    public ConcurrentHashMap<String,IPeer> connections;
     public Server() throws RemoteException {
         
     }
     
     @Override
-    public void registryUser(IPeer peer) throws RemoteException {
+    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException {
         System.out.println(peer.getUsername()+" registred");
+        connections.put(username, peer);
+        return connections;
     }
 
     @Override
-    public void unregistryUser(IPeer peer) {
-        
+    public void unregistryUser(String username) {
+        connections.remove(username);
     }
 
     @Override
     public IPeer getUser(String user) {
-        return null;
+        return connections.get(user);
     }
     
     
@@ -75,6 +80,11 @@ public class Server extends UnicastRemoteObject implements IServer{
         } catch (RemoteException | MalformedURLException ex) {
             System.out.println("Impossible to connect with rmiregistry");
         }
+    }
+
+    @Override
+    public ArrayList<IPeer> getUsers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

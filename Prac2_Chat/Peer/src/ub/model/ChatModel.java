@@ -1,8 +1,3 @@
-/*
- * Peer Side
- * This project is being developed by Pablo Martinez and Xavi Moreno
- */
-
 package ub.model;
 
 import java.rmi.RemoteException;
@@ -48,6 +43,7 @@ public class ChatModel {
      * @param username
      * @param message
      * @return 
+     * @throws java.rmi.RemoteException 
      */
     public boolean writeMessage(String username, String message) throws RemoteException{
         Message m = new Message(myRemotePeer,message);
@@ -87,7 +83,9 @@ public class ChatModel {
     
     public Chat createChat(IPeer peer, String username){
         ChatListener l = listener.onNewChatCreated(username);
-        return new Chat(l, peer);
+        Chat c = new Chat(l,peer);
+        chats.put(peer, c);
+        return c;
     }
 
     void userConnected(String username, IPeer peer) {
@@ -97,6 +95,14 @@ public class ChatModel {
     
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);
+        public void onMemberConnected(String username);
+        public void onMemberDisconnected();
+    }
+    
+    public void setConnections(ConcurrentHashMap<String,IPeer> c){
+        this.members = c;
+        for(String s: c.keySet())
+            listener.onMemberConnected(s);
     }
    
 }

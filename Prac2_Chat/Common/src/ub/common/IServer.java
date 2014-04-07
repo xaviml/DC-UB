@@ -9,14 +9,15 @@ package ub.common;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
  * @author zenbook
  */
 public interface IServer extends Remote {
-    public void registryUser(IPeer peer) throws RemoteException;
-    public void unregistryUser(IPeer peer) throws RemoteException;
+    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException;
+    public void unregistryUser(String username) throws RemoteException;
     public IPeer getUser(String user) throws RemoteException;
     public ArrayList<IPeer> getUsers();
 }

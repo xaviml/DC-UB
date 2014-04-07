@@ -14,6 +14,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ub.common.IPeer;
 import ub.common.IServer;
 
 /**
@@ -27,7 +31,6 @@ public class ChatController {
     
     
     public ChatController(ChatRoomListener listener) {
-        
         this.chatModel = new ChatModel(listener, myPeer);
 
     }
@@ -35,7 +38,8 @@ public class ChatController {
     public void register(String IP, String username) throws RemoteException, NotBoundException, MalformedURLException {
         myPeer = new Peer(username,chatModel);
         server = (IServer) Naming.lookup("rmi://localhost:1099/Server");
-        server.registryUser(myPeer);
+        ConcurrentHashMap<String,IPeer> con = server.registryUser(myPeer.getUsername(), myPeer);
+        chatModel.setConnections(con);
         //dateServer.registryUser(myPeer);
     }
     
@@ -47,11 +51,10 @@ public class ChatController {
         return chatModel.getConnectedClients();
     }
     
-   
-    public ArrayList<Message> retrieveChatMessages(long chatid){
-        return null;
+    public boolean writeMessage(String username, String message) throws RemoteException{
+        // TODO: Control if client isnt connected anymore
+        return chatModel.writeMessage(username, message);
     }
-    
     
     
 }
