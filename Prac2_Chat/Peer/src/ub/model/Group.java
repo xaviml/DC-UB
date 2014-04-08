@@ -16,24 +16,33 @@ import ub.common.Message;
  * @author Pablo
  */
 public class Group {
-    private GroupListener listener;
-    private ArrayList<IPeer> members;
+    private GroupListener guiListener;
+    private ChatModelServices modelListener;
+    private ArrayList<String> members;
     private ArrayList<Message> messages;
     private GroupReference reference;
     private String name;
     
-    public Group(GroupListener listener, ArrayList<IPeer> members, String name, GroupReference ref){
+    public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
         // If this is a new group, create a reference.
         if (ref == null) ref = createRef();
         
         this.messages = new ArrayList<>();
         this.reference = ref;
         this.members = members;
-        this.listener = listener;
+        this.modelListener = modelListener;
+        this.guiListener = guiListener;
         this.name = name;
         
     }
 
+    private void leaveGroup(String user){
+        synchronized(members){
+            members.remove(user);
+        }
+        
+    }
+    
     private GroupReference createRef() {
         return new GroupReference();
     }
@@ -42,25 +51,35 @@ public class Group {
         return reference;
     }
     
-    public void writeMessage(Message m) throws RemoteException{
-        for (IPeer p: members) {
-            p.writeMessageGroup(reference, m);
+    public void writeMessage(Message m){
+        for (String s: members) {
+            IPeer p = modelListener.getIPeerByName(name);
+            if (p == null){
+                members.remove(s);
+                continue;
+            }
+            try{
+                p.writeMessage(reference, m);
+            }catch(RemoteException rem){
+                modelListener.notifyDisconnectedClient(name);
+            }
         }
     }
     
     public void reciveMessage(Message m){
         this.messages.add(m);
-        listener.onNewGroupMessageRecieved(reference, m);
+        guiListener.onNewGroupMessageRecieved(reference, m);
     }
     
 
     void setName(String newName) {
         this.name = newName;
-        listener.onGroupNameChanged(reference, newName);
+        guiListener.onGroupNameChanged(reference, newName);
     }
     
     public interface GroupListener{
         public void onNewGroupMessageRecieved(GroupReference ref, Message m);
         public void onGroupNameChanged(GroupReference ref, String newName);
+        public void onMemberLeaveGroup(String username);
     }
 }

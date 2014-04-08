@@ -18,7 +18,7 @@ public interface IPeer extends Remote{
     public void ping() throws RemoteException;
     public String getUsername() throws RemoteException;
     public void writeMessage(Message message) throws RemoteException;
-    public void writeMessageGroup(GroupReference ref, Message message) throws RemoteException;
+    public void writeMessage(GroupReference ref, Message message) throws RemoteException;
     public void userConnect(String username, IPeer peer) throws RemoteException;
     public void userDisconnect(String username) throws RemoteException;
     public void addGroup(GroupReference gref, String groupName, ArrayList<String> peers) throws RemoteException;

@@ -5,11 +5,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
@@ -22,14 +21,14 @@ import ub.model.Group.GroupListener;
  *
  * @author Pablo
  */
-public class ChatModel {
+public class ChatModel implements ChatModelServices{
     
     private final ChatRoomListener listener;
     private String myUsername;
     private Peer myPeer;
     private IServer server;
     public ConcurrentHashMap<String,IPeer> connections;
-    public ConcurrentHashMap<IPeer, Chat> chats;
+    public ConcurrentHashMap<String, Chat> chats;
     public ConcurrentHashMap<GroupReference, Group> groups;
     
     public ChatModel(ChatRoomListener listener){
@@ -58,50 +57,29 @@ public class ChatModel {
         return a;
     }
     
-    
-    /**
-     * For single chats
-     * @param username
-     * @param message 
-     * @throws ub.exceptions.WrongAdreseeException 
-     */
-    public void writeMessage(String username, String message) throws WrongAdreseeException{
+    public void writeMessage(String adressee, String message) throws WrongAdreseeException{
         Message m = new Message(myUsername,message);
-        IPeer adressee = connections.get(username);
         
         // Check if adressee exists.
-        if (adressee == null) throw new WrongAdreseeException();
+        if (!connections.contains(adressee)) throw new WrongAdreseeException();
         Chat c = chats.get(adressee);
         
         // Check if we already have a chat with the client
         if (c == null){
             // If not, create a new one.
-            c = createChat(adressee, username);
+            c = createChat(adressee);
         }
         c.writeMessage(m);
-        try {
-            adressee.writeMessage(m);
-        } catch (RemoteException ex) {
-            notifyDisconnection(username);
-        }
     }
     
-    /**
-     * For single chats
-     * @param m
-     * @return
-     * @throws RemoteException 
-     */
-    public boolean recieveMessage(Message m) throws RemoteException{
-        IPeer sender = connections.get(m.getUsername());
+    public void recieveMessage(Message m) throws RemoteException{
+        String sender = m.getUsername();
         Chat c = chats.get(sender);
         if (c == null){
             // Doesn't exist. Create a new Chat
-            String username = sender.getUsername();
-            c = createChat(sender, username);
+            c = createChat(sender);
         }
         c.writeMessage(m);
-        return false;
     }
     
     
@@ -110,9 +88,7 @@ public class ChatModel {
             ls = listener.onNewGroupCreated(gref, members, groupName);
         
         // Create the IPeer list, in order to create the Group
-        ArrayList<IPeer> peers = new ArrayList<>();
-        for(String s: members) peers.add(connections.get(s));
-        Group g = new Group(ls,peers,groupName,gref);
+        Group g = new Group(this, ls,members,groupName,gref);
         
         // Check gref. If function is called internally it would be null.
         // Else, if function is called externally it would already have a gref.
@@ -125,24 +101,20 @@ public class ChatModel {
         
     }
     
-    public void writeGroupMessage(GroupReference gref, String message){
+    public void writeMessage(GroupReference gref, String message){
         Group g = groups.get(gref);
-        try {
-            g.writeMessage(new Message(myUsername, message));
-        } catch (RemoteException ex) {
-            System.err.println("Gay");
-        }
+        g.writeMessage(new Message(myUsername, message));
     }
     
-    public void recieveGroupMessage(GroupReference gref, Message message){
-        
+    public void recieveMessage(GroupReference gref, Message message){
+        groups.get(gref).reciveMessage(message);
     }
     
     
-    public Chat createChat(IPeer peer, String username){
+    public Chat createChat(String username){
         ChatListener l = listener.onNewChatCreated(username);
-        Chat c = new Chat(l,peer);
-        chats.put(peer, c);
+        Chat c = new Chat(this, l, new ArrayList<>(Arrays.asList(myUsername, username)));
+        chats.put(username, c);
         return c;
     }
 
@@ -189,6 +161,16 @@ public class ChatModel {
             c.get(s).userConnect(myUsername, myPeer);
         }
             
+    }
+
+    @Override
+    public IPeer getIPeerByName(String username) {
+        return connections.get(username);
+    }
+
+    @Override
+    public void notifyDisconnectedClient(String username) {
+        notifyDisconnection(username);
     }
     
     

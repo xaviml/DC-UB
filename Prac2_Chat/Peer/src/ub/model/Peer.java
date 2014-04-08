@@ -52,8 +52,8 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void writeMessageGroup(GroupReference ref, Message message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void writeMessage(GroupReference ref, Message message) {
+        chatModel.writeMessage(ref, username);
     }
 
     @Override
