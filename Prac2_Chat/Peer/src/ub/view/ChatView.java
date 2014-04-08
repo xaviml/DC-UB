@@ -197,6 +197,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         if(evt.getClickCount() == 2) {
             MessageBox m = getMessageBoxChat(name);
             openTab(m, false, true);
+            tf_send.requestFocusInWindow();
         }
     }//GEN-LAST:event_list_usersMousePressed
 
@@ -267,7 +268,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     
     private MessageBox getMessageBoxChat(String username) {
         MessageBox m;
-        if(chats.contains(username)) {
+        if(chats.containsKey(username)) {
             m = chats.get(username);
         }else{
             m = new MessageBox(username, this.username, new String[]{username});
