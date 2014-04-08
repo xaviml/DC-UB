@@ -14,12 +14,7 @@ import java.rmi.RemoteException;
  * @author zenbook
  */
 public interface IPeer extends Remote {
-    /**
-     * Username of Peer.
-     * 
-     * @return String
-     * @throws java.rmi.RemoteException
-     */
+    public void ping() throws RemoteException;
     public String getUsername() throws RemoteException;
     public boolean writeMessage(Message message) throws RemoteException;
     public boolean writeMessageGroup(GroupReference ref, Message message) throws RemoteException;
