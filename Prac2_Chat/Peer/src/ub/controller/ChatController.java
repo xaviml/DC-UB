@@ -25,20 +25,20 @@ import ub.common.InvalidUserNameException;
 public class ChatController {
     private Peer myPeer;
     private IServer server;
-    private final ChatModel chatModel;
+    private ChatModel chatModel;
+    private ChatRoomListener listener;
     
     
     public ChatController(ChatRoomListener listener) {
-        this.chatModel = new ChatModel(listener, myPeer);
-
+        this.listener = listener;
     }
     
-    public void register(String IP, String username) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
+    public void register(String IP, int port, String username) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
+        this.chatModel = new ChatModel(listener, myPeer);
         myPeer = new Peer(username,chatModel);
-        server = (IServer) Naming.lookup("rmi://localhost:1099/Server");
-        ConcurrentHashMap<String,IPeer> con = server.registryUser(myPeer.getUsername(), myPeer);
+        server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
+        ConcurrentHashMap<String,IPeer> con = server.registryUser(myPeer.getUsername(), (IPeer)myPeer);
         chatModel.setConnections(con);
-        //dateServer.registryUser(myPeer);
     }
     
     public void disconnect(){
@@ -49,9 +49,13 @@ public class ChatController {
         return chatModel.getConnectedClients();
     }
     
-    public boolean writeMessage(String username, String message) throws RemoteException{
+    public boolean writeMessage(String username, String message) {
         // TODO: Control if client isnt connected anymore
         return chatModel.writeMessage(username, message);
+    }
+    
+    public String getUsername() {
+        return myPeer.getUsername();
     }
     
     

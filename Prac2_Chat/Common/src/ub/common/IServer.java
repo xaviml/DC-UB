@@ -19,5 +19,5 @@ public interface IServer extends Remote {
     public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, InvalidUserNameException;
     public void unregistryUser(String username) throws RemoteException;
     public IPeer getUser(String user) throws RemoteException;
-    public ArrayList<String> getUsers();
+    public ArrayList<String> getUsers() throws RemoteException;
 }

@@ -9,27 +9,41 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import ub.common.InvalidUserNameException;
+import ub.controller.ChatController;
+import ub.model.Chat;
+import ub.model.ChatModel;
 
 /**
  *
  * @author zenbook
  */
-public class ChatView extends JFrame {
+public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
-    private ConcurrentHashMap<Long, MessageBox> chats;
+    private ConcurrentHashMap<String, MessageBox> chats;
     private MessageBox currentMessageBox;
+    
+    private ChatController controller;
     
     /**
      * Creates new form ChatView
      */
     public ChatView() {
         initComponents();
+        
+        controller = new ChatController(this);
+        
+        chats = new ConcurrentHashMap<>();
+        
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((screen.getWidth() - getWidth()) /2);
         int y = (int) ((screen.getHeight() -getHeight()) /2);
@@ -55,40 +69,15 @@ public class ChatView extends JFrame {
         });
         
         currentMessageBox = null;
-        
-        
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addUser("Xavi");
-        addUser("falcon");
-        addGroup("Perrillas");
-        addGroup("Playa!");
-        addGroup("Familia");
-        
-        
-        
+    }
+    
+    public boolean registry(String IP, int port, String user) {
+        try {
+            controller.register(IP, port, user);
+            return true;
+        } catch (RemoteException | NotBoundException | MalformedURLException | InvalidUserNameException ex) {
+            return false;
+        }
     }
 
     /**
@@ -111,8 +100,23 @@ public class ChatView extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
+        setMinimumSize(new java.awt.Dimension(355, 235));
+
+        tab_chats.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        tab_chats.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
 
         btn_send.setText("Send");
+        btn_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sendActionPerformed(evt);
+            }
+        });
+
+        tf_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_sendActionPerformed(evt);
+            }
+        });
 
         tab_users.setBorder(null);
         tab_users.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
@@ -151,7 +155,7 @@ public class ChatView extends JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(tab_chats))
@@ -167,8 +171,8 @@ public class ChatView extends JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_send)
-                            .addComponent(tf_send, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(tab_users, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
+                            .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(tab_users, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -185,18 +189,50 @@ public class ChatView extends JFrame {
         DefaultListModel model = (DefaultListModel) list_users.getModel();
         String name = (String) model.get(list_users.getSelectedIndex());
         if(evt.getClickCount() == 2) {
-            addTab(name, false);
+            MessageBox m = new MessageBox(name, controller.getUsername(), new String[] {name});
+            openTab(m, false, true);
         }
     }//GEN-LAST:event_list_usersMousePressed
 
-    private void addTab(String name, boolean group) {
+    private void tf_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_sendActionPerformed
+        sendMessage();
+    }//GEN-LAST:event_tf_sendActionPerformed
+
+    private void btn_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendActionPerformed
+        sendMessage();
+    }//GEN-LAST:event_btn_sendActionPerformed
+
+    private void sendMessage() {
+        
+        final String msg = tf_send.getText();
+        if(msg.isEmpty()) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                controller.writeMessage(currentMessageBox.getFirstUser(), msg);
+            }
+        }).start();
+        tf_send.setText("");
+        currentMessageBox.writeMessageMe(msg);
+    }
+    
+    private void openTab(MessageBox m, boolean group, boolean selectedTab) {
         if(tab_chats.getTabCount() == 0) {
             btn_send.setVisible(true);
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
         }
-        tab_chats.addTab(name, new MessageBox("Xavi", name));
-        tab_chats.setSelectedIndex(tab_chats.getTabCount()-1);
+        int idx = tab_chats.indexOfTab(m.getName());
+        if(idx == -1) { //if tab doesn't exist...
+            tab_chats.addTab(m.getNameChat(), m);
+            idx = tab_chats.getTabCount()-1;
+        }
+        
+        //Select the tab
+        if(selectedTab) {
+            tab_chats.setSelectedIndex(idx);
+            currentMessageBox = m;
+        }
     }
     
     private void addUser(String user) {
@@ -210,6 +246,19 @@ public class ChatView extends JFrame {
     private void addStringInList(String string, JList list) {
         DefaultListModel model = (DefaultListModel) list.getModel();
         model.addElement(string);
+    }
+    
+    private void removeUser(String user) {
+        addStringInList(user, list_users);
+    }
+    
+    private void removeGroup(String group) {
+        addStringInList(group, list_groups);
+    }
+    
+    private void removeStringInList(String string, JList list) {
+        DefaultListModel model = (DefaultListModel) list.getModel();
+        model.removeElement(string);
     }
     
     
@@ -231,19 +280,14 @@ public class ChatView extends JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ChatView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new ChatView().setVisible(true);
             }
@@ -260,4 +304,22 @@ public class ChatView extends JFrame {
     private javax.swing.JTabbedPane tab_users;
     private javax.swing.JTextField tf_send;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public Chat.ChatListener onNewChatCreated(String username) {
+        MessageBox msgBox = new MessageBox(username, controller.getUsername(), new String[]{username});
+        this.chats.put(username, msgBox);
+        openTab(msgBox, false, false);
+        return msgBox;
+    }
+
+    @Override
+    public void onMemberConnected(String username) {
+        addUser(username);
+    }
+
+    @Override
+    public void onMemberDisconnected(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

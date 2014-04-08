@@ -14,13 +14,13 @@ import ub.model.Chat.ChatListener;
  */
 public class ChatModel {
     
-    private final ChatRoomListener listener;
-    private final IPeer myRemotePeer;
+    private ChatRoomListener listener;
+    private final Peer myRemotePeer;
     public ConcurrentHashMap<String,IPeer> members;
     public ConcurrentHashMap<IPeer, Chat> chats;
     public ConcurrentHashMap<GroupReference, Group> groups;
     
-    public ChatModel(ChatRoomListener listener, IPeer myRemotePeer){
+    public ChatModel(ChatRoomListener listener, Peer myRemotePeer){
         this.listener = listener;
         this.myRemotePeer = myRemotePeer;
         this.members = new ConcurrentHashMap<>();
@@ -43,7 +43,6 @@ public class ChatModel {
      * @param username
      * @param message
      * @return 
-     * @throws java.rmi.RemoteException 
      */
     public boolean writeMessage(String username, String message){
         Message m = new Message(myRemotePeer,message);
@@ -78,6 +77,7 @@ public class ChatModel {
      * @throws RemoteException 
      */
     public boolean recieveMessage(Message m) throws RemoteException{
+        System.out.println("ChatModel::MESSAGEEE");
         IPeer sender = m.getIPeer();
         Chat c = chats.get(sender);
         if (c == null){
@@ -110,8 +110,12 @@ public class ChatModel {
     
     public void setConnections(ConcurrentHashMap<String,IPeer> c){
         this.members = c;
-        for(String s: c.keySet())
-            listener.onMemberConnected(s);
+        for(String s: c.keySet()) {
+            if(!s.equals(myRemotePeer.getUsername())) {
+                listener.onMemberConnected(s);
+            }
+        }
+            
     }
    
 }

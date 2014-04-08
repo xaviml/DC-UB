@@ -29,4 +29,11 @@ public class Message implements Serializable{
     public IPeer getIPeer(){
         return user;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" + "user=" + user + ", message=" + message + '}';
+    }
+
+    
 }

@@ -15,11 +15,19 @@ import javax.swing.JFrame;
  */
 public class WelcomeView extends JFrame {
 
+    private String IP;
+    private int port;
+    private String user;
+    
     /**
      * Creates new form NewJFrame
+     * @param IP
+     * @param port
      */
-    public WelcomeView() {
+    public WelcomeView(String IP, int port) {
         initComponents();
+        this.IP = IP;
+        this.port = port;
         lbl_nickname_in_use.setVisible(false);
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((screen.getWidth() - getWidth()) /2);
@@ -105,22 +113,29 @@ public class WelcomeView extends JFrame {
         initApp(tf_nickname.getText());
     }//GEN-LAST:event_btn_proceedActionPerformed
 
-    private void initApp(String user) {
-        lbl_nickname_in_use.setVisible(true);
+    private void initApp(final String user) {
+        
         
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new ChatView().setVisible(true);
-                setVisible(false);
-                dispose();
+                ChatView c = new ChatView();
+                if(c.registry(IP,port,  user)) {
+                    c.setVisible(true);
+                    setVisible(false);
+                    dispose();
+                }else {
+                    lbl_nickname_in_use.setVisible(true);
+                    tf_nickname.setText("");
+                }
+                    
             }
         });
     }
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -148,7 +163,7 @@ public class WelcomeView extends JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new WelcomeView().setVisible(true);
+                new WelcomeView(args[0],Integer.parseInt(args[1])).setVisible(true);
             }
         });
     }
