@@ -61,7 +61,7 @@ public class ChatModel implements ChatModelServices{
         Message m = new Message(myUsername,message);
         
         // Check if adressee exists.
-        if (connections.get(adressee) == null) throw new WrongAdreseeException();
+        if (connections.get(adressee)==null) throw new WrongAdreseeException();
         Chat c = chats.get(adressee);
         
         // Check if we already have a chat with the client
