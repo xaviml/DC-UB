@@ -53,7 +53,7 @@ public class Peer extends UnicastRemoteObject implements IPeer{
 
     @Override
     public void writeMessage(GroupReference ref, Message message) {
-        chatModel.writeMessage(ref, username);
+        chatModel.recieveMessage(ref, message);
     }
 
     @Override
