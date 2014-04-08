@@ -57,7 +57,7 @@ public class ChatModel implements ChatModelServices{
         return a;
     }
     
-    public void writeMessage(String adressee, String message) throws WrongAdreseeException{
+    public void writeMessage(String adressee, String message){
         Message m = new Message(myUsername,message);
         
         // Check if adressee exists.
