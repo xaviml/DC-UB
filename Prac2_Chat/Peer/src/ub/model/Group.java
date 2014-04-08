@@ -65,6 +65,8 @@ public class Group {
                 services.notifyDisconnectedClient(name);
             }
         }
+        this.messages.add(m);
+        guiListener.onNewGroupMessageRecieved(reference, m);
     }
     
     public void reciveMessage(Message m){
