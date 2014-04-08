@@ -12,19 +12,19 @@ import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import ub.common.GroupReference;
 import ub.common.InvalidUserNameException;
 import ub.controller.ChatController;
-import ub.exceptions.WrongAdreseeException;
 import ub.model.Chat;
 import ub.model.ChatModel;
+import ub.model.Group;
 
 /**
  *
@@ -34,6 +34,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
     private ConcurrentHashMap<String, MessageBox> chats;
     private MessageBox currentMessageBox;
+    
+    private String username;
     
     private ChatController controller;
     
@@ -75,6 +77,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     }
     
     public boolean registry(String IP, int port, String user) {
+        this.username = user;
         try {
             controller.register(IP, port, user);
             return true;
@@ -192,7 +195,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         DefaultListModel model = (DefaultListModel) list_users.getModel();
         String name = (String) model.get(list_users.getSelectedIndex());
         if(evt.getClickCount() == 2) {
-            MessageBox m = new MessageBox(name, controller.getUsername(), new String[] {name});
+            MessageBox m = getMessageBoxChat(name);
             openTab(m, false, true);
         }
     }//GEN-LAST:event_list_usersMousePressed
@@ -216,7 +219,6 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
             }
         }).start();
         tf_send.setText("");
-        currentMessageBox.writeMessageMe(msg);
     }
     
     private void openTab(MessageBox m, boolean group, boolean selectedTab) {
@@ -224,8 +226,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
             btn_send.setVisible(true);
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
+            currentMessageBox = m;
         }
-        int idx = tab_chats.indexOfTab(m.getName());
+        int idx = tab_chats.indexOfTab(m.getNameChat());
         if(idx == -1) { //if tab doesn't exist...
             tab_chats.addTab(m.getNameChat(), m);
             idx = tab_chats.getTabCount()-1;
@@ -262,6 +265,17 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     private void removeStringInList(String string, JList list) {
         DefaultListModel model = (DefaultListModel) list.getModel();
         model.removeElement(string);
+    }
+    
+    private MessageBox getMessageBoxChat(String username) {
+        MessageBox m;
+        if(chats.contains(username)) {
+            m = chats.get(username);
+        }else{
+            m = new MessageBox(username, this.username, new String[]{username});
+            chats.put(username, m);
+        }
+        return m;
     }
     
     
@@ -310,19 +324,25 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
     @Override
     public Chat.ChatListener onNewChatCreated(String username) {
-        MessageBox msgBox = new MessageBox(username, controller.getUsername(), new String[]{username});
-        this.chats.put(username, msgBox);
+        MessageBox msgBox = getMessageBoxChat(username);
         openTab(msgBox, false, false);
         return msgBox;
     }
 
     @Override
     public void onMemberConnected(String username) {
+
+        if(username.equals(this.username)) return;
         addUser(username);
     }
 
     @Override
     public void onMemberDisconnected(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Group.GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

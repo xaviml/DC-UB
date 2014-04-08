@@ -8,10 +8,7 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -100,6 +97,9 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     
     @Override
     public void onNewMessageRecived(final Message m) {
-        writeMessageOther(m.getUsername(), m.getMessage());
+        if(m.getUsername().equals(this.me))
+            writeMessageMe(m.getMessage());
+        else
+            writeMessageOther(m.getUsername(), m.getMessage());
     }
 }
