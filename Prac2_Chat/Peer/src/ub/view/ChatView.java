@@ -22,6 +22,7 @@ import javax.swing.JList;
 import ub.common.GroupReference;
 import ub.common.InvalidUserNameException;
 import ub.controller.ChatController;
+import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat;
 import ub.model.ChatModel;
 import ub.model.Group;
@@ -30,10 +31,9 @@ import ub.model.Group;
  *
  * @author zenbook
  */
-public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
+public class ChatView extends JFrame implements ChatModel.ChatRoomListener, MessageBox.OnMessageBoxListener{
 
     private ConcurrentHashMap<String, MessageBox> chats;
-    private MessageBox currentMessageBox;
     
     private String username;
     
@@ -54,6 +54,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         int y = (int) ((screen.getHeight() -getHeight()) /2);
         setLocation(x, y);
         
+        lbl_typing.setVisible(false);
         btn_send.setVisible(false);
         tf_send.setVisible(false);
         tab_chats.setVisible(false);
@@ -69,17 +70,16 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                
+                controller.disconnect();
             }
         });
-        
-        currentMessageBox = null;
     }
     
     public boolean registry(String IP, int port, String user) {
         this.username = user;
         try {
             controller.register(IP, port, user);
+            setTitle("Chat RMI["+user+"]");
             return true;
         } catch (RemoteException | NotBoundException | MalformedURLException | InvalidUserNameException ex) {
             return false;
@@ -103,6 +103,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         list_users = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         list_groups = new javax.swing.JList();
+        lbl_typing = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
@@ -151,6 +152,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
         tab_users.addTab("Groups", jScrollPane2);
 
+        lbl_typing.setText("typing...");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -164,7 +167,10 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
                         .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tab_chats))
+                    .addComponent(tab_chats)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lbl_typing)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -174,6 +180,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(tab_chats)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_typing, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_send)
@@ -192,8 +200,10 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     }//GEN-LAST:event_list_groupsMousePressed
 
     private void list_usersMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_usersMousePressed
+        int selected = list_users.getSelectedIndex();
+        if(selected == -1) return;
         DefaultListModel model = (DefaultListModel) list_users.getModel();
-        String name = (String) model.get(list_users.getSelectedIndex());
+        String name = (String) model.get(selected);
         if(evt.getClickCount() == 2) {
             MessageBox m = getMessageBoxChat(name);
             openTab(m, false, true);
@@ -210,15 +220,23 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     }//GEN-LAST:event_btn_sendActionPerformed
 
     private void sendMessage() {
+        
+        final MessageBox m = getCurrentMessageBox();
+        
         final String msg = tf_send.getText();
         if(msg.isEmpty()) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    controller.writeMessage(currentMessageBox.getFirstUser(), msg);
+                try{
+                    controller.writeMessage(m.getFirstUser(), msg);
+                }catch(WrongAdresseeException ex){
+                    m.writeErrorMessage();
+                }
             }
         }).start();
         tf_send.setText("");
+        lbl_typing.setVisible(true);
     }
     
     private void openTab(MessageBox m, boolean group, boolean selectedTab) {
@@ -231,12 +249,22 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         if(idx == -1) { //if tab doesn't exist...
             tab_chats.addTab(m.getNameChat(), m);
             idx = tab_chats.getTabCount()-1;
+            tab_chats.setTabComponentAt(idx, new ButtonTabComponent(tab_chats, new Runnable() {
+                @Override
+                public void run() {
+                    if(tab_chats.getTabCount() == 0) {
+                        lbl_typing.setVisible(false);
+                        btn_send.setVisible(false);
+                        tf_send.setVisible(false);
+                        tab_chats.setVisible(false);
+                    }
+                }
+            }));
         }
         
         //Select the tab
         if(selectedTab || tab_chats.getTabCount() == 1) {
             tab_chats.setSelectedIndex(idx);
-            currentMessageBox = m;
         }
     }
     
@@ -254,7 +282,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     }
     
     private void removeUser(String user) {
-        addStringInList(user, list_users);
+        removeStringInList(user, list_users);
     }
     
     private void removeGroup(String group) {
@@ -271,11 +299,15 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         if(chats.containsKey(username)) {
             m = chats.get(username);
         }else{
-            m = new MessageBox(username, this.username, new String[]{username});
+            m = new MessageBox(username, this.username, new String[]{username}, false, this);
             chats.put(username, m);
         }
         return m;
     }
+    
+    private MessageBox getCurrentMessageBox() {
+        return (MessageBox) tab_chats.getSelectedComponent();
+    } 
     
     
     
@@ -314,6 +346,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     private javax.swing.JButton btn_send;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lbl_typing;
     private javax.swing.JList list_groups;
     private javax.swing.JList list_users;
     private javax.swing.JTabbedPane tab_chats;
@@ -337,11 +370,29 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
 
     @Override
     public void onMemberDisconnected(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        removeUser(username);
+        getMessageBoxChat(username).writeErrorMessage();
     }
 
     @Override
     public Group.GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void userIsTyping(MessageBox m) {
+        if(m == getCurrentMessageBox()) {
+            
+        }
+    }
+
+    @Override
+    public void newMessageChat(String user) {
+        openTab(getMessageBoxChat(user), false, false);
+    }
+
+    @Override
+    public void removeTab() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

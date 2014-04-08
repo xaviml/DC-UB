@@ -8,6 +8,7 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.beans.PropertyEditorManager;
 import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,15 +33,26 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     
     private String nameChat;
     private String lastUser;
+    private boolean isEmpty;
+    private boolean isGroup;
+    
+    private boolean closed;
+    
+    private OnMessageBoxListener listener;
     
     private JTextPane pane;
     
-    public MessageBox(String name, String me, String[] others) {
+    public MessageBox(String name, String me, String[] others, boolean group,OnMessageBoxListener listener) {
         this.me = me;
         this.lastUser = "";
         this.nameChat = name;
         this.others = others;
         this.colors = new HashMap<>();
+        this.isEmpty = true;
+        this.isGroup = group;
+        this.closed = false;
+        
+        this.listener = listener;
         
         Color[] c = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
         for (int i = 0; i < others.length; i++) {
@@ -53,25 +65,34 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         pane = new JTextPane();
         pane.setMargin(new Insets(5, 5, 5, 5));
         add(new JScrollPane(pane));
+        
     }
     
     public synchronized void writeMessageMe(String msg) {
-        if(!lastUser.equals(me))
-            addMessage("\n"+this.me+"\n", Color.BLUE, true);
+        if(!lastUser.equals(me)) {
+            String space = isEmpty ? "":"\n";
+            addMessage(space+this.me+"\n", Color.BLUE, true);
+        }
         addMessage(msg+"\n", Color.BLACK, false);
         lastUser = me;
+        this.isEmpty = false;
     }
     
     public synchronized void writeMessageOther(String user, String msg) {
-        if(!lastUser.equals(user))
-            addMessage("\n"+user+"\n", colors.get(user), true);
+        if(!lastUser.equals(user)) {
+            String space = isEmpty ? "":"\n";
+            addMessage(space+user+"\n", colors.get(user), true);
+        }
         addMessage(msg+"\n", Color.BLACK, false);
-        
+        this.isEmpty = false;
         lastUser = user;
+        
+        if(!isGroup)
+            listener.newMessageChat(getFirstUser());
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
-        
+        if(closed) return;
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
@@ -85,6 +106,10 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         pane.setCharacterAttributes(aset, false);
         pane.replaceSelection(msg);
         pane.setEditable(false);
+    }
+    
+    public boolean isGroup() {
+        return this.isGroup;
     }
 
     public String getFirstUser() {
@@ -106,5 +131,22 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     @Override
     public void onUserTyping() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void writeErrorMessage() {
+        addMessage("\nThis user is not avaible now.", Color.gray, false);
+        closed = true;
+    }
+    
+    /**
+     * Interfaz para comunicar-me con la view principal
+     * 
+     */
+    
+    public interface OnMessageBoxListener {
+        public void userIsTyping(MessageBox m);
+        public void newMessageChat(String user);
+
+        public void removeTab();
     }
 }

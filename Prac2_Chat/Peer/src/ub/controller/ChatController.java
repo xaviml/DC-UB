@@ -10,10 +10,10 @@ import ub.model.ChatModel;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import ub.common.GroupReference;
 import ub.common.IServer;
 import ub.common.InvalidUserNameException;
+import ub.exceptions.WrongAdresseeException;
 
 /**
  *
@@ -35,12 +35,17 @@ public class ChatController {
     public void disconnect(){
         chatModel.disconnect();
     }
-    public void writeMessage(String username, String message){
+    public void writeMessage(String username, String message) throws WrongAdresseeException{
         chatModel.writeMessage(username, message);
     }
     public void writeMessage(GroupReference gref, String message){
         chatModel.writeMessage(gref, message);
     }
+    
+    public void userIsTyping(String username) {
+        chatModel.userIsTyping(username);
+    }
+    
     public String getUsername(){
         return myUserName;
     }

@@ -107,7 +107,7 @@ public class ChatModel implements ChatModelServices{
     /* For single chats */
     //                  //
     
-    public void writeMessage(String adressee, String message){
+    public void writeMessage(String adressee, String message) throws WrongAdresseeException{
         Message m = new Message(myUsername,message);
         
         // Check if adressee exists.
