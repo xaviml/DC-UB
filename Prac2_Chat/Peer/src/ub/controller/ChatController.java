@@ -26,19 +26,14 @@ public class ChatController {
     private Peer myPeer;
     private IServer server;
     private ChatModel chatModel;
-    private ChatRoomListener listener;
     
     
     public ChatController(ChatRoomListener listener) {
-        this.listener = listener;
+        this.chatModel = new ChatModel(listener);
     }
     
     public void register(String IP, int port, String username) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
-        this.chatModel = new ChatModel(listener, myPeer);
-        myPeer = new Peer(username,chatModel);
-        server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
-        ConcurrentHashMap<String,IPeer> con = server.registryUser(myPeer.getUsername(), (IPeer)myPeer);
-        chatModel.setConnections(con);
+        chatModel.register(IP, port, username);
     }
     
     public void disconnect(){

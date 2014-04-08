@@ -1,11 +1,16 @@
 package ub.model;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
 import ub.common.GroupReference;
 import ub.common.IPeer;
+import ub.common.IServer;
+import ub.common.InvalidUserNameException;
 import ub.model.Chat.ChatListener;
 
 /**
@@ -14,20 +19,31 @@ import ub.model.Chat.ChatListener;
  */
 public class ChatModel {
     
-    private ChatRoomListener listener;
-    private final Peer myRemotePeer;
+    private final ChatRoomListener listener;
+    private String myUsername;
+    private Peer myPeer;
+    private IServer server;
     public ConcurrentHashMap<String,IPeer> members;
     public ConcurrentHashMap<IPeer, Chat> chats;
     public ConcurrentHashMap<GroupReference, Group> groups;
     
-    public ChatModel(ChatRoomListener listener, Peer myRemotePeer){
+    public ChatModel(ChatRoomListener listener){
+        
         this.listener = listener;
-        this.myRemotePeer = myRemotePeer;
         this.members = new ConcurrentHashMap<>();
         this.chats = new ConcurrentHashMap<>();
         this.groups = new ConcurrentHashMap<>();
         
     }
+    
+    // Tested (OK)
+    public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, InvalidUserNameException{
+        myUsername = username;
+        myPeer = new Peer(username,this);
+        server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
+        setConnections(server.registryUser(username, (IPeer)myPeer));
+    }
+    
     
     public ArrayList<String> getConnectedClients(){
         ArrayList<String> a = new ArrayList<>();
@@ -45,7 +61,7 @@ public class ChatModel {
      * @return 
      */
     public boolean writeMessage(String username, String message){
-        Message m = new Message(myRemotePeer,message);
+        Message m = new Message(members.get(myUsername),message);
         IPeer adressee = members.get(username);
         
         // Check if adressee exists.
@@ -77,7 +93,6 @@ public class ChatModel {
      * @throws RemoteException 
      */
     public boolean recieveMessage(Message m) throws RemoteException{
-        System.out.println("ChatModel::MESSAGEEE");
         IPeer sender = m.getIPeer();
         Chat c = chats.get(sender);
         if (c == null){
@@ -99,6 +114,7 @@ public class ChatModel {
 
     void userConnected(String username, IPeer peer) {
         members.put(username, peer);
+        listener.onMemberConnected(username);
     }
     
     
@@ -108,12 +124,14 @@ public class ChatModel {
         public void onMemberDisconnected(String username);
     }
     
-    public void setConnections(ConcurrentHashMap<String,IPeer> c){
+    public void setConnections(ConcurrentHashMap<String,IPeer> c) throws RemoteException{
         this.members = c;
         for(String s: c.keySet()) {
-            if(!s.equals(myRemotePeer.getUsername())) {
+            if(!s.equals(myUsername)) {
                 listener.onMemberConnected(s);
             }
+            //You may also notify other connections you are here.
+            c.get(s).userConnect(myUsername, myPeer);
         }
             
     }
