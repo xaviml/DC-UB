@@ -8,18 +8,19 @@ package ub.common;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
  * @author zenbook
  */
-public interface IPeer extends Remote {
+public interface IPeer extends Remote{
     public void ping() throws RemoteException;
     public String getUsername() throws RemoteException;
-    public boolean writeMessage(Message message) throws RemoteException;
-    public boolean writeMessageGroup(GroupReference ref, Message message) throws RemoteException;
+    public void writeMessage(Message message) throws RemoteException;
+    public void writeMessageGroup(GroupReference ref, Message message) throws RemoteException;
     public void userConnect(String username, IPeer peer) throws RemoteException;
-    public void userDisconnect(IPeer peer) throws RemoteException;
-    public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException;
+    public void userDisconnect(String username) throws RemoteException;
+    public void addGroup(GroupReference gref, String groupName, ArrayList<String> peers) throws RemoteException;
     public void userIsTyping() throws RemoteException;
 }

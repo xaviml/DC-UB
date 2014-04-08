@@ -6,18 +6,17 @@
 package ub.common;
 
 import java.io.Serializable;
-import ub.common.IPeer;
 
 /**
  *
  * @author Pablo
  */
 public class Message implements Serializable{
-    private IPeer user;
+    private String user;
     private String message;
     
     
-    public Message(IPeer p, String s){
+    public Message(String p, String s){
         this.user = p;
         this.message = s;
     }
@@ -26,7 +25,7 @@ public class Message implements Serializable{
         return message;
     }
 
-    public IPeer getIPeer(){
+    public String getUsername(){
         return user;
     }
 
