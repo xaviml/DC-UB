@@ -59,7 +59,7 @@ public class Group {
                 continue;
             }
             try{
-                p.writeMessageGroup(reference, m);
+                p.writeMessage(reference, m);
             }catch(RemoteException rem){
                 modelListener.notifyDisconnectedClient(name);
             }
