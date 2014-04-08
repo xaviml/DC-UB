@@ -12,7 +12,7 @@ import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.InvalidUserNameException;
-import ub.exceptions.WrongAdreseeException;
+import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat.ChatListener;
 import ub.model.Group.GroupListener;
 
@@ -26,9 +26,9 @@ public class ChatModel implements ChatModelServices{
     private String myUsername;
     private Peer myPeer;
     private IServer server;
-    public ConcurrentHashMap<String,IPeer> connections;
-    public ConcurrentHashMap<String, Chat> chats;
-    public ConcurrentHashMap<GroupReference, Group> groups;
+    public ConcurrentHashMap<String,IPeer> connections;                         // All the connections         
+    public ConcurrentHashMap<String, Chat> chats;                               // Chats
+    public ConcurrentHashMap<GroupReference, Group> groups;                     // Groups
     
     public ChatModel(ChatRoomListener listener){
         
@@ -39,14 +39,61 @@ public class ChatModel implements ChatModelServices{
         
     }
     
-    // Tested (OK)
+    //                 //
+    /* General methods */
+    //                 //
+    
+    void userConnected(String username, IPeer peer) {
+        connections.put(username, peer);
+        listener.onMemberConnected(username);
+    }
+    
+    void userDisconnected(String username){
+        connections.remove(username);
+        listener.onMemberDisconnected(username);
+    }
+
+    private void notifyDisconnection(String username) {
+        connections.remove(username);
+        listener.onMemberDisconnected(username);
+        try {
+            server.unregistryUser(username);
+        } catch (RemoteException ex) {
+            System.err.println("Server disconnected");
+        }
+        for (Entry<String,IPeer> e: connections.entrySet()){
+            if (!e.getKey().equals(myUsername))try {
+                e.getValue().userDisconnect(username);
+            } catch (RemoteException ex) {
+                // Bad luck.. While we were notifying a disconnection
+                // Another user was also disconnected. Notify this too.. :/
+                notifyDisconnection(e.getKey());
+            }
+        }
+    }
+
+    public void disconnect() {
+        notifyDisconnection(myUsername);
+    }
+
+    public void setConnections(ConcurrentHashMap<String,IPeer> c) throws RemoteException{
+        this.connections = c;
+        for(String s: c.keySet()) {
+            if(!s.equals(myUsername)) {
+                listener.onMemberConnected(s);
+            }
+            //You may also notify other connections you are here.
+            c.get(s).userConnect(myUsername, myPeer);
+        }
+            
+    }
+    
     public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, InvalidUserNameException{
         myUsername = username;
         myPeer = new Peer(username,this);
         server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
         setConnections(server.registryUser(username, (IPeer)myPeer));
     }
-    
     
     public ArrayList<String> getConnectedClients(){
         ArrayList<String> a = new ArrayList<>();
@@ -56,11 +103,15 @@ public class ChatModel implements ChatModelServices{
         return a;
     }
     
+    //                  //
+    /* For single chats */
+    //                  //
+    
     public void writeMessage(String adressee, String message){
         Message m = new Message(myUsername,message);
         
         // Check if adressee exists.
-        if (connections.get(adressee)==null) throw new WrongAdreseeException();
+        if (connections.get(adressee)==null) throw new WrongAdresseeException();
         Chat c = chats.get(adressee);
         
         // Check if we already have a chat with the client
@@ -81,6 +132,24 @@ public class ChatModel implements ChatModelServices{
         c.reciveMessage(m);
     }
     
+    public Chat createChat(String username){
+        ChatListener l = listener.onNewChatCreated(username);
+        Chat c = new Chat(this, l, username);
+        chats.put(username, c);
+        return c;
+    }
+    
+    public void userIsTyping(String username){
+        Chat c = chats.get(username);
+        if (chats.get(username)!= null){
+            c.userIsTyping();
+        }
+    }
+    
+    
+    //            //
+    /* For groups */
+    //            //
     
     public void addGroup(GroupListener ls, ArrayList<String> members, String groupName, GroupReference gref){
         if (ls == null)
@@ -109,59 +178,9 @@ public class ChatModel implements ChatModelServices{
         groups.get(gref).reciveMessage(message);
     }
     
-    
-    public Chat createChat(String username){
-        ChatListener l = listener.onNewChatCreated(username);
-        Chat c = new Chat(this, l, username);
-        chats.put(username, c);
-        return c;
-    }
-
-    void userConnected(String username, IPeer peer) {
-        connections.put(username, peer);
-        listener.onMemberConnected(username);
-    }
-    
-    void userDisconnected(String username){
-        connections.remove(username);
-        listener.onMemberDisconnected(username);
-    }
-
-    private void notifyDisconnection(String username) {
-        connections.remove(username);
-        listener.onMemberDisconnected(username);
-        try {
-            server.unregistryUser(username);
-        } catch (RemoteException ex) {
-            System.err.println("Server disconnected");
-        }
-        for (Entry<String,IPeer> e: connections.entrySet()){
-            if (!e.getKey().equals(myUsername))try {
-                e.getValue().userDisconnect(username);
-            } catch (RemoteException ex) {
-                // Bad luck.. While we were notifying a disconnection
-                // Another user was also disconnected. Notify this too.. :/
-                notifyDisconnection(e.getKey());
-            }
-        }
-        while(true){}
-    }
-
-    public void disconnect() {
-        notifyDisconnection(myUsername);
-    }
-
-    public void setConnections(ConcurrentHashMap<String,IPeer> c) throws RemoteException{
-        this.connections = c;
-        for(String s: c.keySet()) {
-            if(!s.equals(myUsername)) {
-                listener.onMemberConnected(s);
-            }
-            //You may also notify other connections you are here.
-            c.get(s).userConnect(myUsername, myPeer);
-        }
-            
-    }
+    //                             //
+    /* Utilities for lower classes */
+    //                             //
 
     @Override
     public IPeer getIPeerByName(String username) {
@@ -177,7 +196,6 @@ public class ChatModel implements ChatModelServices{
     public String getMyUserName() {
         return myUsername;
     }
-    
     
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);

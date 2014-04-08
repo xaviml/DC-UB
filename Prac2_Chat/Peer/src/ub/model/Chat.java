@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import ub.common.Message;
 import java.util.ArrayList;
 import ub.common.IPeer;
+import ub.exceptions.UserDisconnectedException;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Chat{
     }
     
     protected void writeMessage(Message m) {
+        if (member == null) throw new UserDisconnectedException();
         IPeer p = services.getIPeerByName(member);
         try {
             p.writeMessage(m);
@@ -45,8 +47,13 @@ public class Chat{
         listener.onNewMessageRecived(m);
         
     }
+    
+    void userIsTyping() {
+        listener.onUserTyping();
+    }
 
     public interface ChatListener{
         public void onNewMessageRecived(Message m);
+        public void onUserTyping();
     }
 }

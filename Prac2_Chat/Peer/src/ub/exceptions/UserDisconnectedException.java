@@ -9,5 +9,6 @@ package ub.exceptions;
  *
  * @author kirtash
  */
-public class WrongAdreseeException extends RuntimeException{
+public class UserDisconnectedException extends RuntimeException{
+    
 }

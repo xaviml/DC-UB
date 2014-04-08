@@ -40,10 +40,9 @@ public class Peer extends UnicastRemoteObject implements IPeer{
         chatModel.userDisconnected(username);
     }
 
-
     @Override
-    public void userIsTyping() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void userIsTyping(String username) {
+        chatModel.userIsTyping(username);
     }
 
     @Override

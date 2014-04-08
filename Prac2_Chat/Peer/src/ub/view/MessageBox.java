@@ -102,4 +102,9 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         else
             writeMessageOther(m.getUsername(), m.getMessage());
     }
+
+    @Override
+    public void onUserTyping() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -9,13 +9,14 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.InvalidUserNameException;
 import ub.common.Message;
 import ub.controller.ChatController;
-import ub.exceptions.WrongAdreseeException;
+import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat;
 import ub.model.ChatModel.ChatRoomListener;
 import ub.model.Group;
@@ -31,13 +32,16 @@ public class test implements ChatRoomListener {
     }
     
     public void run(){
+        ConcurrentHashMap<String,Integer> map = new ConcurrentHashMap<>();
+        System.out.println(map.remove("hola"));
+        /*
         ChatController c = new ChatController(this);
         try {
             c.register("127.0.0.1", 8080, "User3");
             System.out.println("Registered");
-            /*synchronized(this){
+            synchronized(this){
                 this.wait(5000);
-            }*/
+            }
             c.writeMessage("User2", "You are so gay");
             //c.writeMessage("User", "Yeah, so you are");
         } catch (RemoteException ex) {
@@ -48,9 +52,9 @@ public class test implements ChatRoomListener {
             Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidUserNameException ex) {
             Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrongAdreseeException ex) {
+        } catch (WrongAdresseeException ex) {
             Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }
     public static void main(String[]args){
         new test();
@@ -64,6 +68,11 @@ public class test implements ChatRoomListener {
             @Override
             public void onNewMessageRecived(Message m) {
                 System.err.println(m.getMessage());
+            }
+
+            @Override
+            public void onUserTyping() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         };
     }
