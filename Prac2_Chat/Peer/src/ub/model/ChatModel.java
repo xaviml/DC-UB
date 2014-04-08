@@ -14,7 +14,7 @@ import ub.model.Chat.ChatListener;
  */
 public class ChatModel {
     
-    private ChatRoomListener listener;
+    private final ChatRoomListener listener;
     private final IPeer myRemotePeer;
     public ConcurrentHashMap<String,IPeer> members;
     public ConcurrentHashMap<IPeer, Chat> chats;
