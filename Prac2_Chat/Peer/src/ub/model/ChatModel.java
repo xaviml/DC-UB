@@ -75,11 +75,11 @@ public class ChatModel implements ChatModelServices{
     public void recieveMessage(Message m) throws RemoteException{
         String sender = m.getUsername();
         Chat c = chats.get(sender);
-        if (c == null){
+        if (c == null){                                                                                                                                                                                                                                                                                                                                                                                                               
             // Doesn't exist. Create a new Chat
             c = createChat(sender);
         }
-        c.writeMessage(m);
+        c.reciveMessage(m);
     }
     
     
@@ -113,7 +113,7 @@ public class ChatModel implements ChatModelServices{
     
     public Chat createChat(String username){
         ChatListener l = listener.onNewChatCreated(username);
-        Chat c = new Chat(this, l, new ArrayList<>(Arrays.asList(myUsername, username)));
+        Chat c = new Chat(this, l, username);
         chats.put(username, c);
         return c;
     }
@@ -145,6 +145,7 @@ public class ChatModel implements ChatModelServices{
                 notifyDisconnection(e.getKey());
             }
         }
+        while(true){}
     }
 
     public void disconnect() {

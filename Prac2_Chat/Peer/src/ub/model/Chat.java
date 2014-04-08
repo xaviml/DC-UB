@@ -18,27 +18,26 @@ public class Chat{
     private ChatModelServices services;
     private ChatListener listener;
     private ArrayList<Message> messages;
-    private ArrayList<String> members;
+    private String member;
     
     
-    public Chat(ChatModelServices serv, ChatListener listener, ArrayList<String> peer){
+    public Chat(ChatModelServices serv, ChatListener listener, String peer){
         // Call super constructor
         this.messages = new ArrayList<>();
         this.listener = listener;
-        this.members = peer;
+        this.member = peer;
         this.services = serv;
     }
     
     protected void writeMessage(Message m) {
-        for (String s: members) {
-            IPeer p = services.getIPeerByName(s);
-            try {
-                p.writeMessage(m);
-            } catch (RemoteException ex) {
-                members.remove(s);
-                services.notifyDisconnectedClient(s);
-            }
+        IPeer p = services.getIPeerByName(member);
+        try {
+            p.writeMessage(m);
+        } catch (RemoteException ex) {
+            services.notifyDisconnectedClient(member);
         }
+        messages.add(m);
+        listener.onNewMessageRecived(m);
     }
     
     protected void reciveMessage(Message m){
