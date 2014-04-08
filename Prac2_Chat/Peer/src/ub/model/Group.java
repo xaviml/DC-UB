@@ -17,7 +17,7 @@ import ub.common.Message;
  */
 public class Group {
     private GroupListener guiListener;
-    private ChatModelServices modelListener;
+    private ChatModelServices services;
     private ArrayList<String> members;
     private ArrayList<Message> messages;
     private GroupReference reference;
@@ -30,7 +30,7 @@ public class Group {
         this.messages = new ArrayList<>();
         this.reference = ref;
         this.members = members;
-        this.modelListener = modelListener;
+        this.services = modelListener;
         this.guiListener = guiListener;
         this.name = name;
         
@@ -53,7 +53,8 @@ public class Group {
     
     public void writeMessage(Message m){
         for (String s: members) {
-            IPeer p = modelListener.getIPeerByName(name);
+            if (s.equals(services.getMyUserName()))continue;
+            IPeer p = services.getIPeerByName(name);
             if (p == null){
                 members.remove(s);
                 continue;
@@ -61,7 +62,7 @@ public class Group {
             try{
                 p.writeMessage(reference, m);
             }catch(RemoteException rem){
-                modelListener.notifyDisconnectedClient(name);
+                services.notifyDisconnectedClient(name);
             }
         }
     }

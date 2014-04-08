@@ -5,7 +5,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map.Entry;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
@@ -172,6 +171,11 @@ public class ChatModel implements ChatModelServices{
     @Override
     public void notifyDisconnectedClient(String username) {
         notifyDisconnection(username);
+    }
+
+    @Override
+    public String getMyUserName() {
+        return myUsername;
     }
     
     

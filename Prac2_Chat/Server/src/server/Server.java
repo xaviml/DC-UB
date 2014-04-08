@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import server.Pinger.ServerServices;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.InvalidUserNameException;
@@ -21,11 +22,12 @@ import ub.common.InvalidUserNameException;
  *
  * @author zenbook
  */
-public class Server extends UnicastRemoteObject implements IServer{
+public class Server extends UnicastRemoteObject implements ServerServices, IServer{
 
     public ConcurrentHashMap<String,IPeer> connections;
     public Server() throws RemoteException {
         connections = new ConcurrentHashMap<>();
+        new Thread(new Pinger(this)).start();
     }
     
     @Override
@@ -83,6 +85,8 @@ public class Server extends UnicastRemoteObject implements IServer{
         } catch (RemoteException | MalformedURLException ex) {
             System.out.println("Impossible to connect with rmiregistry");
         }
+        
+        
     }
 
     @Override
@@ -90,6 +94,17 @@ public class Server extends UnicastRemoteObject implements IServer{
         ArrayList<String> a = new ArrayList();
         for (String s : connections.keySet()) a.add(s);
         return a;
+    }
+
+    @Override
+    public ConcurrentHashMap<String, IPeer> getConnections() {
+        return connections;
+    }
+
+    @Override
+    public void disconnectClient(String s) {
+        connections.remove(s);
+        // May notify clients
     }
     
 }
