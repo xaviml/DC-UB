@@ -100,10 +100,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     
     @Override
     public void onNewMessageRecived(final Message m) {
-        try {
-            writeMessageOther(m.getIPeer().getUsername(), m.getMessage());
-        } catch (RemoteException ex) {
-            Logger.getLogger(MessageBox.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        writeMessageOther(m.getUsername(), m.getMessage());
     }
 }

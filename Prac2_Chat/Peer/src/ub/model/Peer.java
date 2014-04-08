@@ -7,6 +7,7 @@ package ub.model;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
@@ -35,8 +36,8 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void userDisconnect(IPeer peer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void userDisconnect(String username) {
+        chatModel.userDisconnected(username);
     }
 
 
@@ -46,22 +47,22 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void addGroup(float idChat, String group, IPeer[] peers) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void writeMessage(Message message) throws RemoteException {
+        chatModel.recieveMessage(message);
     }
 
     @Override
-    public boolean writeMessage(Message message) throws RemoteException {
-        return chatModel.recieveMessage(message);
-    }
-
-    @Override
-    public boolean writeMessageGroup(GroupReference ref, Message message) {
+    public void writeMessageGroup(GroupReference ref, Message message) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void ping() throws RemoteException {}
+
+    @Override
+    public void addGroup(GroupReference gref, String groupName, ArrayList<String> members) throws RemoteException {
+        chatModel.addGroup(null, members, groupName, gref);
+    }
 
 
 

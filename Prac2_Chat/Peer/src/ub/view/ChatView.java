@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -20,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import ub.common.InvalidUserNameException;
 import ub.controller.ChatController;
+import ub.exceptions.WrongAdreseeException;
 import ub.model.Chat;
 import ub.model.ChatModel;
 
@@ -209,7 +212,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                controller.writeMessage(currentMessageBox.getFirstUser(), msg);
+                    controller.writeMessage(currentMessageBox.getFirstUser(), msg);
             }
         }).start();
         tf_send.setText("");
