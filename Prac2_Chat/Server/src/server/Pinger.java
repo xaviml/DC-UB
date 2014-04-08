@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import ub.common.IPeer;
 
 /**
@@ -28,27 +29,30 @@ public class Pinger implements Runnable{
     
     @Override
     public void run() {
+        ExecutorService executor = Executors.newFixedThreadPool(10);
         while(true){
             try {
-                ExecutorService executor = Executors.newFixedThreadPool(10);
+                
                 
                 // Check off connections
+                System.out.println("Check disponibility");
                 for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
                     Runnable worker = new WorkerPing(e.getKey(),e.getValue());
                     executor.execute(worker);
                 }
-                executor.shutdown();
-                while (!executor.isTerminated()) {}
+                executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+                System.out.println("Finished all threads");
                 
-                // Disconnect them, and do callback.
+                
+                // Do the callback.
                 for(String s: disconnected){
-                    services.disconnectClient(s);
+                    System.out.println("Notifying "+s);
                     for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
                         Runnable worker = new WorkerNotifyDisconnect(s,e.getValue());
                         executor.execute(worker);
                     }
-                    executor.shutdown();
-                    while (!executor.isTerminated()) {}
+                    executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+                    System.out.println("Finished all threads");
                 }
                 disconnected.clear();
                 synchronized(this){
@@ -79,6 +83,7 @@ public class Pinger implements Runnable{
             try {
                 p.ping();
             } catch (RemoteException ex) {
+                services.disconnectClient(s);
                 synchronized(disconnected){
                     disconnected.add(s);
                 }
