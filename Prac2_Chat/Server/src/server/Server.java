@@ -13,6 +13,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.InvalidUserNameException;
@@ -25,7 +27,7 @@ public class Server extends UnicastRemoteObject implements IServer{
 
     public ConcurrentHashMap<String,IPeer> connections;
     public Server() throws RemoteException {
-        
+        connections = new ConcurrentHashMap<>();
     }
     
     @Override
