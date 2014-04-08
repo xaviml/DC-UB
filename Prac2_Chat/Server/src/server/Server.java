@@ -13,8 +13,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.InvalidUserNameException;
@@ -41,6 +39,7 @@ public class Server extends UnicastRemoteObject implements IServer{
     @Override
     public void unregistryUser(String username) {
         connections.remove(username);
+        System.out.println("Disconnected "+username);
     }
 
     @Override
