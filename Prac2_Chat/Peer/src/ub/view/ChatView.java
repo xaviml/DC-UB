@@ -209,7 +209,6 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
     }//GEN-LAST:event_btn_sendActionPerformed
 
     private void sendMessage() {
-        
         final String msg = tf_send.getText();
         if(msg.isEmpty()) return;
         new Thread(new Runnable() {
@@ -226,7 +225,6 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
             btn_send.setVisible(true);
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
-            currentMessageBox = m;
         }
         int idx = tab_chats.indexOfTab(m.getNameChat());
         if(idx == -1) { //if tab doesn't exist...
@@ -235,7 +233,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener{
         }
         
         //Select the tab
-        if(selectedTab) {
+        if(selectedTab || tab_chats.getTabCount() == 1) {
             tab_chats.setSelectedIndex(idx);
             currentMessageBox = m;
         }
