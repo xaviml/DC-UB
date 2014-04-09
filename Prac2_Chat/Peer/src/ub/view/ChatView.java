@@ -22,6 +22,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import ub.common.GroupReference;
@@ -304,6 +305,15 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     private void btn_createGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_createGroupActionPerformed
         int[] idxs = list_users.getSelectedIndices();
+        ArrayList<String> members = new ArrayList<>();
+        DefaultListModel<String> m = (DefaultListModel<String>) list_users.getModel();
+        for (int idx : idxs) {
+            members.add(m.get(idx));
+        }
+        String text = JOptionPane.showInputDialog("Enter a name group");
+        if(text.trim().isEmpty()) return;
+        
+        controller.addGroup(null,members, text);
     }//GEN-LAST:event_btn_createGroupActionPerformed
 
     private void sendMessage() {
