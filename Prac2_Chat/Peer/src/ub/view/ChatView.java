@@ -21,8 +21,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import ub.common.GroupReference;
@@ -32,6 +30,7 @@ import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat;
 import ub.model.ChatModel;
 import ub.model.Group;
+import ub.view.CreateGroupDialog.CreateGroupObject;
 
 /**
  *
@@ -74,6 +73,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         btn_send.setVisible(false);
         tf_send.setVisible(false);
         tab_chats.setVisible(false);
+        btn_createGroup.setEnabled(false);
         
         list_users.setModel(new DefaultListModel());
         list_groups.setModel(new DefaultListModel());
@@ -300,23 +300,20 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private void tab_usersStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_usersStateChanged
         int idx = tab_users.getSelectedIndex();
         if(tab_users.getTitleAt(idx).equals("Users")) {
+            btn_createGroup.setVisible(false);
             btn_leftGroup.setVisible(false);
         }else{
+            btn_createGroup.setVisible(true);
             btn_leftGroup.setVisible(true);
         }
     }//GEN-LAST:event_tab_usersStateChanged
 
     private void btn_createGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_createGroupActionPerformed
-        int[] idxs = list_users.getSelectedIndices();
-        ArrayList<String> members = new ArrayList<>();
-        DefaultListModel<String> m = (DefaultListModel<String>) list_users.getModel();
-        for (int idx : idxs) {
-            members.add(m.get(idx));
-        }
-        String text = JOptionPane.showInputDialog("Enter a name group");
-        if(text.trim().isEmpty()) return;
+        CreateGroupDialog dialog = new CreateGroupDialog(this, (DefaultListModel<String>) list_users.getModel());
+        CreateGroupObject c = dialog.showDialog();
+        if(c == null) return;
         
-        controller.addGroup(members, text);
+        controller.addGroup(c.users, c.name);
     }//GEN-LAST:event_btn_createGroupActionPerformed
 
     private void sendMessage() {
@@ -445,17 +442,23 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void onMemberConnected(String username) {
+        
         if(username.equals(this.username)) return;
         addUser(username);
         if(chats.containsKey(username)) {
             chats.get(username).writeConnectUser();
         }
+        if(list_users.getModel().getSize() == 1)
+            btn_createGroup.setEnabled(true);
     }
 
     @Override
     public void onMemberDisconnected(String username) {
+        
         removeUser(username);
         getMessageBoxChat(username).writeErrorMessage();
+        if(list_users.getModel().getSize() == 0)
+            btn_createGroup.setEnabled(false);
     }
 
     @Override

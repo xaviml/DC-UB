@@ -29,7 +29,6 @@ public class Group {
     
     public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
         // If this is a new group, create a reference.
-        if (ref == null) ref = createRef();
         this.executor = Executors.newFixedThreadPool(10);
         this.messages = new ArrayList<>();
         this.reference = ref;
@@ -38,10 +37,6 @@ public class Group {
         this.guiListener = guiListener;
         this.name = name;
         
-    }
-    
-    private GroupReference createRef() {
-        return new GroupReference();
     }
     
     public GroupReference getRef(){
