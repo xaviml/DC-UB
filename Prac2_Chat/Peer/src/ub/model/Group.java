@@ -29,7 +29,6 @@ public class Group {
     
     public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
         // If this is a new group, create a reference.
-        if (ref == null) ref = createRef();
         this.executor = Executors.newFixedThreadPool(10);
         this.messages = new ArrayList<>();
         this.reference = ref;
@@ -40,10 +39,6 @@ public class Group {
         
     }
     
-    private GroupReference createRef() {
-        return new GroupReference();
-    }
-    
     public GroupReference getRef(){
         return reference;
     }
@@ -51,7 +46,7 @@ public class Group {
     public void writeMessage(Message m){
         for (String s:members) {
             if (s.equals(services.getMyUserName()))continue;
-            IPeer p = services.getIPeerByName(name);
+            IPeer p = services.getIPeerByName(s);
             if (p == null){
                 // This might never happens...
                 removeMember(name);
@@ -66,6 +61,7 @@ public class Group {
         } catch (InterruptedException ex) {
             System.err.println("Interrupted");
         }
+        executor.shutdown();
         
         /*
         for (String s: members) {

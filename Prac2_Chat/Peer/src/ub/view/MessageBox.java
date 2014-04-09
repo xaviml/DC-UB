@@ -8,7 +8,6 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.beans.PropertyEditorManager;
 import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,21 +36,23 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     private String lastUser;
     private boolean isEmpty;
     private boolean isGroup;
+    private GroupReference gref;
     
     private OnMessageBoxListener listener;
     
     private JTextPane pane;
     
-    public MessageBox(String name, String me, String[] others, boolean group,OnMessageBoxListener listener) {
+    public MessageBox(String name, String me, String[] others, GroupReference gref, OnMessageBoxListener listener) {
         this.me = me;
         this.lastUser = "";
         this.nameChat = name;
+        this.gref = gref;
         
         this.other = others[0];
         this.chatters = new HashMap<>();
         
         this.isEmpty = true;
-        this.isGroup = group;
+        this.isGroup = gref != null;
         
         this.listener = listener;
         
@@ -93,6 +94,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
+        if(c == null) return;
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
@@ -124,6 +126,10 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     
     public boolean isGroup() {
         return this.isGroup;
+    }
+    
+    public GroupReference getGroupReference() {
+        return this.gref;
     }
 
     public String getFirstUser() {

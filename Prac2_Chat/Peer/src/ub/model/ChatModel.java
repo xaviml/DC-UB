@@ -78,8 +78,8 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         listener.onMemberDisconnected(username);
         removeItOfAllGroups(username);
         
-        boolean b = checkServerState();
-        if (b) return;
+        //boolean b = checkServerState();
+        //if (b) return;
         //This method will be working just when server is
         //Down.
         
@@ -94,6 +94,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         } catch (InterruptedException ex) {
             System.err.println("Interrupted");
         }
+        executor.shutdown();
     }
 
     public void disconnect() {
@@ -215,13 +216,14 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     //            //
     
     public void addGroup(ArrayList<String> members, String groupName, GroupReference gref){
-        //if (groups.get(gref)!= null) return; // This group already exist!
+//        if (groups.get(gref)!= null) return; // This group already exist!
+        if(gref== null)
+            gref = new GroupReference();
         GroupListener ls = listener.onNewGroupCreated(gref, members, groupName);
         Group g = new Group(this, ls, members, groupName, gref);
         
         // Check gref. If function is called internally it would be null.
         // Else, if function is called externally it would already have a gref.
-        if (gref == null) gref = g.getRef();
         groups.put(gref, g);
     }
 
