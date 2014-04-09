@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
-import ub.model.workers.NotifyGroupMessage;
+import ub.model.workers.NotifyGroup;
 
 /**
  *
@@ -52,16 +52,15 @@ public class Group {
                 removeMember(name);
                 continue;
             }
-            executor.execute(new NotifyGroupMessage(services, reference, m, p, s));
-            
+            executor.execute(new NotifyGroup(services, reference, m, p, s));
         }
         try {
             // Join threads
-            executor.awaitTermination(5, TimeUnit.SECONDS);
+            executor.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException ex) {
             System.err.println("Interrupted");
         }
-        executor.shutdown();
+        //executor.shutdown();
         
         /*
         for (String s: members) {

@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
@@ -20,6 +22,7 @@ import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat.ChatListener;
 import ub.model.Group.GroupListener;
 import ub.model.workers.NotifyConnectionDown;
+import ub.model.workers.NotifyGroup;
 import ub.model.workers.PingServer;
 
 /**
@@ -32,6 +35,11 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     private int port;
     
     //
+    
+    // Threads
+    private Thread serverDownThread;
+    private Thread serverPingThread;
+    
     
     private final ChatRoomListener listener;
     private String myUsername;
@@ -78,8 +86,8 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         listener.onMemberDisconnected(username);
         removeItOfAllGroups(username);
         
-        //boolean b = checkServerState();
-        //if (b) return;
+        boolean b = checkServerState();
+        if (b) return;
         //This method will be working just when server is
         //Down.
         
@@ -126,7 +134,8 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
         setConnections(server.registryUser(username, (IPeer)myPeer));
         listener.onServerUp();
-        new Thread(new PingServer(this,server)).start();
+        serverPingThread = new Thread(new PingServer(this,server));
+        serverPingThread.start();
     }
     
     public ArrayList<String> getConnectedClients(){
@@ -157,7 +166,8 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     public void notifyServerDown(){
         this.server = null;
         listener.onServerDown();
-        new Thread(new AttemptingToReconnect(this, IP, port, myUsername)).start();
+        serverDownThread = new Thread(new AttemptingToReconnect(this, IP, port, myUsername));
+        serverDownThread.start();
     }
     
     //                  //
@@ -217,16 +227,28 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     
     public void addGroup(ArrayList<String> members, String groupName, GroupReference gref){
 //        if (groups.get(gref)!= null) return; // This group already exist!
-        if(gref== null)
+        boolean rec = true;
+        if(gref== null){
+            rec = false;
             gref = new GroupReference();
+        }
         GroupListener ls = listener.onNewGroupCreated(gref, members, groupName);
         Group g = new Group(this, ls, members, groupName, gref);
         
         // Check gref. If function is called internally it would be null.
         // Else, if function is called externally it would already have a gref.
         groups.put(gref, g);
+        if (!rec){
+            for(String s: members)
+                executor.execute(new Thread(new NotifyGroup(this, gref, groupName, members, connections.get(s), myUsername)));
+            try {
+                executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ex) {
+                System.err.println("Interrupted!");
+            }
+        }
     }
-
+        
     public void changeGroupName(GroupReference gref, String newName){
         groups.get(gref).setName(newName);
         
