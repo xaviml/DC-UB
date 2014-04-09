@@ -214,11 +214,10 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     /* For groups */
     //            //
     
-    public void addGroup(GroupListener ls, ArrayList<String> members, String groupName, GroupReference gref){
-        if (ls == null)
-            ls = listener.onNewGroupCreated(gref, members, groupName);
-        
-        Group g = new Group(this, ls,members,groupName,gref);
+    public void addGroup(ArrayList<String> members, String groupName, GroupReference gref){
+        if (groups.get(gref)!= null) return; // This group already exist!
+        GroupListener ls = listener.onNewGroupCreated(gref, members, groupName);
+        Group g = new Group(this, ls, members, groupName, gref);
         
         // Check gref. If function is called internally it would be null.
         // Else, if function is called externally it would already have a gref.

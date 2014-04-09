@@ -51,8 +51,8 @@ public class ChatController {
     public String getUsername(){
         return chatModel.getMyUserName();
     }
-    public void addGroup(Group.GroupListener ls, ArrayList<String> members, String groupName){
-        chatModel.addGroup(ls, members, groupName, null);
+    public void addGroup(ArrayList<String> members, String groupName){
+        chatModel.addGroup(members, groupName, null);
     }
     public void addGroupMember(GroupReference gref, String username){
         
