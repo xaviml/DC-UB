@@ -29,18 +29,29 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="tab_users" min="-2" pref="157" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="tf_send" pref="442" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btn_send" min="-2" pref="70" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="tab_chats" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="btn_createGroup" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btn_leftGroup" min="-2" pref="102" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="tab_users" min="-2" pref="234" max="-2" attributes="0"/>
+              </Group>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="lbl_typing" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="tf_send" pref="365" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btn_send" min="-2" pref="70" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="tab_chats" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -49,11 +60,11 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="tab_chats" max="32767" attributes="0"/>
+                      <Component id="tab_chats" pref="312" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lbl_typing" min="-2" pref="21" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -62,7 +73,14 @@
                           <Component id="tf_send" alignment="3" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="tab_users" pref="374" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btn_createGroup" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="btn_leftGroup" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="tab_users" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -103,6 +121,9 @@
         </Property>
         <Property name="tabPlacement" type="int" value="3"/>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tab_usersStateChanged"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -177,6 +198,16 @@
     <Component class="javax.swing.JLabel" name="lbl_typing">
       <Properties>
         <Property name="text" type="java.lang.String" value="typing..."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btn_createGroup">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Create group"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btn_leftGroup">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Left group"/>
       </Properties>
     </Component>
   </SubComponents>

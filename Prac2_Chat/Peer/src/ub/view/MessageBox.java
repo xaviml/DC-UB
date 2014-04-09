@@ -18,19 +18,21 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
+import ub.common.GroupReference;
 import ub.common.Message;
 import ub.model.Chat;
+import ub.model.Group;
 
 /**
  *
  * @author Xavi Moreno
  */
-public class MessageBox extends JPanel implements Chat.ChatListener{
+public class MessageBox extends JPanel implements Chat.ChatListener, Group.GroupListener{
 
     private String me; //Color: CYAN
-    private HashMap<String, Color> colors;
-    private String[] others;
+    private HashMap<String, Color> chatters;
     
+    private String other; //For individual chat
     private String nameChat;
     private String lastUser;
     private boolean isEmpty;
@@ -44,8 +46,10 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         this.me = me;
         this.lastUser = "";
         this.nameChat = name;
-        this.others = others;
-        this.colors = new HashMap<>();
+        
+        this.other = others[0];
+        this.chatters = new HashMap<>();
+        
         this.isEmpty = true;
         this.isGroup = group;
         
@@ -53,7 +57,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         
         Color[] c = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
         for (int i = 0; i < others.length; i++) {
-            this.colors.put(others[i], c[i%c.length]);
+            this.chatters.put(others[i], c[i%c.length]);
         }
         
         setLayout(new GridLayout(0, 1));
@@ -78,7 +82,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     public synchronized void writeMessageOther(String user, String msg) {
         if(!lastUser.equals(user)) {
             String space = isEmpty ? "":"\n";
-            addMessage(space+user+"\n", colors.get(user), true);
+            addMessage(space+user+"\n", chatters.get(user), true);
         }
         addMessage(msg+"\n", Color.BLACK, false);
         this.isEmpty = false;
@@ -106,14 +110,14 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     
     public synchronized void writeErrorMessage() {
         String user = getFirstUser();
-        addMessage("\n"+user, this.colors.get(user), false);
+        addMessage("\n"+user, this.chatters.get(user), false);
         addMessage(" is disconnected.", Color.gray, false);
         this.lastUser = "";
     }
     
     public synchronized void writeConnectUser() {
         String user = getFirstUser();
-        addMessage("\n"+user, this.colors.get(user), false);
+        addMessage("\n"+user, this.chatters.get(user), false);
         addMessage(" is connected.", Color.gray, false);
         this.lastUser = "";
     }
@@ -123,7 +127,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     }
 
     public String getFirstUser() {
-        return this.others[0];
+        return this.other;
     }
     
     public String getNameChat() {
@@ -142,6 +146,31 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     public void onUserTyping() {
         listener.userIsTyping(this);
     }
+
+    @Override
+    public void onNewGroupMessageRecieved(GroupReference ref, Message m) {
+        if(m.getUsername().equals(this.me))
+            writeMessageMe(m.getMessage());
+        else
+            writeMessageOther(m.getUsername(), m.getMessage());
+    }
+
+    @Override
+    public void onGroupNameChanged(GroupReference ref, String newName) {
+        listener.onGroupNameChanged(this.nameChat, newName);
+        this.nameChat = newName;
+    }
+
+    @Override
+    public void onMemberLeaveGroup(String username) {
+        synchronized(this) {
+            addMessage("\n"+username, this.chatters.get(username), false);
+            addMessage(" has left group.", Color.gray, false);
+            this.lastUser = "";
+            chatters.remove(username);
+        }
+        
+    }
     
     
     
@@ -151,7 +180,12 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
      */
     
     public interface OnMessageBoxListener {
+        //For indivual chat
         public void userIsTyping(MessageBox m);
         public void newMessageChat(String user);
+        
+        //For group
+        public void onGroupNameChanged(String oldName, String newName);
+        
     }
 }
