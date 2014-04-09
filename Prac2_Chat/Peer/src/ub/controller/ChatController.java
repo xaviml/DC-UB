@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import ub.common.GroupReference;
-import ub.common.IServer;
 import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
 
@@ -20,9 +19,7 @@ import ub.exceptions.WrongAdresseeException;
  * @author Xavi Moreno
  */
 public class ChatController {
-    private String myUserName;
-    private IServer server;
-    private ChatModel chatModel;
+    private final ChatModel chatModel;
     
     
     public ChatController(ChatRoomListener listener) {
@@ -30,7 +27,6 @@ public class ChatController {
     }
     
     public void register(String IP, int port, String username) throws RemoteException, NotBoundException, MalformedURLException, UserInUseException {
-        this.myUserName = username;
         chatModel.register(IP, port, username);
     }
     
@@ -51,7 +47,7 @@ public class ChatController {
     }
     
     public String getUsername(){
-        return myUserName;
+        return chatModel.getMyUserName();
     }
     
     public void addGroupMember(GroupReference gref, String username){
