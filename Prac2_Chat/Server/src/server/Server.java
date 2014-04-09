@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import server.Pinger.ServerServices;
 import ub.common.IPeer;
 import ub.common.IServer;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 
 /**
  *
@@ -31,8 +31,8 @@ public class Server extends UnicastRemoteObject implements ServerServices, IServ
     }
     
     @Override
-    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, InvalidUserNameException {
-        if (connections.get(username)!=null) throw new InvalidUserNameException();
+    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, UserInUseException {
+        if (connections.get(username)!=null) throw new UserInUseException();
         System.out.println(peer.getUsername()+" registred");
         connections.put(username, peer);
         return connections;
