@@ -22,5 +22,7 @@ public interface IPeer extends Remote{
     public void userConnect(String username, IPeer peer) throws RemoteException;
     public void userDisconnect(String username) throws RemoteException;
     public void addGroup(GroupReference gref, String groupName, ArrayList<String> peers) throws RemoteException;
+    public void userLeftGroup(GroupReference gref, String username);
     public void userIsTyping(String username) throws RemoteException;
+    public void notifyServerIsDown() throws RemoteException;
 }

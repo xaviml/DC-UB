@@ -9,6 +9,6 @@ package ub.common;
  *
  * @author Pablo
  */
-public class InvalidUserNameException extends Exception {
+public class UserInUseException extends Exception {
     
 }
