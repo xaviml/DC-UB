@@ -11,9 +11,6 @@ import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
@@ -48,11 +45,11 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     public ConcurrentHashMap<String,IPeer> connections;                         // All the connections         
     public ConcurrentHashMap<String, Chat> chats;                               // Chats
     public ConcurrentHashMap<GroupReference, Group> groups;                     // Groups
-    private final ExecutorService executor;
+    private ExecutorService executor;
     
     
     public ChatModel(ChatRoomListener listener) {
-        this.executor = Executors.newFixedThreadPool(10);
+        this.executor = null;
         this.listener = listener;
         this.connections = new ConcurrentHashMap<>();
         this.chats = new ConcurrentHashMap<>();
@@ -90,22 +87,18 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         if (b) return;
         //This method will be working just when server is
         //Down.
-        
+        this.executor = Executors.newFixedThreadPool(10);
         for (Entry<String, IPeer> e: connections.entrySet()) {
             if (e.getKey().equals(myUsername)) continue;
             Runnable worker = new NotifyConnectionDown(this, username, e.getKey(),e.getValue());
             executor.execute(worker);
         }
-        try {
-            // Join threads
-            executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            System.err.println("Interrupted");
-        }
         executor.shutdown();
     }
 
     public void disconnect() {
+        if (serverDownThread != null) serverDownThread.interrupt();
+        if (serverPingThread != null) serverPingThread.interrupt();
         notifyDisconnection(myUsername);
     }
 
@@ -239,13 +232,10 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         // Else, if function is called externally it would already have a gref.
         groups.put(gref, g);
         if (!rec){
+            this.executor = Executors.newFixedThreadPool(10);
             for(String s: members)
                 executor.execute(new Thread(new NotifyGroup(this, gref, groupName, members, connections.get(s), myUsername)));
-            try {
-                executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ex) {
-                System.err.println("Interrupted!");
-            }
+            executor.shutdown();
         }
     }
         

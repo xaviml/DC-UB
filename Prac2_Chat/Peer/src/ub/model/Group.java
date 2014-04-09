@@ -8,7 +8,6 @@ package ub.model;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
@@ -19,7 +18,7 @@ import ub.model.workers.NotifyGroup;
  * @author Pablo
  */
 public class Group {
-    private final ExecutorService executor;
+    private ExecutorService executor;
     private final GroupListener guiListener;
     private final ChatModelServices services;
     private final ArrayList<String> members;
@@ -29,7 +28,6 @@ public class Group {
     
     public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
         // If this is a new group, create a reference.
-        this.executor = Executors.newFixedThreadPool(10);
         this.messages = new ArrayList<>();
         this.reference = ref;
         this.members = members;
@@ -44,6 +42,7 @@ public class Group {
     }
     
     public void writeMessage(Message m){
+        this.executor = Executors.newFixedThreadPool(10);
         for (String s:members) {
             if (s.equals(services.getMyUserName()))continue;
             IPeer p = services.getIPeerByName(s);
@@ -54,13 +53,7 @@ public class Group {
             }
             executor.execute(new NotifyGroup(services, reference, m, p, s));
         }
-        try {
-            // Join threads
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException ex) {
-            System.err.println("Interrupted");
-        }
-        //executor.shutdown();
+        executor.shutdown();
         
         /*
         for (String s: members) {
