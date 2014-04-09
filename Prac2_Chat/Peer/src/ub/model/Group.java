@@ -61,6 +61,7 @@ public class Group {
         } catch (InterruptedException ex) {
             System.err.println("Interrupted");
         }
+        executor.shutdown();
         
         /*
         for (String s: members) {

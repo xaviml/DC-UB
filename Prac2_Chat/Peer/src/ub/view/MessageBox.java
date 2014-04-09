@@ -17,6 +17,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
+import ub.common.GroupReference;
 import ub.common.Message;
 import ub.model.Chat;
 import ub.model.Group;
@@ -35,21 +36,23 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     private String lastUser;
     private boolean isEmpty;
     private boolean isGroup;
+    private GroupReference gref;
     
     private OnMessageBoxListener listener;
     
     private JTextPane pane;
     
-    public MessageBox(String name, String me, String[] others, boolean group,OnMessageBoxListener listener) {
+    public MessageBox(String name, String me, String[] others, GroupReference gref, OnMessageBoxListener listener) {
         this.me = me;
         this.lastUser = "";
         this.nameChat = name;
+        this.gref = gref;
         
         this.other = others[0];
         this.chatters = new HashMap<>();
         
         this.isEmpty = true;
-        this.isGroup = group;
+        this.isGroup = gref != null;
         
         this.listener = listener;
         
@@ -122,6 +125,10 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     
     public boolean isGroup() {
         return this.isGroup;
+    }
+    
+    public GroupReference getGroupReference() {
+        return this.gref;
     }
 
     public String getFirstUser() {

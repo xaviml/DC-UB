@@ -78,8 +78,8 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         listener.onMemberDisconnected(username);
         removeItOfAllGroups(username);
         
-        boolean b = checkServerState();
-        if (b) return;
+        //boolean b = checkServerState();
+        //if (b) return;
         //This method will be working just when server is
         //Down.
         
@@ -94,6 +94,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         } catch (InterruptedException ex) {
             System.err.println("Interrupted");
         }
+        executor.shutdown();
     }
 
     public void disconnect() {

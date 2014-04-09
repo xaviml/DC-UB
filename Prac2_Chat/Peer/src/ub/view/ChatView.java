@@ -325,7 +325,10 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             @Override
             public void run() {
                 try{
-                    controller.writeMessage(m.getFirstUser(), msg);
+                    if(m.isGroup())
+                        controller.writeMessage(m.getGroupReference(), msg);
+                    else
+                        controller.writeMessage(m.getFirstUser(), msg);
                 }catch(WrongAdresseeException ex){
                     m.writeMessageMe(msg);
                 }
@@ -340,7 +343,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             tf_send.setVisible(true);
             tab_chats.setVisible(true);
         }
-        int idx = tab_chats.indexOfTab(m.getNameChat());
+        int idx = tab_chats.indexOfComponent(m);
         if(idx == -1) { //if tab doesn't exist...
             tab_chats.addTab(m.getNameChat(), m);
             idx = tab_chats.getTabCount()-1;
@@ -393,7 +396,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         if(chats.containsKey(username)) {
             m = chats.get(username);
         }else{
-            m = new MessageBox(username, this.username, new String[]{username}, false, this);
+            m = new MessageBox(username, this.username, new String[]{username}, null, this);
             chats.put(username, m);
         }
         return m;
@@ -466,9 +469,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         GroupObject groupObj = new GroupObject(gref, groupName);
         addGroup(groupObj);
         String[] users = members.toArray(new String[members.size()]);
-        MessageBox group = new MessageBox(groupName, username, users, true, this);
+        MessageBox group = new MessageBox(groupName, username, users, gref, this);
         hashGroup.put(gref, group);
-        openTab(group, true, false);
+        openTab(group, true, true);
         return group;
     }
 
