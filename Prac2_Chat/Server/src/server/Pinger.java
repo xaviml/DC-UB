@@ -55,7 +55,7 @@ public class Pinger implements Runnable, DisconnectedList {
                 // Do the callback.
                 for(String s: disconnected){
                     for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
-                        Runnable worker = new NotifyDisconnectionWorker(this, s,e.getValue());
+                        Runnable worker = new NotifyDisconnectionWorker(this, s, e.getKey(), e.getValue());
                         executor.execute(worker);
                     }
                     executor.awaitTermination(1, TimeUnit.MINUTES);

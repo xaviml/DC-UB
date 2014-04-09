@@ -106,5 +106,8 @@ public class Server extends UnicastRemoteObject implements ServerServices, IServ
         connections.remove(s);
         // May notify clients
     }
+
+    @Override
+    public void ping() throws RemoteException {}
     
 }
