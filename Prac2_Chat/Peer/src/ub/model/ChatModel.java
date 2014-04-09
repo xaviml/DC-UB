@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat.ChatListener;
 import ub.model.Group.GroupListener;
@@ -88,7 +88,7 @@ public class ChatModel implements ChatModelServices{
             
     }
     
-    public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, InvalidUserNameException{
+    public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, UserInUseException{
         myUsername = username;
         myPeer = new Peer(username,this);
         server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");

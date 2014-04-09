@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 
 /**
  *
@@ -139,7 +139,7 @@ public class WelcomeView extends JFrame {
                     lbl_nickname_in_use.setText("Server is down");
                     lbl_nickname_in_use.setVisible(true);
                     tf_nickname.setText("");
-                } catch (InvalidUserNameException ex) {
+                } catch (UserInUseException ex) {
                     lbl_nickname_in_use.setVisible(true);
                     tf_nickname.setText("");
                 }

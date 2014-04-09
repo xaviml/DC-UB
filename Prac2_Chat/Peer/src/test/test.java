@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ub.common.GroupReference;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 import ub.common.Message;
 import ub.controller.ChatController;
 import ub.exceptions.WrongAdresseeException;
