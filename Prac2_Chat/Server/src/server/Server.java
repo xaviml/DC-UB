@@ -23,8 +23,9 @@ import ub.common.UserInUseException;
  * @author zenbook
  */
 public class Server extends UnicastRemoteObject implements ServerServices, IServer{
-
     public ConcurrentHashMap<String,IPeer> connections;
+    
+    
     public Server() throws RemoteException {
         connections = new ConcurrentHashMap<>();
         new Thread(new Pinger(this)).start();
@@ -33,7 +34,7 @@ public class Server extends UnicastRemoteObject implements ServerServices, IServ
     @Override
     public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, UserInUseException {
         if (connections.get(username)!=null) throw new UserInUseException();
-        System.out.println(peer.getUsername()+" registred");
+        System.out.println(username+" registred");
         connections.put(username, peer);
         return connections;
     }
