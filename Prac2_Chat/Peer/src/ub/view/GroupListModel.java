@@ -7,17 +7,16 @@ package ub.view;
 
 import java.util.ArrayList;
 import javax.swing.AbstractListModel;
-import ub.common.GroupReference;
 
 /**
  *
  * @author Xavi Moreno
  */
-public class GroupListModel extends AbstractListModel<GroupObject>{
+public class GroupListModel extends AbstractListModel<String>{
     
-    private ArrayList<GroupObject> mArray;
+    private ArrayList<MessageBox> mArray;
 
-    public GroupListModel(ArrayList<GroupObject> mArray) {
+    public GroupListModel(ArrayList<MessageBox> mArray) {
         this.mArray = mArray;
     }
     
@@ -27,26 +26,7 @@ public class GroupListModel extends AbstractListModel<GroupObject>{
     }
 
     @Override
-    public GroupObject getElementAt(int i) {
-        return mArray.get(i);
-    }
-}
-
-class GroupObject {
-    private GroupReference id;
-    private String name;
-
-    public GroupObject(GroupReference id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public GroupReference getId() {
-        return id;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+    public String getElementAt(int i) {
+        return mArray.get(i).getNameChat();
     }
 }
