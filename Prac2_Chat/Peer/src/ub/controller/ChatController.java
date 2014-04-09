@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import ub.common.GroupReference;
 import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
-import ub.model.Group;
 
 /**
  *

@@ -5,10 +5,10 @@
 
 package ub.model;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
@@ -54,13 +54,20 @@ public class Group {
             IPeer p = services.getIPeerByName(name);
             if (p == null){
                 // This might never happens...
-                members.remove(s);
+                removeMember(name);
                 continue;
             }
             executor.execute(new NotifyGroupMessage(services, reference, m, p, s));
             
         }
+        try {
+            // Join threads
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException ex) {
+            System.err.println("Interrupted");
+        }
         
+        /*
         for (String s: members) {
             if (s.equals(services.getMyUserName()))continue;
             IPeer p = services.getIPeerByName(name);
@@ -74,6 +81,7 @@ public class Group {
                 services.notifyDisconnectedClient(name);
             }
         }
+        */
         this.messages.add(m);
         guiListener.onNewGroupMessageRecieved(m);
     }
