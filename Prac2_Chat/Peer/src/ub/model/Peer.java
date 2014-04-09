@@ -56,7 +56,7 @@ public class Peer extends UnicastRemoteObject implements IPeer{
 
     @Override
     public void addGroup(GroupReference gref, String groupName, ArrayList<String> members) throws RemoteException {
-        chatModel.addGroup(null, members, groupName, gref);
+        chatModel.addGroup(members, groupName, gref);
     }
 
     @Override

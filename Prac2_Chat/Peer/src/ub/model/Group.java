@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
+import ub.model.workers.NotifyGroupMessage;
 
 /**
  *
@@ -48,6 +49,18 @@ public class Group {
     }
     
     public void writeMessage(Message m){
+        for (String s:members) {
+            if (s.equals(services.getMyUserName()))continue;
+            IPeer p = services.getIPeerByName(name);
+            if (p == null){
+                // This might never happens...
+                members.remove(s);
+                continue;
+            }
+            executor.execute(new NotifyGroupMessage(services, reference, m, p, s));
+            
+        }
+        
         for (String s: members) {
             if (s.equals(services.getMyUserName()))continue;
             IPeer p = services.getIPeerByName(name);
