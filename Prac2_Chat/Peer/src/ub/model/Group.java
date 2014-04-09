@@ -46,7 +46,7 @@ public class Group {
     public void writeMessage(Message m){
         for (String s:members) {
             if (s.equals(services.getMyUserName()))continue;
-            IPeer p = services.getIPeerByName(name);
+            IPeer p = services.getIPeerByName(s);
             if (p == null){
                 // This might never happens...
                 removeMember(name);

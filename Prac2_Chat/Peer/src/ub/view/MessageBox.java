@@ -94,6 +94,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
+        if(c == null) return;
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
