@@ -44,8 +44,6 @@ public class Pinger implements Runnable, DisconnectedList {
                     Runnable worker = new PingWorker(this, e.getKey(),e.getValue());
                     executor.execute(worker);
                 }
-                // Join threads
-                executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
 
                 // Do the propper disconnections
                 for (String s: disconnected){
