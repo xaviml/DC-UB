@@ -10,9 +10,11 @@ import ub.model.ChatModel;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import ub.common.GroupReference;
 import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
+import ub.model.Group;
 
 /**
  *
@@ -49,7 +51,9 @@ public class ChatController {
     public String getUsername(){
         return chatModel.getMyUserName();
     }
-    
+    public void addGroup(Group.GroupListener ls, ArrayList<String> members, String groupName, GroupReference gref){
+        chatModel.addGroup(ls, members, groupName, gref);
+    }
     public void addGroupMember(GroupReference gref, String username){
         
     }

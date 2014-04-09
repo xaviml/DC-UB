@@ -30,6 +30,7 @@ public class NotifyConnectionDown implements Runnable{
     @Override
     public void run() {
         try {
+            System.out.println("Notifying: "+user+". "+removedUser+" is gone.");
             peer.userDisconnect(removedUser);
         } catch (RemoteException ex) {
             // Disconnectception!

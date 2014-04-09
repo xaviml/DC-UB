@@ -484,11 +484,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void onServerDown() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void onServerUp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
