@@ -46,7 +46,7 @@
                       <Component id="lbl_typing" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="tf_send" pref="272" max="32767" attributes="0"/>
+                      <Component id="tf_send" pref="265" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btn_send" min="-2" pref="70" max="-2" attributes="0"/>
                   </Group>
@@ -61,7 +61,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="tab_chats" pref="274" max="32767" attributes="0"/>
+                      <Component id="tab_chats" pref="277" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lbl_typing" min="-2" pref="21" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>

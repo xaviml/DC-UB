@@ -233,7 +233,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lbl_typing))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -244,7 +244,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_typing, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -359,11 +359,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private void btn_addGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addGroupActionPerformed
         int idx = list_groups.getSelectedIndex();
         if(idx == -1) return;
-        
+
         final MessageBox m = orderedListGroups.get(idx);
         AddMemberDialog d = new AddMemberDialog(this, (DefaultListModel<String>) list_users.getModel());
         final ArrayList<String> users = d.showDialog();
-        
+
         new Thread(new Runnable() {
             @Override
             public void run() {
