@@ -53,4 +53,11 @@ public class ChatController {
     public String getUsername(){
         return myUserName;
     }
+    
+    public void addGroupMember(GroupReference gref, String username){
+        
+    }
+    public void leaveGroup(GroupReference gref){
+        
+    }
 }
