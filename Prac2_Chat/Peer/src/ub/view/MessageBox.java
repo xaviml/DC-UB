@@ -148,20 +148,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
 
     @Override
-    public void onNewGroupMessageRecieved(GroupReference ref, Message m) {
-        if(m.getUsername().equals(this.me))
-            writeMessageMe(m.getMessage());
-        else
-            writeMessageOther(m.getUsername(), m.getMessage());
-    }
-
-    @Override
-    public void onGroupNameChanged(GroupReference ref, String newName) {
-        listener.onGroupNameChanged(this.nameChat, newName);
-        this.nameChat = newName;
-    }
-
-    @Override
     public void onMemberLeaveGroup(String username) {
         synchronized(this) {
             addMessage("\n"+username, this.chatters.get(username), false);
@@ -170,6 +156,20 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             chatters.remove(username);
         }
         
+    }
+
+    @Override
+    public void onNewGroupMessageRecieved(Message m) {
+        if(m.getUsername().equals(this.me))
+            writeMessageMe(m.getMessage());
+        else
+            writeMessageOther(m.getUsername(), m.getMessage());
+    }
+
+    @Override
+    public void onGroupNameChanged(String newName) {
+        listener.onGroupNameChanged(this.nameChat, newName);
+        this.nameChat = newName;
     }
     
     
