@@ -10,7 +10,9 @@ import ub.common.IPeer;
 import ub.model.ChatModelServices;
 
 /**
- *
+ *  This class is an executor.
+ * Just notify another connection that someone has disconnected.
+ * 
  * @author kirtash
  */
 public class NotifyConnectionDown implements Runnable{
@@ -30,6 +32,8 @@ public class NotifyConnectionDown implements Runnable{
         try {
             peer.userDisconnect(removedUser);
         } catch (RemoteException ex) {
+            // Disconnectception!
+            // That's why notifyDisconnectedClient is a synchronized function...
             services.notifyDisconnectedClient(user);
         }
     }
