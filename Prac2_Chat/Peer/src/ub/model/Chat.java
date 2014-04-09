@@ -33,6 +33,8 @@ public class Chat{
     protected void writeMessage(Message m) {
         if (member == null) throw new UserDisconnectedException();
         IPeer p = services.getIPeerByName(member);
+        if (p == null) return;
+        
         try {
             p.writeMessage(m);
         } catch (RemoteException ex) {
@@ -54,6 +56,7 @@ public class Chat{
     
     public void userIsTypingSender(String username) {
         IPeer p = services.getIPeerByName(member);
+        if (p == null) return;
         try {
             p.userIsTyping(username);
         } catch (RemoteException ex) {

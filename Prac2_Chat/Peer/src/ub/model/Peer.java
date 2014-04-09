@@ -63,6 +63,11 @@ public class Peer extends UnicastRemoteObject implements IPeer{
         chatModel.addGroup(null, members, groupName, gref);
     }
 
+    @Override
+    public void notifyServerIsDown() throws RemoteException {
+        chatModel.recieveServerDownFlag();
+    }
+
 
 
 }
