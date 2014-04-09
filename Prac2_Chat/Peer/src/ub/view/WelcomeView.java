@@ -7,7 +7,13 @@ package ub.view;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import ub.common.InvalidUserNameException;
 
 /**
  *
@@ -119,12 +125,21 @@ public class WelcomeView extends JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ChatView c = new ChatView();
-                if(c.registry(IP,port,  user)) {
+                try {
+                    ChatView c = new ChatView();
+                    c.registry(IP,port,  user);
                     c.setVisible(true);
                     setVisible(false);
                     dispose();
-                }else {
+                    
+                    
+                    
+                    
+                } catch (RemoteException | MalformedURLException | NotBoundException ex) {
+                    lbl_nickname_in_use.setText("Server is down");
+                    lbl_nickname_in_use.setVisible(true);
+                    tf_nickname.setText("");
+                } catch (InvalidUserNameException ex) {
                     lbl_nickname_in_use.setVisible(true);
                     tf_nickname.setText("");
                 }

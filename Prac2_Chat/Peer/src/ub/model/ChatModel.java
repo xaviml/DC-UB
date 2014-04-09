@@ -139,10 +139,17 @@ public class ChatModel implements ChatModelServices{
         return c;
     }
     
-    public void userIsTyping(String username){
+    public void userIsTypingSender(String username){
         Chat c = chats.get(username);
-        if (chats.get(username)!= null){
-            c.userIsTyping();
+        if (c != null){
+            c.userIsTypingSender(myUsername);
+        }
+    }
+    
+    public void userIsTypingReceiver(String username) {
+        Chat c = chats.get(username);
+        if (c != null){
+            c.userIsTypingReceiver();
         }
     }
     

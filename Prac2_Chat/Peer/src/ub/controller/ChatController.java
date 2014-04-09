@@ -43,7 +43,7 @@ public class ChatController {
     }
     
     public void userIsTyping(String username) {
-        chatModel.userIsTyping(username);
+        chatModel.userIsTypingSender(username);
     }
     
     public String getUsername(){

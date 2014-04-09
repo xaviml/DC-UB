@@ -7,18 +7,23 @@ package ub.view;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import ub.common.GroupReference;
 import ub.common.InvalidUserNameException;
 import ub.controller.ChatController;
@@ -38,6 +43,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private String username;
     
     private ChatController controller;
+    private boolean isTyping;
+    
+    private Timer timer;
     
     /**
      * Creates new form ChatView
@@ -48,6 +56,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         controller = new ChatController(this);
         
         chats = new ConcurrentHashMap<>();
+        isTyping = false;
         
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((screen.getWidth() - getWidth()) /2);
@@ -73,17 +82,23 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 controller.disconnect();
             }
         });
+        
+        tab_chats.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(tab_chats.getTabCount()<2) return;
+                MessageBox m = getCurrentMessageBox();
+                ButtonTabComponent b = getButtonTabComponent(m);
+                b.visibleStar(false);
+            }
+        });
     }
     
-    public boolean registry(String IP, int port, String user) {
+    public void registry(String IP, int port, String user) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
         this.username = user;
-        try {
-            controller.register(IP, port, user);
-            setTitle("Chat RMI["+user+"]");
-            return true;
-        } catch (RemoteException | NotBoundException | MalformedURLException | InvalidUserNameException ex) {
-            return false;
-        }
+        controller.register(IP, port, user);
+        setTitle("Chat RMI["+user+"]");
     }
 
     /**
@@ -122,6 +137,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         tf_send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tf_sendActionPerformed(evt);
+            }
+        });
+        tf_send.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tf_sendKeyPressed(evt);
             }
         });
 
@@ -219,11 +239,33 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         sendMessage();
     }//GEN-LAST:event_btn_sendActionPerformed
 
-    private void sendMessage() {
+    private void tf_sendKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tf_sendKeyPressed
         
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) return;
+        final MessageBox m = getCurrentMessageBox();
+        if(m.isGroup()) return;
+        if(!isTyping) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    controller.userIsTyping(m.getFirstUser());
+                }
+            }).start();
+        }
+        this.isTyping = true;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                    isTyping = false;
+            }
+        }, 1000);
+        
+    }//GEN-LAST:event_tf_sendKeyPressed
+
+    private void sendMessage() {
         final MessageBox m = getCurrentMessageBox();
         
-        final String msg = tf_send.getText();
+        final String msg = tf_send.getText().trim();
         if(msg.isEmpty()) return;
         new Thread(new Runnable() {
             @Override
@@ -231,12 +273,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 try{
                     controller.writeMessage(m.getFirstUser(), msg);
                 }catch(WrongAdresseeException ex){
-                    m.writeErrorMessage();
+                    m.writeMessageMe(msg);
                 }
             }
         }).start();
         tf_send.setText("");
-        lbl_typing.setVisible(true);
     }
     
     private void openTab(MessageBox m, boolean group, boolean selectedTab) {
@@ -252,8 +293,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             tab_chats.setTabComponentAt(idx, new ButtonTabComponent(tab_chats, new Runnable() {
                 @Override
                 public void run() {
+                    lbl_typing.setVisible(false);
                     if(tab_chats.getTabCount() == 0) {
-                        lbl_typing.setVisible(false);
                         btn_send.setVisible(false);
                         tf_send.setVisible(false);
                         tab_chats.setVisible(false);
@@ -363,9 +404,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void onMemberConnected(String username) {
-
         if(username.equals(this.username)) return;
         addUser(username);
+        if(chats.containsKey(username)) {
+            chats.get(username).writeConnectUser();
+        }
     }
 
     @Override
@@ -382,17 +425,38 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     @Override
     public void userIsTyping(MessageBox m) {
         if(m == getCurrentMessageBox()) {
-            
+            final Object mutex = new Object();
+            synchronized(mutex) {
+                if(!lbl_typing.isVisible())
+                    lbl_typing.setVisible(true);
+            }
+            if(timer != null)
+                timer.cancel();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    synchronized(mutex) {
+                        lbl_typing.setVisible(false);
+                    }
+                }
+            }, 1500);
         }
     }
 
     @Override
     public void newMessageChat(String user) {
-        openTab(getMessageBoxChat(user), false, false);
+        if(lbl_typing.isVisible())
+            lbl_typing.setVisible(false);
+        MessageBox m = chats.get(user);
+        if(m == getCurrentMessageBox()) return;
+        openTab(m, false, false);
+        ButtonTabComponent b = getButtonTabComponent(m);
+        b.visibleStar(true);
     }
-
-    @Override
-    public void removeTab() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    private ButtonTabComponent getButtonTabComponent(MessageBox m) {
+        int idx = tab_chats.indexOfComponent(m);
+        return (ButtonTabComponent) tab_chats.getTabComponentAt(idx);
     }
 }

@@ -44,6 +44,7 @@ import java.awt.event.*;
 public class ButtonTabComponent extends JPanel {
     private final JTabbedPane pane;
     private final Runnable runnable;
+    private JLabel lbl_star;
 
     public ButtonTabComponent(final JTabbedPane pane, Runnable runnable) {
         //unset default FlowLayout' gaps
@@ -54,6 +55,9 @@ public class ButtonTabComponent extends JPanel {
         }
         this.pane = pane;
         setOpaque(false);
+        
+        lbl_star = new JLabel("*");
+        lbl_star.setVisible(false);
         
         //make JLabel read titles from JTabbedPane
         JLabel label = new JLabel() {
@@ -67,6 +71,7 @@ public class ButtonTabComponent extends JPanel {
             }
         };
         
+        add(lbl_star);
         add(label);
         //add more space between the label and the button
         label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
@@ -75,6 +80,10 @@ public class ButtonTabComponent extends JPanel {
         add(button);
         //add more space to the top of the component
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+    }
+    
+    public void visibleStar(boolean visible) {
+        lbl_star.setVisible(visible);
     }
 
     private class TabButton extends JButton implements ActionListener {

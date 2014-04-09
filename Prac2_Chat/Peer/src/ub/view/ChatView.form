@@ -93,6 +93,7 @@
     <Component class="javax.swing.JTextField" name="tf_send">
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_sendActionPerformed"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tf_sendKeyPressed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="tab_users">

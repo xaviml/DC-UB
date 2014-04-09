@@ -48,8 +48,17 @@ public class Chat{
         
     }
     
-    void userIsTyping() {
+    public void userIsTypingReceiver() {
         listener.onUserTyping();
+    }
+    
+    public void userIsTypingSender(String username) {
+        IPeer p = services.getIPeerByName(member);
+        try {
+            p.userIsTyping(username);
+        } catch (RemoteException ex) {
+            services.notifyDisconnectedClient(member);
+        }
     }
 
     public interface ChatListener{

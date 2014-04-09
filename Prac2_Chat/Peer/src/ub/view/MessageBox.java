@@ -36,8 +36,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     private boolean isEmpty;
     private boolean isGroup;
     
-    private boolean closed;
-    
     private OnMessageBoxListener listener;
     
     private JTextPane pane;
@@ -50,7 +48,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         this.colors = new HashMap<>();
         this.isEmpty = true;
         this.isGroup = group;
-        this.closed = false;
         
         this.listener = listener;
         
@@ -92,7 +89,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
-        if(closed) return;
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
@@ -106,6 +102,20 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
         pane.setCharacterAttributes(aset, false);
         pane.replaceSelection(msg);
         pane.setEditable(false);
+    }
+    
+    public synchronized void writeErrorMessage() {
+        String user = getFirstUser();
+        addMessage("\n"+user, this.colors.get(user), false);
+        addMessage(" is disconnected.", Color.gray, false);
+        this.lastUser = "";
+    }
+    
+    public synchronized void writeConnectUser() {
+        String user = getFirstUser();
+        addMessage("\n"+user, this.colors.get(user), false);
+        addMessage(" is connected.", Color.gray, false);
+        this.lastUser = "";
     }
     
     public boolean isGroup() {
@@ -130,13 +140,10 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
 
     @Override
     public void onUserTyping() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        listener.userIsTyping(this);
     }
-
-    public void writeErrorMessage() {
-        addMessage("\nThis user is not avaible now.", Color.gray, false);
-        closed = true;
-    }
+    
+    
     
     /**
      * Interfaz para comunicar-me con la view principal
@@ -146,7 +153,5 @@ public class MessageBox extends JPanel implements Chat.ChatListener{
     public interface OnMessageBoxListener {
         public void userIsTyping(MessageBox m);
         public void newMessageChat(String user);
-
-        public void removeTab();
     }
 }

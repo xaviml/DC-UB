@@ -42,7 +42,7 @@ public class Peer extends UnicastRemoteObject implements IPeer{
 
     @Override
     public void userIsTyping(String username) {
-        chatModel.userIsTyping(username);
+        chatModel.userIsTypingReceiver(username);
     }
 
     @Override
