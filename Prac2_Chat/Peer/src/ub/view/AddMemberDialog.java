@@ -11,27 +11,26 @@ import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.WindowConstants;
 
 /**
  *
  * @author zenbook
  */
-public class CreateGroupDialog extends javax.swing.JDialog {
+public class AddMemberDialog extends javax.swing.JDialog {
 
-    private String name;
     private ArrayList<String> users;
     
     /**
-     * Creates new form NewJDialog
+     * Creates new form AddMemberDialog
      * @param parent
-     * @param model
      */
-    public CreateGroupDialog(java.awt.Frame parent, DefaultListModel<String> model) {
+    public AddMemberDialog(java.awt.Frame parent, DefaultListModel<String> model) {
         super(parent, true);
         initComponents();
         
         list_users.setModel(model);
+        
+        lbl_error.setVisible(false);
         
         //Translate windows in the center of screen
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -43,14 +42,14 @@ public class CreateGroupDialog extends javax.swing.JDialog {
         DefaultListCellRenderer renderer =  (DefaultListCellRenderer)list_users.getCellRenderer();  
         renderer.setHorizontalAlignment(JLabel.CENTER); 
     }
-    
-    public CreateGroupObject showDialog() {
-        setVisible(true);
-        if(name.isEmpty() || users.isEmpty())
-            return null;
-        return new CreateGroupObject(name, users);
-    }
 
+    public ArrayList<String> showDialog() {
+        setVisible(true);
+        if(users.isEmpty())
+            return null;
+        return users;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,34 +59,19 @@ public class CreateGroupDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lbl_name = new javax.swing.JLabel();
-        tf_namegroup = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         list_users = new javax.swing.JList();
-        btn_create = new javax.swing.JButton();
-        lbl_error = new javax.swing.JLabel();
         btn_cancel = new javax.swing.JButton();
+        btn_add = new javax.swing.JButton();
+        lbl_error = new javax.swing.JLabel();
+        lbl_select = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Create group");
-        setMinimumSize(new java.awt.Dimension(261, 281));
+        setTitle("Add Member");
         setResizable(false);
 
-        lbl_name.setText("Name");
-
         list_users.setFont(new java.awt.Font("DejaVu Sans Mono", 2, 15)); // NOI18N
-        list_users.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane1.setViewportView(list_users);
-
-        btn_create.setText("Create");
-        btn_create.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_createActionPerformed(evt);
-            }
-        });
-
-        lbl_error.setForeground(new java.awt.Color(255, 12, 0));
-        lbl_error.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
         btn_cancel.setText("Cancel");
         btn_cancel.addActionListener(new java.awt.event.ActionListener() {
@@ -96,6 +80,18 @@ public class CreateGroupDialog extends javax.swing.JDialog {
             }
         });
 
+        btn_add.setText("Add");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addActionPerformed(evt);
+            }
+        });
+
+        lbl_error.setForeground(new java.awt.Color(255, 6, 0));
+        lbl_error.setText("Select users");
+
+        lbl_select.setText("Select users to Add");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,31 +99,31 @@ public class CreateGroupDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl_error, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lbl_select)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lbl_name)
-                        .addGap(4, 4, 4)
-                        .addComponent(tf_namegroup))
+                        .addComponent(btn_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
+                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btn_cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_create, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lbl_error)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_name)
-                    .addComponent(tf_namegroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                .addComponent(lbl_select)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_create)
-                    .addComponent(btn_cancel, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_cancel))
+                    .addComponent(btn_add, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbl_error, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -135,47 +131,32 @@ public class CreateGroupDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_createActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_createActionPerformed
-        this.name = tf_namegroup.getText().trim();
-        int[] idxs = list_users.getSelectedIndices();
+    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
+        setVisible(false);
         this.users = new ArrayList<>();
+        dispose();
+    }//GEN-LAST:event_btn_cancelActionPerformed
+
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        int[] idxs = list_users.getSelectedIndices();
         DefaultListModel<String> m = (DefaultListModel<String>) list_users.getModel();
+        this.users = new ArrayList<>();
         for (int idx : idxs) {
             users.add(m.get(idx));
         }
-        if(this.name.isEmpty()) {
-            lbl_error.setText("The name group is empty");
-            return;
-        } else if(users.isEmpty()) {
+        if(users.isEmpty()) {
             lbl_error.setText("Select users");
             return;
         }
         dispose();
-    }//GEN-LAST:event_btn_createActionPerformed
-
-    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
-        setVisible(false);
-        this.name = "";
-        dispose();
-    }//GEN-LAST:event_btn_cancelActionPerformed
-
-    class CreateGroupObject {
-        public String name;
-        public ArrayList<String> users;
-
-        public CreateGroupObject(String name, ArrayList<String> users) {
-            this.name = name;
-            this.users = users;
-        }
-    }
+    }//GEN-LAST:event_btn_addActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_cancel;
-    private javax.swing.JButton btn_create;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbl_error;
-    private javax.swing.JLabel lbl_name;
+    private javax.swing.JLabel lbl_select;
     private javax.swing.JList list_users;
-    private javax.swing.JTextField tf_namegroup;
     // End of variables declaration//GEN-END:variables
 }

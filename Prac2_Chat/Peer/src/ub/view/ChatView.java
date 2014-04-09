@@ -40,7 +40,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     private ConcurrentHashMap<String, MessageBox> chats; //For individual chats
     
-    private ArrayList<GroupObject> orderedListGroups;
+    private ArrayList<MessageBox> orderedListGroups;
     private ConcurrentHashMap<GroupReference, MessageBox> hashGroup;
     
     private String username;
@@ -74,6 +74,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         tf_send.setVisible(false);
         tab_chats.setVisible(false);
         btn_createGroup.setEnabled(false);
+        btn_addGroup.setEnabled(false);
+        btn_leftGroup.setEnabled(false);
         
         list_users.setModel(new DefaultListModel());
         list_groups.setModel(new DefaultListModel());
@@ -128,10 +130,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         lbl_typing = new javax.swing.JLabel();
         btn_createGroup = new javax.swing.JButton();
         btn_leftGroup = new javax.swing.JButton();
+        btn_addGroup = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
-        setMinimumSize(new java.awt.Dimension(355, 235));
+        setMinimumSize(new java.awt.Dimension(553, 342));
 
         tab_chats.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         tab_chats.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -164,6 +167,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
         list_users.setBorder(null);
         list_users.setFont(new java.awt.Font("DejaVu Sans Mono", 2, 15)); // NOI18N
+        list_users.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         list_users.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 list_usersMousePressed(evt);
@@ -196,6 +200,18 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         });
 
         btn_leftGroup.setText("Left group");
+        btn_leftGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_leftGroupActionPerformed(evt);
+            }
+        });
+
+        btn_addGroup.setText("Add Member");
+        btn_addGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addGroupActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -205,22 +221,21 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_createGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_leftGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(tab_users, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tab_users, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btn_createGroup, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tab_chats)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(46, 464, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lbl_typing))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tab_chats, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tf_send)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -229,7 +244,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_typing, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -237,9 +252,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                             .addComponent(btn_send)
                             .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btn_createGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_leftGroup)
+                            .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_createGroup)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tab_users)))
                 .addContainerGap())
@@ -302,9 +319,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         if(tab_users.getTitleAt(idx).equals("Users")) {
             btn_createGroup.setVisible(false);
             btn_leftGroup.setVisible(false);
+            btn_addGroup.setVisible(false);
         }else{
             btn_createGroup.setVisible(true);
             btn_leftGroup.setVisible(true);
+            btn_addGroup.setVisible(true);
         }
     }//GEN-LAST:event_tab_usersStateChanged
 
@@ -315,6 +334,43 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         
         controller.addGroup(c.users, c.name);
     }//GEN-LAST:event_btn_createGroupActionPerformed
+
+    private void btn_leftGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_leftGroupActionPerformed
+         //if groups is empty: btn_leftGroup.setEnabled(false);
+        int idx = list_groups.getSelectedIndex();
+        if(idx == -1) return;
+        final MessageBox m = orderedListGroups.get(idx);
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.leaveGroup(m.getGroupReference());
+            }
+        }).start();
+        
+        removeGroup(m);
+        hashGroup.remove(m.getGroupReference());
+        if(hashGroup.isEmpty()) {
+            btn_leftGroup.setEnabled(false);
+            btn_addGroup.setEnabled(false);
+        }
+    }//GEN-LAST:event_btn_leftGroupActionPerformed
+
+    private void btn_addGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addGroupActionPerformed
+        int idx = list_groups.getSelectedIndex();
+        if(idx == -1) return;
+        
+        final MessageBox m = orderedListGroups.get(idx);
+        AddMemberDialog d = new AddMemberDialog(this, (DefaultListModel<String>) list_users.getModel());
+        final ArrayList<String> users = d.showDialog();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                controller.addGroupMember(m.getGroupReference(), users);
+            }
+        }).start();
+    }//GEN-LAST:event_btn_addGroupActionPerformed
 
     private void sendMessage() {
         final MessageBox m = getCurrentMessageBox();
@@ -374,7 +430,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         model.addElement(user);
     }
     
-    private void addGroup(GroupObject group) {
+    private void addGroup(MessageBox group) {
         this.orderedListGroups.add(group);
         GroupListModel m = new GroupListModel(this.orderedListGroups);
         list_groups.setModel(m);
@@ -385,7 +441,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         model.removeElement(user);
     }
     
-    private void removeGroup(GroupObject group) {
+    private void removeGroup(MessageBox group) {
         this.orderedListGroups.remove(group);
         GroupListModel m = new GroupListModel(this.orderedListGroups);
         list_groups.setModel(m);
@@ -423,6 +479,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     } 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_addGroup;
     private javax.swing.JButton btn_createGroup;
     private javax.swing.JButton btn_leftGroup;
     private javax.swing.JButton btn_send;
@@ -466,12 +523,17 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public Group.GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName) {
-        GroupObject groupObj = new GroupObject(gref, groupName);
-        addGroup(groupObj);
+        
         String[] users = members.toArray(new String[members.size()]);
         MessageBox group = new MessageBox(groupName, username, users, gref, this);
+        addGroup(group);
         hashGroup.put(gref, group);
         openTab(group, true, true);
+        if(hashGroup.size() == 1) {
+            btn_leftGroup.setEnabled(true);
+            btn_addGroup.setEnabled(true);
+        }
+            
         return group;
     }
 
