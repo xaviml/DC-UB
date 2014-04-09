@@ -58,8 +58,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         initComponents();
         
         controller = new ChatController(this);
-        
         chats = new ConcurrentHashMap<>();
+        
+        this.orderedListGroups = new ArrayList<>();
+        this.hashGroup = new ConcurrentHashMap<>();
+        
         isTyping = false;
         
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -313,7 +316,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         String text = JOptionPane.showInputDialog("Enter a name group");
         if(text.trim().isEmpty()) return;
         
-        controller.addGroup(null,members, text);
+        controller.addGroup(members, text);
     }//GEN-LAST:event_btn_createGroupActionPerformed
 
     private void sendMessage() {
