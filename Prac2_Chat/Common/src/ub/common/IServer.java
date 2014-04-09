@@ -16,8 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zenbook
  */
 public interface IServer extends Remote {
-    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, InvalidUserNameException;
+    public ConcurrentHashMap<String,IPeer> registryUser(String username, IPeer peer) throws RemoteException, UserInUseException;
     public void unregistryUser(String username) throws RemoteException;
     public IPeer getUser(String user) throws RemoteException;
     public ArrayList<String> getUsers() throws RemoteException;
+    public void ping() throws RemoteException;
 }

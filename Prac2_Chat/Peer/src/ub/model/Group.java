@@ -7,6 +7,8 @@ package ub.model;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
@@ -16,30 +18,24 @@ import ub.common.Message;
  * @author Pablo
  */
 public class Group {
-    private GroupListener guiListener;
-    private ChatModelServices services;
-    private ArrayList<String> members;
-    private ArrayList<Message> messages;
-    private GroupReference reference;
+    private final ExecutorService executor;
+    private final GroupListener guiListener;
+    private final ChatModelServices services;
+    private final ArrayList<String> members;
+    private final ArrayList<Message> messages;
+    private final GroupReference reference;
     private String name;
     
     public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
         // If this is a new group, create a reference.
         if (ref == null) ref = createRef();
-        
+        this.executor = Executors.newFixedThreadPool(10);
         this.messages = new ArrayList<>();
         this.reference = ref;
         this.members = members;
         this.services = modelListener;
         this.guiListener = guiListener;
         this.name = name;
-        
-    }
-
-    private void leaveGroup(String user){
-        synchronized(members){
-            members.remove(user);
-        }
         
     }
     
@@ -66,23 +62,36 @@ public class Group {
             }
         }
         this.messages.add(m);
-        guiListener.onNewGroupMessageRecieved(reference, m);
+        guiListener.onNewGroupMessageRecieved(m);
     }
     
     public void reciveMessage(Message m){
         this.messages.add(m);
-        guiListener.onNewGroupMessageRecieved(reference, m);
+        guiListener.onNewGroupMessageRecieved(m);
     }
     
 
     void setName(String newName) {
         this.name = newName;
-        guiListener.onGroupNameChanged(reference, newName);
+        guiListener.onGroupNameChanged(newName);
+    }
+
+    void addMember(String username) {
+        synchronized(members){
+            members.add(username);
+        }
+    }
+    
+    void removeMember(String username){
+        synchronized(members){
+            members.remove(username);
+        }
+        guiListener.onMemberLeaveGroup(username);
     }
     
     public interface GroupListener{
-        public void onNewGroupMessageRecieved(GroupReference ref, Message m);
-        public void onGroupNameChanged(GroupReference ref, String newName);
+        public void onNewGroupMessageRecieved(Message m);
+        public void onGroupNameChanged(String newName);
         public void onMemberLeaveGroup(String username);
     }
 }

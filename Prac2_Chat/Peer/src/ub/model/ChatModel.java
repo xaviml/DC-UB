@@ -1,5 +1,6 @@
 package ub.model;
 
+import ub.model.workers.AttemptingToReconnect;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -8,19 +9,29 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat.ChatListener;
 import ub.model.Group.GroupListener;
+import ub.model.workers.NotifyConnectionDown;
+import ub.model.workers.PingServer;
 
 /**
  *
  * @author Pablo
  */
-public class ChatModel implements ChatModelServices{
+public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReconnect{
+    // Server variables
+    private String IP;
+    private int port;
+    
+    //
     
     private final ChatRoomListener listener;
     private String myUsername;
@@ -29,9 +40,11 @@ public class ChatModel implements ChatModelServices{
     public ConcurrentHashMap<String,IPeer> connections;                         // All the connections         
     public ConcurrentHashMap<String, Chat> chats;                               // Chats
     public ConcurrentHashMap<GroupReference, Group> groups;                     // Groups
+    private final ExecutorService executor;
     
-    public ChatModel(ChatRoomListener listener){
-        
+    
+    public ChatModel(ChatRoomListener listener) {
+        this.executor = Executors.newFixedThreadPool(10);
         this.listener = listener;
         this.connections = new ConcurrentHashMap<>();
         this.chats = new ConcurrentHashMap<>();
@@ -51,24 +64,35 @@ public class ChatModel implements ChatModelServices{
     void userDisconnected(String username){
         connections.remove(username);
         listener.onMemberDisconnected(username);
+        removeItOfAllGroups(username);
+        
+        
     }
 
-    private void notifyDisconnection(String username) {
+    private synchronized void notifyDisconnection(String username) {
+        // Due to the ammount of threads created on this function
+        // And the possible recursivity, it's important to synchronize this
+        // function and only allow 1 thread to be on it.
+
         connections.remove(username);
         listener.onMemberDisconnected(username);
-        try {
-            server.unregistryUser(username);
-        } catch (RemoteException ex) {
-            System.err.println("Server disconnected");
+        removeItOfAllGroups(username);
+        
+        boolean b = checkServerState();
+        if (b) return;
+        //This method will be working just when server is
+        //Down.
+        
+        for (Entry<String, IPeer> e: connections.entrySet()) {
+            if (e.getKey().equals(myUsername)) continue;
+            Runnable worker = new NotifyConnectionDown(this, username, e.getKey(),e.getValue());
+            executor.execute(worker);
         }
-        for (Entry<String,IPeer> e: connections.entrySet()){
-            if (!e.getKey().equals(myUsername))try {
-                e.getValue().userDisconnect(username);
-            } catch (RemoteException ex) {
-                // Bad luck.. While we were notifying a disconnection
-                // Another user was also disconnected. Notify this too.. :/
-                notifyDisconnection(e.getKey());
-            }
+        try {
+            // Join threads
+            executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            System.err.println("Interrupted");
         }
     }
 
@@ -88,11 +112,20 @@ public class ChatModel implements ChatModelServices{
             
     }
     
-    public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, InvalidUserNameException{
+    void recieveServerDownFlag() {
+        checkServerState();
+    }
+    
+    @Override
+    public void register(String IP, int port, String username) throws NotBoundException, MalformedURLException, RemoteException, UserInUseException{
+        this.IP = IP;
+        this.port = port;
         myUsername = username;
         myPeer = new Peer(username,this);
         server = (IServer) Naming.lookup("rmi://"+IP+":"+port+"/Server");
         setConnections(server.registryUser(username, (IPeer)myPeer));
+        listener.onServerUp();
+        new Thread(new PingServer(this,server)).start();
     }
     
     public ArrayList<String> getConnectedClients(){
@@ -101,6 +134,29 @@ public class ChatModel implements ChatModelServices{
             a.add(s);
         }
         return a;
+    }
+    
+    //                //
+    /* Server methods */
+    //                //
+    private boolean checkServerState() {
+        if (server == null) return false;
+        
+        try {
+            // Check server state
+            server.ping();
+            return true;
+        } catch (RemoteException ex) {
+            server = null;
+            return false;
+        }
+    }
+    
+    @Override
+    public void notifyServerDown(){
+        this.server = null;
+        listener.onServerDown();
+        new Thread(new AttemptingToReconnect(this, IP, port, myUsername)).start();
     }
     
     //                  //
@@ -126,7 +182,7 @@ public class ChatModel implements ChatModelServices{
         String sender = m.getUsername();
         Chat c = chats.get(sender);
         if (c == null){                                                                                                                                                                                                                                                                                                                                                                                                               
-            // Doesn't exist. Create a new Chat
+            // Dont exist. Create a new Chat
             c = createChat(sender);
         }
         c.reciveMessage(m);
@@ -185,6 +241,18 @@ public class ChatModel implements ChatModelServices{
         groups.get(gref).reciveMessage(message);
     }
     
+    public void addGroupMember(GroupReference gref, String username){
+        groups.get(gref).addMember(username);
+    }
+    
+    public void removeGroupMember(GroupReference gref, String username){
+        groups.get(gref).removeMember(username);
+    }
+    
+    private void removeItOfAllGroups(String username) {
+        for(Group g: groups.values()) g.removeMember(username);
+    }
+    
     //                             //
     /* Utilities for lower classes */
     //                             //
@@ -203,12 +271,19 @@ public class ChatModel implements ChatModelServices{
     public String getMyUserName() {
         return myUsername;
     }
+
+
+
+
+
     
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);
         public GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName);
         public void onMemberConnected(String username);
         public void onMemberDisconnected(String username);
+        public void onServerDown();
+        public void onServerUp();
     }
     
 

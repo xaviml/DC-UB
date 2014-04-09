@@ -25,10 +25,6 @@ public class Peer extends UnicastRemoteObject implements IPeer{
         this.chatModel = model;
     }
     
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public void userConnect(String username, IPeer peer) {
@@ -61,6 +57,21 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     @Override
     public void addGroup(GroupReference gref, String groupName, ArrayList<String> members) throws RemoteException {
         chatModel.addGroup(null, members, groupName, gref);
+    }
+
+    @Override
+    public void notifyServerIsDown() throws RemoteException {
+        chatModel.recieveServerDownFlag();
+    }
+
+    @Override
+    public void userLeftGroup(GroupReference gref, String username) {
+        chatModel.removeGroupMember(gref, username);
+    }
+
+    @Override
+    public void userJoinedGroup(GroupReference gref, String username) {
+        chatModel.addGroupMember(gref, username);
     }
 
 

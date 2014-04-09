@@ -25,7 +25,7 @@ import javax.swing.JList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import ub.common.GroupReference;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 import ub.controller.ChatController;
 import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat;
@@ -98,7 +98,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         });
     }
     
-    public void registry(String IP, int port, String user) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
+    public void registry(String IP, int port, String user) throws RemoteException, NotBoundException, MalformedURLException, UserInUseException {
         this.username = user;
         controller.register(IP, port, user);
         setTitle("Chat RMI["+user+"]");

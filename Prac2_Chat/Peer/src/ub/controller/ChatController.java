@@ -12,7 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import ub.common.GroupReference;
 import ub.common.IServer;
-import ub.common.InvalidUserNameException;
+import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
 
 /**
@@ -29,7 +29,7 @@ public class ChatController {
         this.chatModel = new ChatModel(listener);
     }
     
-    public void register(String IP, int port, String username) throws RemoteException, NotBoundException, MalformedURLException, InvalidUserNameException {
+    public void register(String IP, int port, String username) throws RemoteException, NotBoundException, MalformedURLException, UserInUseException {
         this.myUserName = username;
         chatModel.register(IP, port, username);
     }
