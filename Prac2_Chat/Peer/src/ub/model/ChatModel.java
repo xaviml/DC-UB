@@ -101,14 +101,14 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     }
 
     public void setConnections(ConcurrentHashMap<String,IPeer> c) throws RemoteException{
-        this.connections = c;
+        
         for(String s: c.keySet()) {
-            if(!s.equals(myUsername)) {
-                listener.onMemberConnected(s);
-            }
+            if(s.equals(myUsername) || this.connections.containsKey(s))continue;
+            listener.onMemberConnected(s);
             //You may also notify other connections you are here.
             c.get(s).userConnect(myUsername, myPeer);
         }
+        this.connections = c;
             
     }
     
@@ -218,7 +218,6 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         if (ls == null)
             ls = listener.onNewGroupCreated(gref, members, groupName);
         
-        // Create the IPeer list, in order to create the Group
         Group g = new Group(this, ls,members,groupName,gref);
         
         // Check gref. If function is called internally it would be null.

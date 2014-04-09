@@ -495,11 +495,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void onServerDown() {
-        
     }
 
     @Override
     public void onServerUp() {
-        
     }
 }
