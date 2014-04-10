@@ -8,7 +8,9 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -28,7 +30,9 @@ import ub.model.Group;
 public class MessageBox extends JPanel implements Chat.ChatListener, Group.GroupListener{
 
     private String me; //Color: CYAN
-    private HashMap<String, Color> chatters;
+    private ConcurrentHashMap<String, Color> chatters;
+    
+    private Color[] colors = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
     
     private String other; //For individual chat
     private String nameChat;
@@ -48,17 +52,15 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         this.gref = gref;
         
         this.other = others[0];
-        this.chatters = new HashMap<>();
+        this.chatters = new ConcurrentHashMap<>();
         
         this.isEmpty = true;
         this.isGroup = gref != null;
         
         this.listener = listener;
-        
-        Color[] c = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
-        for (int i = 0; i < others.length; i++) {
-            if(others[i].equals(me)) continue;
-            this.chatters.put(others[i], c[i%c.length]);
+        for (String u : others) {
+            if (u.equals(me)) continue;
+            addMember(u);
         }
         
         setLayout(new GridLayout(0, 1));
@@ -90,6 +92,14 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         
         if(!isGroup)
             listener.newMessageChat(getFirstUser());
+    }
+    
+    private void addMember(String user) {
+        this.chatters.put(user, colors[chatters.size()%colors.length]);
+    }
+    
+    private void removeMember(String user) {
+        this.chatters.remove(user);
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
@@ -160,9 +170,18 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             addMessage("\n"+username, this.chatters.get(username), false);
             addMessage(" has left group.", Color.gray, false);
             this.lastUser = "";
-            chatters.remove(username);
         }
+        removeMember(username);
+        refreshMembers();
         
+    }
+    
+    public synchronized void refreshMembers() {
+        ArrayList<String> users = new ArrayList<>();
+        for (String user : this.chatters.keySet()) {
+            users.add(user);
+        }
+        listener.refreshMembers(users);
     }
 
     @Override
@@ -180,9 +199,14 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
 
     @Override
-    public void onNewMemberConnected(String username){
-        addMessage(username+" joined the chat.\n", Color.gray, false);
-        this.lastUser = "";
+    public void onNewMemberConnected(String username) {
+        addMember(username);
+        synchronized(this) {
+            addMessage("\n"+username, this.chatters.get(username), false);
+            addMessage(" joined", Color.gray, false);
+            this.lastUser = "";
+        }
+        refreshMembers();
     }
 
     
@@ -200,6 +224,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         
         //For group
         public void onGroupNameChanged(String oldName, String newName);
+        public void refreshMembers(ArrayList<String> members);
         
     }
 }

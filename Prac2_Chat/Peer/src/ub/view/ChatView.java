@@ -5,6 +5,7 @@
 
 package ub.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -68,7 +69,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         int y = (int) ((screen.getHeight() -getHeight()) /2);
         setLocation(x, y);
         
-        lbl_typing.setVisible(false);
+        lbl_stateServer.setText("");
+        lbl_state.setText("");
         btn_send.setVisible(false);
         tf_send.setVisible(false);
         tab_chats.setVisible(false);
@@ -126,10 +128,12 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         list_users = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         list_groups = new javax.swing.JList();
-        lbl_typing = new javax.swing.JLabel();
+        lbl_state = new javax.swing.JLabel();
         btn_createGroup = new javax.swing.JButton();
         btn_leftGroup = new javax.swing.JButton();
         btn_addGroup = new javax.swing.JButton();
+        lbl_server = new javax.swing.JLabel();
+        lbl_stateServer = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
@@ -137,6 +141,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
         tab_chats.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         tab_chats.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
+        tab_chats.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tab_chatsStateChanged(evt);
+            }
+        });
 
         btn_send.setText("Send");
         btn_send.addActionListener(new java.awt.event.ActionListener() {
@@ -188,7 +197,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
         tab_users.addTab("Groups", jScrollPane2);
 
-        lbl_typing.setText("typing...");
+        lbl_state.setText("typing...");
 
         btn_createGroup.setText("Create group");
         btn_createGroup.setToolTipText("You must select users to create a group");
@@ -212,27 +221,37 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             }
         });
 
+        lbl_server.setText("Server state:");
+
+        lbl_stateServer.setForeground(new java.awt.Color(32, 158, 28));
+        lbl_stateServer.setText("Online");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tab_users, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(btn_createGroup, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbl_server)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tab_users, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btn_createGroup, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(lbl_stateServer)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(tab_chats)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lbl_typing))
+                        .addComponent(lbl_state))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -243,21 +262,25 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
+                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_typing, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbl_state, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_send)
                             .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbl_server)
+                            .addComponent(lbl_stateServer))
+                        .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btn_addGroup, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btn_addGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_createGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tab_users)))
+                        .addComponent(tab_users, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -371,6 +394,18 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         }).start();
     }//GEN-LAST:event_btn_addGroupActionPerformed
 
+    private void tab_chatsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_chatsStateChanged
+        MessageBox m = getCurrentMessageBox();
+        if(m==null) return;
+        if(m.isGroup()) {
+            if(timer != null)
+                timer.cancel();
+            m.refreshMembers();
+        } else{
+            lbl_state.setText("");
+        }
+    }//GEN-LAST:event_tab_chatsStateChanged
+
     private void sendMessage() {
         final MessageBox m = getCurrentMessageBox();
         
@@ -392,7 +427,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         tf_send.setText("");
     }
     
-    private void openTab(MessageBox m, boolean group, boolean selectedTab) {
+    private synchronized void openTab(MessageBox m, boolean group, boolean selectedTab) {
         if(tab_chats.getTabCount() == 0) {
             btn_send.setVisible(true);
             tf_send.setVisible(true);
@@ -400,12 +435,15 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         }
         int idx = tab_chats.indexOfComponent(m);
         if(idx == -1) { //if tab doesn't exist...
-            tab_chats.addTab(m.getNameChat(), m);
+            String name = m.getNameChat();
+            if(group)
+                name = "("+name+")";
+            tab_chats.addTab(name, m);
             idx = tab_chats.getTabCount()-1;
             tab_chats.setTabComponentAt(idx, new ButtonTabComponent(tab_chats, new Runnable() {
                 @Override
                 public void run() {
-                    lbl_typing.setVisible(false);
+                    lbl_state.setText("");
                     if(tab_chats.getTabCount() == 0) {
                         btn_send.setVisible(false);
                         tf_send.setVisible(false);
@@ -484,7 +522,9 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private javax.swing.JButton btn_send;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lbl_typing;
+    private javax.swing.JLabel lbl_server;
+    private javax.swing.JLabel lbl_state;
+    private javax.swing.JLabel lbl_stateServer;
     private javax.swing.JList list_groups;
     private javax.swing.JList list_users;
     private javax.swing.JTabbedPane tab_chats;
@@ -532,6 +572,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             btn_leftGroup.setEnabled(true);
             btn_addGroup.setEnabled(true);
         }
+        tab_usersStateChanged(null);
             
         return group;
     }
@@ -541,8 +582,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         if(m == getCurrentMessageBox()) {
             final Object mutex = new Object();
             synchronized(mutex) {
-                if(!lbl_typing.isVisible())
-                    lbl_typing.setVisible(true);
+                if(lbl_state.getText().isEmpty())
+                    lbl_state.setText("typing...");
             }
             if(timer != null)
                 timer.cancel();
@@ -551,7 +592,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 @Override
                 public void run() {
                     synchronized(mutex) {
-                        lbl_typing.setVisible(false);
+                        lbl_state.setText("");
                     }
                 }
             }, 1500);
@@ -560,8 +601,8 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void newMessageChat(String user) {
-        if(lbl_typing.isVisible())
-            lbl_typing.setVisible(false);
+        if(!lbl_state.getText().isEmpty())
+            lbl_state.setText("");
         MessageBox m = chats.get(user);
         if(m == getCurrentMessageBox()) return;
         openTab(m, false, false);
@@ -575,9 +616,18 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     @Override
     public void onServerDown() {
+        lbl_stateServer.setText("OFFLINE");
+        lbl_stateServer.setForeground(Color.red);
     }
 
     @Override
     public void onServerUp() {
+        lbl_stateServer.setText("ONLINE");
+        lbl_stateServer.setForeground(Color.green);
+    }
+
+    @Override
+    public void refreshMembers(ArrayList<String> members) {
+        lbl_state.setText("Members: "+members.toString());
     }
 }
