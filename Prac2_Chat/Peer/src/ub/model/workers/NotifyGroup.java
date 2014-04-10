@@ -72,6 +72,7 @@ public class NotifyGroup implements Runnable{
                     break;
                 case LEAVE_GROUP:
                     adreesse.leaveGroup(gref, newMemberName);
+                    break;
             }
         } catch (RemoteException ex) {
             services.notifyDisconnectedClient(username);
