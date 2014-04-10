@@ -23,12 +23,16 @@ import ub.common.UserInUseException;
  * @author zenbook
  */
 public class Server extends UnicastRemoteObject implements ServerServices, IServer{
+    private Pinger pinger;
+    private Thread tPinger;
     public ConcurrentHashMap<String,IPeer> connections;
     
     
     public Server() throws RemoteException {
         connections = new ConcurrentHashMap<>();
-        new Thread(new Pinger(this)).start();
+        pinger = new Pinger(this);
+        tPinger = new Thread(pinger);
+        tPinger.start();
     }
     
     @Override
@@ -41,8 +45,10 @@ public class Server extends UnicastRemoteObject implements ServerServices, IServ
 
     @Override
     public void unregistryUser(String username) {
-        connections.remove(username);
-        System.out.println("Disconnected "+username);
+        //disconnectClient(username);
+        //System.out.println("Disconnected "+username);
+        pinger.addDisconnected(username);
+        tPinger.interrupt();
     }
 
     @Override
@@ -105,7 +111,6 @@ public class Server extends UnicastRemoteObject implements ServerServices, IServ
     @Override
     public void disconnectClient(String s) {
         connections.remove(s);
-        // May notify clients
     }
 
     @Override

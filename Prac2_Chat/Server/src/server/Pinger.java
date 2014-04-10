@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.common.IPeer;
 import workers.DisconnectedList;
 import workers.NotifyDisconnectionWorker;
@@ -23,12 +25,13 @@ import workers.PingWorker;
 public class Pinger implements Runnable, DisconnectedList {
     private final ArrayList<String> disconnected;
     private final ServerServices services;
-    private final ExecutorService executor;
+    private ExecutorService executor;
     private final boolean working;
+    private boolean newDisconnectedFlag;
     
     public Pinger(ServerServices services){
+        this.newDisconnectedFlag = false;
         this.working = true;
-        this.executor = Executors.newFixedThreadPool(10);
         this.services = services;
         this.disconnected = new ArrayList<>();
     }
@@ -38,41 +41,52 @@ public class Pinger implements Runnable, DisconnectedList {
         
         while(working){
             try {
-                
-                // Check off connections
-                for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
-                    Runnable worker = new PingWorker(this, e.getKey(),e.getValue());
-                    executor.execute(worker);
-                }
-
                 // Do the propper disconnections
-                for (String s: disconnected){
-                    services.disconnectClient(s);
-                }
-                
-                // Do the callback.
-                for(String s: disconnected){
-                    for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
-                        Runnable worker = new NotifyDisconnectionWorker(this, s, e.getKey(), e.getValue());
-                        executor.execute(worker);
-                    }
-                    executor.awaitTermination(1, TimeUnit.MINUTES);
-                }
-                disconnected.clear();
+                notifyDisconnections();
+                pingConnections();
                 synchronized(this){
                     this.wait(3000);
                 }
-            } catch (InterruptedException ex) {
-                System.err.println("Interrupted");
-            }
+            } catch (InterruptedException ex) {}
         }
-        executor.shutdown();
     }
 
+    public void notifyDisconnections() throws InterruptedException{
+        ArrayList<String> cpy = (ArrayList<String>)disconnected.clone();
+            for (String s: cpy){
+                services.disconnectClient(s);
+            }
+
+            // Do the callback.
+            for(String s: cpy){
+                this.executor = Executors.newFixedThreadPool(10);
+                for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
+                    Runnable worker = new NotifyDisconnectionWorker(this, s, e.getKey(), e.getValue());
+                    executor.execute(worker);
+                }
+                executor.shutdown();
+                executor.awaitTermination(3, TimeUnit.SECONDS);
+                disconnected.remove(s);
+            }
+        disconnected.clear();
+    }
+    
+    
+    public void pingConnections() throws InterruptedException{
+        this.executor = Executors.newFixedThreadPool(10);
+        // Check off connections
+        for (Entry<String, IPeer> e: services.getConnections().entrySet()) {
+            Runnable worker = new PingWorker(this, e.getKey(),e.getValue());
+            executor.execute(worker);
+        }
+        executor.shutdown();
+        executor.awaitTermination(3, TimeUnit.SECONDS);
+    }
+    
     @Override
     public void addDisconnected(String s) {
         synchronized(disconnected){
-            disconnected.add(s);
+            if (!disconnected.contains(s)) disconnected.add(s);
         }
     }
     
