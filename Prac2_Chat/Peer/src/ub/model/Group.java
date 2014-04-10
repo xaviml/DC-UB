@@ -103,7 +103,6 @@ public class Group {
                 if (newMembers.contains(s)) newMembers.remove(s);
             }
 
-            System.out.println(members);
             members.addAll(newMembers);
             IPeer p;
 
@@ -117,15 +116,14 @@ public class Group {
                 } catch (RemoteException ex) {
                     services.notifyDisconnectedClient(s);
                 }
-
-                if (tmp.contains(s)) continue;
-                guiListener.onNewMemberConnected(s);
                 for (String m: tmp){
                     p = services.getIPeerByName(m);
                     if (p== null) continue;
                     executor.execute(new NotifyGroup(services, reference, s, p, m, true));
                 }
+                guiListener.onNewMemberConnected(s);
             }
+            
             executor.shutdown();
         }
     }
