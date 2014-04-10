@@ -43,11 +43,12 @@ public class Pinger implements Runnable, DisconnectedList {
             try {
                 // Do the propper disconnections
                 notifyDisconnections();
-                pingConnections();
                 synchronized(this){
                     this.wait(3000);
                 }
-            } catch (InterruptedException ex) {}
+                pingConnections();
+            } catch (InterruptedException ex) {//Server added a disconnection!
+            }
         }
     }
 
