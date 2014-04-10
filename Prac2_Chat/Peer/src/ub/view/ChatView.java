@@ -198,7 +198,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             }
         });
 
-        btn_leftGroup.setText("Left group");
+        btn_leftGroup.setText("Leave group");
         btn_leftGroup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_leftGroupActionPerformed(evt);

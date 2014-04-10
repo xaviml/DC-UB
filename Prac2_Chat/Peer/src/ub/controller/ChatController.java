@@ -55,9 +55,9 @@ public class ChatController {
     }
     
     public void addGroupMember(String gref, ArrayList<String> username){
-        
+        chatModel.addGroupMemberAndNotify(gref, username);
     }
     public void leaveGroup(String gref){
-        
+        chatModel.leaveGroup(gref);
     }
 }

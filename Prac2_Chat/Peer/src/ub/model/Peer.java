@@ -73,6 +73,11 @@ public class Peer extends UnicastRemoteObject implements IPeer{
         chatModel.addGroupMember(gref, username);
     }
 
+    @Override
+    public void leaveGroup(String gref, String username) throws RemoteException {
+        chatModel.removeGroupMember(gref, username);
+    }
+
 
 
 }

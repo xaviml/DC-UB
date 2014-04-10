@@ -16,7 +16,7 @@ import ub.model.ChatModelServices;
  * @author kirtash
  */
 public class NotifyGroup implements Runnable{
-    private enum Instruction{ADD_GROUP,SEND_MESSAGE,NEW_MEMBER};
+    private enum Instruction{ADD_GROUP,SEND_MESSAGE,NEW_MEMBER,LEAVE_GROUP};
     private Instruction instruction;
     private IPeer adreesse;
     private String username;
@@ -38,8 +38,8 @@ public class NotifyGroup implements Runnable{
 
     }
     
-    public NotifyGroup(ChatModelServices services, String groupName, String gref, String newMemberName, IPeer adreesse, String username){
-        this.instruction = Instruction.NEW_MEMBER;
+    public NotifyGroup(ChatModelServices services, String gref, String newMemberName, IPeer adreesse, String username, boolean newMember){
+        this.instruction = (newMember)?Instruction.NEW_MEMBER: Instruction.LEAVE_GROUP;
         this.gref = gref;
         this.newMemberName = newMemberName;
         this.username = username;
@@ -70,6 +70,8 @@ public class NotifyGroup implements Runnable{
                 case SEND_MESSAGE:
                     adreesse.writeMessage(gref, message);
                     break;
+                case LEAVE_GROUP:
+                    adreesse.leaveGroup(gref, newMemberName);
             }
         } catch (RemoteException ex) {
             services.notifyDisconnectedClient(username);

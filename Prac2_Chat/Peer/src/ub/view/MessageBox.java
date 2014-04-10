@@ -178,6 +178,11 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         listener.onGroupNameChanged(this.nameChat, newName);
         this.nameChat = newName;
     }
+
+    @Override
+    public void onNewMemberConnected(String username) {
+        System.out.println(username+ " Has joined the group");
+    }
     
     
     

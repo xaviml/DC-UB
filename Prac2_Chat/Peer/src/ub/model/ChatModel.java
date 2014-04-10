@@ -12,6 +12,8 @@ import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.UserInUseException;
@@ -83,17 +85,20 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         listener.onMemberDisconnected(username);
         removeItOfAllGroups(username);
         
-        boolean b = checkServerState();
-        if (b) return;
-        //This method will be working just when server is
-        //Down.
-        this.executor = Executors.newFixedThreadPool(10);
-        for (Entry<String, IPeer> e: connections.entrySet()) {
-            if (e.getKey().equals(myUsername)) continue;
-            Runnable worker = new NotifyConnectionDown(this, username, e.getKey(),e.getValue());
-            executor.execute(worker);
+        try {
+            server.unregistryUser(username);
+        } catch (RemoteException ex) {
+            //This method will be working just when server is
+            //Down.
+            this.executor = Executors.newFixedThreadPool(10);
+            for (Entry<String, IPeer> e: connections.entrySet()) {
+                if (e.getKey().equals(myUsername)) continue;
+                Runnable worker = new NotifyConnectionDown(this, username, e.getKey(),e.getValue());
+                executor.execute(worker);
+            }
+            executor.shutdown();
         }
-        executor.shutdown();
+
     }
 
     public void disconnect() {
@@ -248,11 +253,6 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         
     }
     
-    /**
-     *
-     * @param gref
-     * @param message
-     */
     public void writeMessageGroup(String gref, String message){
         Group g = groups.get(gref);
         g.writeMessage(new Message(myUsername, message));
@@ -266,9 +266,19 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         groups.get(gref).addMember(username);
     }
     
+    public void addGroupMemberAndNotify(String gref, ArrayList<String> username) {
+        groups.get(gref).addMemberAndNotify(username);
+    }
+    
     public void removeGroupMember(String gref, String username){
         groups.get(gref).removeMember(username);
     }
+    
+    public void leaveGroup(String gref) {
+        groups.get(gref).leaveGroup();
+        groups.remove(gref);
+    }
+
     
     private void removeItOfAllGroups(String username) {
         for(Group g: groups.values()) g.removeMember(username);
@@ -292,6 +302,9 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     public String getMyUserName() {
         return myUsername;
     }
+
+
+
 
 
 
