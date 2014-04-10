@@ -396,6 +396,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     private void tab_chatsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_chatsStateChanged
         MessageBox m = getCurrentMessageBox();
+        if(m==null) return;
         if(m.isGroup()) {
             if(timer != null)
                 timer.cancel();

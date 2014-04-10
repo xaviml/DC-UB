@@ -148,7 +148,7 @@ public class WelcomeView extends JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(final String args[]) {
+    public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -161,22 +161,36 @@ public class WelcomeView extends JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WelcomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WelcomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WelcomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(WelcomeView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
+        if(args.length != 2) {
+            System.out.println("Execute: java -jar <ip> <port>");
+            System.exit(0);
+        }
+        int p = 0;
+        
+        try{
+             p = Integer.parseInt(args[1]);
+        }catch(NumberFormatException ex) {
+            System.out.println("Port must be a integer");
+            System.exit(0);
+        }
+        
+        if(p<1024 || p > 65535) {
+            System.out.println("Port must be between 1024 and 65535, both included");
+            System.exit(0);
+        }
+        
+        final String IP = args[0];
+        final int port = p;
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new WelcomeView(args[0],Integer.parseInt(args[1])).setVisible(true);
+                new WelcomeView(IP,port).setVisible(true);
             }
         });
     }
