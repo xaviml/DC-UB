@@ -22,14 +22,17 @@ public interface IPeer extends Remote{
     public void writeMessage(Message message) throws RemoteException;
 
     // Group functions
-    public void addGroup(GroupReference gref, String groupName, ArrayList<String> peers) throws RemoteException;
-    public void userLeftGroup(GroupReference gref, String username) throws RemoteException;
-    public void userJoinedGroup(GroupReference gref, String username) throws RemoteException;
-    public void writeMessage(GroupReference ref, Message message) throws RemoteException;
-
+    public void addGroup(String gref, String groupName, ArrayList<String> peers) throws RemoteException;
+    public void userLeftGroup(String gref, String username) throws RemoteException;
+    public void userJoinedGroup(String gref, String username) throws RemoteException;
+    public void writeMessage(String ref, Message message) throws RemoteException;
+    public void leaveGroup(String gref, String username) throws RemoteException;
+    
     // State functions
     public void userConnect(String username, IPeer peer) throws RemoteException;
     public void userDisconnect(String username) throws RemoteException;
     public void notifyServerIsDown() throws RemoteException;
     public void ping() throws RemoteException;
+
+
 }
