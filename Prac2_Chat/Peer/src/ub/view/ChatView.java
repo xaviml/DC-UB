@@ -528,7 +528,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         addGroup(group);
         hashGroup.put(gref, group);
         openTab(group, true, true);
-        if(hashGroup.size() == 1) {
+        if(hashGroup.size() == 1 && tab_users.getSelectedComponent().getName().equals("Groups")) {
             btn_leftGroup.setEnabled(true);
             btn_addGroup.setEnabled(true);
         }
