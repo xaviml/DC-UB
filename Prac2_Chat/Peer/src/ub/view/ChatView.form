@@ -29,24 +29,31 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="btn_addGroup" min="-2" pref="132" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btn_leftGroup" min="-2" pref="120" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="btn_addGroup" min="-2" pref="132" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btn_leftGroup" min="-2" pref="120" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="tab_users" alignment="1" pref="0" max="32767" attributes="0"/>
+                      <Component id="btn_createGroup" alignment="1" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="tab_users" alignment="1" pref="0" max="32767" attributes="0"/>
-                  <Component id="btn_createGroup" alignment="1" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lbl_server" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lbl_stateServer" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="tab_chats" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="lbl_typing" min="-2" max="-2" attributes="0"/>
+                      <Component id="lbl_state" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="tf_send" pref="277" max="32767" attributes="0"/>
+                      <Component id="tf_send" pref="26" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btn_send" min="-2" pref="70" max="-2" attributes="0"/>
                   </Group>
@@ -61,9 +68,9 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="tab_chats" pref="306" max="32767" attributes="0"/>
+                      <Component id="tab_chats" pref="186" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lbl_typing" min="-2" pref="21" max="-2" attributes="0"/>
+                      <Component id="lbl_state" min="-2" pref="21" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btn_send" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -71,14 +78,19 @@
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lbl_server" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbl_stateServer" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="btn_addGroup" pref="35" max="32767" attributes="0"/>
-                          <Component id="btn_leftGroup" max="32767" attributes="0"/>
+                          <Component id="btn_addGroup" max="32767" attributes="0"/>
+                          <Component id="btn_leftGroup" min="-2" pref="35" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btn_createGroup" min="-2" pref="33" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="tab_users" max="32767" attributes="0"/>
+                      <Component id="tab_users" pref="146" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -96,6 +108,9 @@
         </Property>
         <Property name="tabLayoutPolicy" type="int" value="1"/>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tab_chatsStateChanged"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
     </Container>
@@ -194,7 +209,7 @@
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="lbl_typing">
+    <Component class="javax.swing.JLabel" name="lbl_state">
       <Properties>
         <Property name="text" type="java.lang.String" value="typing..."/>
       </Properties>
@@ -223,6 +238,19 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_addGroupActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lbl_server">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Server state:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lbl_stateServer">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="1c" green="9e" red="20" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Online"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

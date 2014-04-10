@@ -8,6 +8,7 @@ package ub.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JPanel;
@@ -171,7 +172,16 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             this.lastUser = "";
         }
         removeMember(username);
+        refreshMembers();
         
+    }
+    
+    public synchronized void refreshMembers() {
+        ArrayList<String> users = new ArrayList<>();
+        for (String user : this.chatters.keySet()) {
+            users.add(user);
+        }
+        listener.refreshMembers(users);
     }
 
     @Override
@@ -196,6 +206,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             addMessage(" joined", Color.gray, false);
             this.lastUser = "";
         }
+        refreshMembers();
     }
     
     
@@ -212,6 +223,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         
         //For group
         public void onGroupNameChanged(String oldName, String newName);
+        public void refreshMembers(ArrayList<String> members);
         
     }
 }

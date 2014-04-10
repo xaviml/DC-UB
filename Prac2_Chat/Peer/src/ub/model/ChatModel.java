@@ -84,6 +84,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         removeItOfAllGroups(username);
         
         try {
+            if(server==null) throw new RemoteException();
             server.unregistryUser(username);
         } catch (RemoteException ex) {
             //This method will be working just when server is
@@ -118,7 +119,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     }
     
     void recieveServerDownFlag() {
-        checkServerState();
+        this.listener.onServerDown();
     }
     
     @Override
@@ -145,18 +146,6 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     //                //
     /* Server methods */
     //                //
-    private boolean checkServerState() {
-        if (server == null) return false;
-        
-        try {
-            // Check server state
-            server.ping();
-            return true;
-        } catch (RemoteException ex) {
-            server = null;
-            return false;
-        }
-    }
     
     @Override
     public void notifyServerDown(){
