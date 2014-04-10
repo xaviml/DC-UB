@@ -62,6 +62,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     //                 //
     
     void userConnected(String username, IPeer peer) {
+        if (connections.containsKey(username)) return;
         connections.put(username, peer);
         listener.onMemberConnected(username);
     }
@@ -108,7 +109,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     public void setConnections(ConcurrentHashMap<String,IPeer> c) throws RemoteException{
         
         for(String s: c.keySet()) {
-            if(s.equals(myUsername) || this.connections.containsKey(s))continue;
+            if(s.equals(myUsername) || this.connections.containsKey(s)) continue;
             listener.onMemberConnected(s);
             //You may also notify other connections you are here.
             c.get(s).userConnect(myUsername, myPeer);

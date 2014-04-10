@@ -180,9 +180,11 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
 
     @Override
-    public void onNewMemberConnected(String username) {
-        System.out.println(username+ " Has joined the group");
+    public void onNewMemberConnected(String username){
+        addMessage(username+" joined the chat.\n", Color.gray, false);
+        this.lastUser = "";
     }
+
     
     
     

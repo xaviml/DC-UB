@@ -31,6 +31,7 @@ public class Chat{
     }
     
     protected void writeMessage(Message m) {
+        
         if (member == null) throw new UserDisconnectedException();
         IPeer p = services.getIPeerByName(member);
         if (p == null) return;
