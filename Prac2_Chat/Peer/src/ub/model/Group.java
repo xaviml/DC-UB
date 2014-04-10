@@ -44,18 +44,20 @@ public class Group {
     }
     
     public void writeMessage(Message m){
-        this.executor = Executors.newFixedThreadPool(10);
-        for (String s:members) {
-            if (s.equals(services.getMyUserName()))continue;
-            IPeer p = services.getIPeerByName(s);
-            if (p == null){
-                // This might never happens...
-                removeMember(name);
-                continue;
+        synchronized(members){
+            this.executor = Executors.newFixedThreadPool(10);
+            for (String s:members) {
+                if (s.equals(services.getMyUserName()))continue;
+                IPeer p = services.getIPeerByName(s);
+                if (p == null){
+                    // This might never happens...
+                    removeMember(name);
+                    continue;
+                }
+                executor.execute(new NotifyGroup(services, reference, m, p, s));
             }
-            executor.execute(new NotifyGroup(services, reference, m, p, s));
+            executor.shutdown();
         }
-        executor.shutdown();
         
         /*
         for (String s: members) {
@@ -72,12 +74,16 @@ public class Group {
             }
         }
         */
-        this.messages.add(m);
+        synchronized(messages){
+            this.messages.add(m);
+        }
         guiListener.onNewGroupMessageRecieved(m);
     }
     
     public void reciveMessage(Message m){
-        this.messages.add(m);
+        synchronized(messages){
+            this.messages.add(m);
+        }
         guiListener.onNewGroupMessageRecieved(m);
     }
     
@@ -88,23 +94,23 @@ public class Group {
     }
     
     void addMemberAndNotify(ArrayList<String> newMembers) {
-        // Check if function is being called with null parameter
-        if (newMembers == null) return; // Avoid errors
-        
-        ArrayList<String> tmp = (ArrayList<String>)members.clone();
-        
-        // Remove duplications
-        for(String s: members){
-            if (newMembers.contains(s)) newMembers.remove(s);
-        }
-
-        System.out.println(members);
-        members.addAll(newMembers);
-        IPeer p;
-        
-        // Crete the executor
-        this.executor = Executors.newFixedThreadPool(10);
         synchronized(members){
+            // Check if function is being called with null parameter
+            if (newMembers == null) return; // Avoid errors
+
+            ArrayList<String> tmp = (ArrayList<String>)members.clone();
+
+            // Remove duplications
+            for(String s: members){
+                if (newMembers.contains(s)) newMembers.remove(s);
+            }
+
+            System.out.println(members);
+            members.addAll(newMembers);
+            IPeer p;
+
+            // Crete the executor
+            this.executor = Executors.newFixedThreadPool(10);
             for(String s: newMembers){
                 // Add a new guy to the group
                 p = services.getIPeerByName(s);
@@ -113,19 +119,16 @@ public class Group {
                 } catch (RemoteException ex) {
                     services.notifyDisconnectedClient(s);
                 }
-                
+
                 if (tmp.contains(s)) continue;
                 guiListener.onNewMemberConnected(s);
                 for (String m: tmp){
                     p = services.getIPeerByName(m);
                     if (p== null) continue;
-                    executor.execute(new Thread(new NotifyGroup(services, reference, s, p, m, true)));
+                    executor.execute(new NotifyGroup(services, reference, s, p, m, true));
                 }
-                
-
             }
             executor.shutdown();
-            
         }
     }
     
@@ -138,6 +141,7 @@ public class Group {
         }
     }
     public void leaveGroup(){
+        synchronized(members){
         this.executor = Executors.newFixedThreadPool(10);
         for (String s:members) {
             if (s.equals(services.getMyUserName()))continue;
@@ -149,12 +153,14 @@ public class Group {
             }
             executor.execute(new NotifyGroup(services, reference, services.getMyUserName(), p, s, false));
         }
-        executor.shutdown();   
+        executor.shutdown();  
+        }
     }
     
     
     void removeMember(String username){
         synchronized(members){
+            if (!members.contains(username))return;
             members.remove(username);
         }
         guiListener.onMemberLeaveGroup(username);

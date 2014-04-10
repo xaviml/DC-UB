@@ -36,17 +36,14 @@ public class AttemptingToReconnect implements Runnable{
     public void run() {
         while (!connected){
             try {
-                System.out.println("Attempting to reconnect");
                 register.register(IP, port, username);
                 connected = true;
-                System.out.println("Success");
             } catch (NotBoundException | MalformedURLException | RemoteException | UserInUseException ex) {
-                System.out.println("Fail");
                 try {
-                    sleep(5000);
-                } catch (InterruptedException ex1) {
-                    System.err.println("Reconnector interrupted");
-                }
+                    synchronized(this){
+                        sleep(5000);
+                    }
+                } catch (InterruptedException ex1) {}
             }
         }
     }

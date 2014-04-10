@@ -16,10 +16,10 @@ import ub.exceptions.UserDisconnectedException;
  * @author Pablo
  */
 public class Chat{
-    private ChatModelServices services;
-    private ChatListener listener;
-    private ArrayList<Message> messages;
-    private String member;
+    private final ChatModelServices services;
+    private final ChatListener listener;
+    private final ArrayList<Message> messages;
+    private final String member;
     
     
     public Chat(ChatModelServices serv, ChatListener listener, String peer){
@@ -34,18 +34,23 @@ public class Chat{
         if (member == null) throw new UserDisconnectedException();
         IPeer p = services.getIPeerByName(member);
         if (p == null) return;
-        
+
         try {
             p.writeMessage(m);
         } catch (RemoteException ex) {
             services.notifyDisconnectedClient(member);
         }
-        messages.add(m);
+        
+        synchronized(messages){
+            messages.add(m);
+        }
         listener.onNewMessageRecived(m);
     }
     
     protected void reciveMessage(Message m){
-        messages.add(m);
+        synchronized (messages){
+            messages.add(m);
+        }
         listener.onNewMessageRecived(m);
         
     }
