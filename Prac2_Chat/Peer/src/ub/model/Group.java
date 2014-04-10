@@ -9,8 +9,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.Message;
 import ub.model.workers.NotifyGroup;
@@ -115,7 +113,7 @@ public class Group {
                 // Add a new guy to the group
                 p = services.getIPeerByName(s);
                 try {
-                    p.addGroup(reference, name, tmp);
+                    p.addGroup(reference, name, members);
                 } catch (RemoteException ex) {
                     services.notifyDisconnectedClient(s);
                 }
