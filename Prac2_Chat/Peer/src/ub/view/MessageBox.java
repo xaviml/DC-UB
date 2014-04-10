@@ -17,7 +17,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-import ub.common.GroupReference;
 import ub.common.Message;
 import ub.model.Chat;
 import ub.model.Group;
@@ -36,13 +35,13 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     private String lastUser;
     private boolean isEmpty;
     private boolean isGroup;
-    private GroupReference gref;
+    private String gref;
     
     private OnMessageBoxListener listener;
     
     private JTextPane pane;
     
-    public MessageBox(String name, String me, String[] others, GroupReference gref, OnMessageBoxListener listener) {
+    public MessageBox(String name, String me, String[] others, String gref, OnMessageBoxListener listener) {
         this.me = me;
         this.lastUser = "";
         this.nameChat = name;
@@ -58,6 +57,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         
         Color[] c = {Color.RED,  Color.ORANGE, Color.GREEN, Color.PINK, Color.DARK_GRAY};
         for (int i = 0; i < others.length; i++) {
+            if(others[i].equals(me)) continue;
             this.chatters.put(others[i], c[i%c.length]);
         }
         
@@ -65,6 +65,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         setBorder(new LineBorder(Color.WHITE, 1, true));
         
         pane = new JTextPane();
+        pane.setEditable(false);
         pane.setMargin(new Insets(5, 5, 5, 5));
         add(new JScrollPane(pane));
         
@@ -77,7 +78,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         }
         addMessage(msg+"\n", Color.BLACK, false);
         lastUser = me;
-        this.isEmpty = false;
     }
     
     public synchronized void writeMessageOther(String user, String msg) {
@@ -86,7 +86,6 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             addMessage(space+user+"\n", chatters.get(user), true);
         }
         addMessage(msg+"\n", Color.BLACK, false);
-        this.isEmpty = false;
         lastUser = user;
         
         if(!isGroup)
@@ -94,7 +93,9 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     }
     
     private void addMessage(String msg, Color c, boolean bold) {
-        if(c == null) return;
+        if(c == null) 
+            c = Color.BLACK;
+        this.isEmpty = false;
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
 
@@ -128,7 +129,7 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         return this.isGroup;
     }
     
-    public GroupReference getGroupReference() {
+    public String getGroupReference() {
         return this.gref;
     }
 

@@ -8,7 +8,6 @@ package ub.model;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
 
@@ -47,15 +46,15 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void writeMessage(GroupReference ref, Message message) {
-        chatModel.recieveMessage(ref, message);
+    public void writeMessage(String ref, Message message) {
+        chatModel.recieveMessageGroup(ref, message);
     }
 
     @Override
     public void ping() throws RemoteException {}
 
     @Override
-    public void addGroup(GroupReference gref, String groupName, ArrayList<String> members) throws RemoteException {
+    public void addGroup(String gref, String groupName, ArrayList<String> members) throws RemoteException {
         chatModel.addGroup(members, groupName, gref);
     }
 
@@ -65,12 +64,12 @@ public class Peer extends UnicastRemoteObject implements IPeer{
     }
 
     @Override
-    public void userLeftGroup(GroupReference gref, String username) {
+    public void userLeftGroup(String gref, String username) {
         chatModel.removeGroupMember(gref, username);
     }
 
     @Override
-    public void userJoinedGroup(GroupReference gref, String username) {
+    public void userJoinedGroup(String gref, String username) {
         chatModel.addGroupMember(gref, username);
     }
 

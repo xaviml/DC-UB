@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import ub.common.GroupReference;
 import ub.common.UserInUseException;
 import ub.exceptions.WrongAdresseeException;
 
@@ -39,8 +38,8 @@ public class ChatController {
         chatModel.writeMessage(username, message);
     }
     
-    public void writeMessage(GroupReference gref, String message){
-        chatModel.writeMessage(gref, message);
+    public void writeMessageGroup(String gref, String message){
+        chatModel.writeMessageGroup(gref, message);
     }
     
     public void userIsTyping(String username) {
@@ -55,10 +54,10 @@ public class ChatController {
         chatModel.addGroup(members, groupName, null);
     }
     
-    public void addGroupMember(GroupReference gref, ArrayList<String> username){
+    public void addGroupMember(String gref, ArrayList<String> username){
         
     }
-    public void leaveGroup(GroupReference gref){
+    public void leaveGroup(String gref){
         
     }
 }

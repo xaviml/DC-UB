@@ -6,12 +6,12 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map.Entry;
 import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.UserInUseException;
@@ -44,7 +44,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     private IServer server;
     public ConcurrentHashMap<String,IPeer> connections;                         // All the connections         
     public ConcurrentHashMap<String, Chat> chats;                               // Chats
-    public ConcurrentHashMap<GroupReference, Group> groups;                     // Groups
+    public ConcurrentHashMap<String, Group> groups;                     // Groups
     private ExecutorService executor;
     
     
@@ -218,12 +218,13 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     /* For groups */
     //            //
     
-    public void addGroup(ArrayList<String> members, String groupName, GroupReference gref){
+    public void addGroup(ArrayList<String> members, String groupName, String gref){
 //        if (groups.get(gref)!= null) return; // This group already exist!
         boolean rec = true;
         if(gref== null){
             rec = false;
-            gref = new GroupReference();
+            Date d = new Date();
+            gref = myUsername+(d.getTime());
         }
         GroupListener ls = listener.onNewGroupCreated(gref, members, groupName);
         Group g = new Group(this, ls, members, groupName, gref);
@@ -233,31 +234,39 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
         groups.put(gref, g);
         if (!rec){
             this.executor = Executors.newFixedThreadPool(10);
-            for(String s: members)
+            members.add(myUsername);
+            for(String s: members) {
+                if(s.equals(myUsername)) continue;
                 executor.execute(new Thread(new NotifyGroup(this, gref, groupName, members, connections.get(s), myUsername)));
+            }
             executor.shutdown();
         }
     }
         
-    public void changeGroupName(GroupReference gref, String newName){
+    public void changeGroupName(String gref, String newName){
         groups.get(gref).setName(newName);
         
     }
     
-    public void writeMessage(GroupReference gref, String message){
+    /**
+     *
+     * @param gref
+     * @param message
+     */
+    public void writeMessageGroup(String gref, String message){
         Group g = groups.get(gref);
         g.writeMessage(new Message(myUsername, message));
     }
     
-    public void recieveMessage(GroupReference gref, Message message){
+    public void recieveMessageGroup(String gref, Message message){
         groups.get(gref).reciveMessage(message);
     }
     
-    public void addGroupMember(GroupReference gref, String username){
+    public void addGroupMember(String gref, String username){
         groups.get(gref).addMember(username);
     }
     
-    public void removeGroupMember(GroupReference gref, String username){
+    public void removeGroupMember(String gref, String username){
         groups.get(gref).removeMember(username);
     }
     
@@ -291,7 +300,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);
-        public GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName);
+        public GroupListener onNewGroupCreated(String gref, ArrayList<String> members, String groupName);
         public void onMemberConnected(String username);
         public void onMemberDisconnected(String username);
         public void onServerDown();

@@ -8,7 +8,6 @@ package ub.model;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
 import ub.model.workers.NotifyGroup;
@@ -23,10 +22,10 @@ public class Group {
     private final ChatModelServices services;
     private final ArrayList<String> members;
     private final ArrayList<Message> messages;
-    private final GroupReference reference;
+    private final String reference;
     private String name;
     
-    public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, GroupReference ref){
+    public Group(ChatModelServices modelListener, GroupListener guiListener, ArrayList<String> members, String name, String ref){
         // If this is a new group, create a reference.
         this.messages = new ArrayList<>();
         this.reference = ref;
@@ -37,7 +36,7 @@ public class Group {
         
     }
     
-    public GroupReference getRef(){
+    public String getRef(){
         return reference;
     }
     

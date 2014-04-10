@@ -23,7 +23,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import ub.common.GroupReference;
 import ub.common.UserInUseException;
 import ub.controller.ChatController;
 import ub.exceptions.WrongAdresseeException;
@@ -41,7 +40,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private ConcurrentHashMap<String, MessageBox> chats; //For individual chats
     
     private ArrayList<MessageBox> orderedListGroups;
-    private ConcurrentHashMap<GroupReference, MessageBox> hashGroup;
+    private ConcurrentHashMap<String, MessageBox> hashGroup;
     
     private String username;
     
@@ -134,7 +133,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat RMI");
-        setMinimumSize(new java.awt.Dimension(553, 342));
+        setMinimumSize(new java.awt.Dimension(669, 351));
 
         tab_chats.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         tab_chats.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -233,7 +232,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lbl_typing))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                        .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_send, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -244,7 +243,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                        .addComponent(tab_chats, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbl_typing, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -252,11 +251,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                             .addComponent(btn_send)
                             .addComponent(tf_send, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btn_leftGroup)
-                            .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_addGroup, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_createGroup)
+                        .addComponent(btn_createGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tab_users)))
                 .addContainerGap())
@@ -267,7 +266,10 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
 
     private void list_groupsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_list_groupsMousePressed
         if(evt.getClickCount() == 2) {
-            
+            int idx = list_groups.getSelectedIndex();
+            if(idx == -1) return;
+            final MessageBox m = orderedListGroups.get(idx);
+            openTab(m, true, true);
         }
     }//GEN-LAST:event_list_groupsMousePressed
 
@@ -292,7 +294,6 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     }//GEN-LAST:event_btn_sendActionPerformed
 
     private void tf_sendKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tf_sendKeyPressed
-        
         if(evt.getKeyCode() == KeyEvent.VK_ENTER) return;
         final MessageBox m = getCurrentMessageBox();
         if(m.isGroup()) return;
@@ -317,13 +318,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private void tab_usersStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_usersStateChanged
         int idx = tab_users.getSelectedIndex();
         if(tab_users.getTitleAt(idx).equals("Users")) {
-            btn_createGroup.setVisible(false);
-            btn_leftGroup.setVisible(false);
-            btn_addGroup.setVisible(false);
+            btn_leftGroup.setEnabled(false);
+            btn_addGroup.setEnabled(false);
         }else{
-            btn_createGroup.setVisible(true);
-            btn_leftGroup.setVisible(true);
-            btn_addGroup.setVisible(true);
+            btn_addGroup.setEnabled(!hashGroup.isEmpty());
+            btn_leftGroup.setEnabled(!hashGroup.isEmpty());
         }
     }//GEN-LAST:event_tab_usersStateChanged
 
@@ -382,7 +381,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             public void run() {
                 try{
                     if(m.isGroup())
-                        controller.writeMessage(m.getGroupReference(), msg);
+                        controller.writeMessageGroup(m.getGroupReference(), msg);
                     else
                         controller.writeMessage(m.getFirstUser(), msg);
                 }catch(WrongAdresseeException ex){
@@ -522,7 +521,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     }
 
     @Override
-    public Group.GroupListener onNewGroupCreated(GroupReference gref, ArrayList<String> members, String groupName) {
+    public Group.GroupListener onNewGroupCreated(String gref, ArrayList<String> members, String groupName) {
         
         String[] users = members.toArray(new String[members.size()]);
         MessageBox group = new MessageBox(groupName, username, users, gref, this);

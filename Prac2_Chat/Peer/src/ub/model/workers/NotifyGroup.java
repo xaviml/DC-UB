@@ -7,7 +7,6 @@ package ub.model.workers;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import ub.common.GroupReference;
 import ub.common.IPeer;
 import ub.common.Message;
 import ub.model.ChatModelServices;
@@ -25,10 +24,10 @@ public class NotifyGroup implements Runnable{
     private Message message;
     private String groupName;
     private String newMemberName;
-    private GroupReference gref;
+    private String gref;
     private ChatModelServices services;
 
-    public NotifyGroup(ChatModelServices services, GroupReference gref, String groupName, ArrayList<String> members, IPeer adreesse, String username){
+    public NotifyGroup(ChatModelServices services, String gref, String groupName, ArrayList<String> members, IPeer adreesse, String username){
         this.instruction = Instruction.ADD_GROUP;
         this.groupName = groupName;
         this.gref = gref;
@@ -39,7 +38,7 @@ public class NotifyGroup implements Runnable{
 
     }
     
-    public NotifyGroup(ChatModelServices services, String groupName, GroupReference gref, String newMemberName, IPeer adreesse, String username){
+    public NotifyGroup(ChatModelServices services, String groupName, String gref, String newMemberName, IPeer adreesse, String username){
         this.instruction = Instruction.NEW_MEMBER;
         this.gref = gref;
         this.newMemberName = newMemberName;
@@ -50,7 +49,7 @@ public class NotifyGroup implements Runnable{
     }
     
     
-    public NotifyGroup(ChatModelServices services, GroupReference gref, Message m, IPeer adreesse, String username){
+    public NotifyGroup(ChatModelServices services, String gref, Message m, IPeer adreesse, String username){
         this.instruction = Instruction.SEND_MESSAGE;
         this.gref = gref;
         this.message = m;
