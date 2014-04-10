@@ -12,8 +12,6 @@ import ub.common.Message;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IPeer;
 import ub.common.IServer;
 import ub.common.UserInUseException;
