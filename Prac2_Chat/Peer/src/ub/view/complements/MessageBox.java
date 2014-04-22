@@ -3,13 +3,12 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.complements;
 
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,7 +23,9 @@ import ub.model.Chat;
 import ub.model.Group;
 
 /**
- *
+ * This is the container of each message.
+ * This class controls the colors of each member and their messages.
+ * 
  * @author Xavi Moreno
  */
 public class MessageBox extends JPanel implements Chat.ChatListener, Group.GroupListener{
@@ -73,6 +74,12 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         
     }
     
+    /**
+     * This method write the message of the own user on the panel.
+     * 
+     * @param msg 
+     */
+    
     public synchronized void writeMessageMe(String msg) {
         if(!lastUser.equals(me)) {
             String space = isEmpty ? "":"\n";
@@ -81,6 +88,13 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         addMessage(msg+"\n", Color.BLACK, false);
         lastUser = me;
     }
+    
+    /**
+     * This method write the message of other user on the panel.
+     * 
+     * @param user
+     * @param msg 
+     */
     
     public synchronized void writeMessageOther(String user, String msg) {
         if(!lastUser.equals(user)) {
@@ -94,13 +108,33 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
             listener.newMessageChat(getFirstUser());
     }
     
+    /**
+     * This method add a member on the xat.
+     * 
+     * @param user 
+     */
+    
     private void addMember(String user) {
         this.chatters.put(user, colors[chatters.size()%colors.length]);
     }
     
+    /**
+     * Remove a member of the xat.
+     * 
+     * @param user 
+     */
+    
     private void removeMember(String user) {
         this.chatters.remove(user);
     }
+    
+    /**
+     * Adds message on the panel.
+     * 
+     * @param msg
+     * @param c
+     * @param bold 
+     */
     
     private void addMessage(String msg, Color c, boolean bold) {
         if(c == null) 
@@ -121,12 +155,22 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         pane.setEditable(false);
     }
     
+    /**
+     * Shows: "<user> is disconnected."
+     * 
+     */
+    
     public synchronized void writeErrorMessage() {
         String user = getFirstUser();
         addMessage("\n"+user, this.chatters.get(user), false);
         addMessage(" is disconnected.", Color.gray, false);
         this.lastUser = "";
     }
+    
+    /**
+     * Shows: "<user> is connected."
+     * 
+     */
     
     public synchronized void writeConnectUser() {
         String user = getFirstUser();
@@ -135,17 +179,41 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         this.lastUser = "";
     }
     
+    /**
+     * Returns true if this instance is a group, otherwise returns false.
+     * 
+     * @return 
+     */
+    
     public boolean isGroup() {
         return this.isGroup;
     }
     
+    /**
+     * Returns the group reference.
+     * 
+     * @return 
+     */
+    
     public String getGroupReference() {
         return this.gref;
     }
+    
+    /**
+     * Returns the first user of this xat.
+     * 
+     * @return 
+     */
 
     public String getFirstUser() {
         return this.other;
     }
+    
+    /**
+     * Returns the name of xat.
+     * 
+     * @return 
+     */
     
     public String getNameChat() {
         return nameChat;
@@ -175,6 +243,11 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
         refreshMembers();
         
     }
+    
+    /**
+     * This method refresh the list of the group members.
+     * 
+     */
     
     public synchronized void refreshMembers() {
         ArrayList<String> users = new ArrayList<>();
@@ -213,17 +286,51 @@ public class MessageBox extends JPanel implements Chat.ChatListener, Group.Group
     
     
     /**
-     * Interfaz para comunicar-me con la view principal
+     * Interface to comunicate the main view.
      * 
      */
     
     public interface OnMessageBoxListener {
-        //For indivual chat
+        /*********************
+         *                   *
+         * For indivual chat *
+         *                   *
+         *********************/
+        
+        /**
+         * This method warns that a user is typing.
+         * 
+         * @param m 
+         */
         public void userIsTyping(MessageBox m);
+        
+        /**
+         * This method warns that a new user has been added on the xat.
+         * 
+         * @param user 
+         */
         public void newMessageChat(String user);
         
-        //For group
+        
+        /*********************
+         *                   *
+         *      For group    *
+         *                   *
+         *********************/
+        
+        /**
+         * This method must change the name of group
+         * 
+         * @param oldName
+         * @param newName 
+         */
         public void onGroupNameChanged(String oldName, String newName);
+        
+        /**
+         * This method must refresh the list of members.
+         * 
+         * @param members 
+         */
         public void refreshMembers(ArrayList<String> members);
         
     }

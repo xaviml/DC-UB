@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.components;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -23,6 +23,7 @@ public class AddMemberDialog extends javax.swing.JDialog {
     /**
      * Creates new form AddMemberDialog
      * @param parent
+     * @param model
      */
     public AddMemberDialog(java.awt.Frame parent, DefaultListModel<String> model) {
         super(parent, true);
@@ -43,6 +44,12 @@ public class AddMemberDialog extends javax.swing.JDialog {
         renderer.setHorizontalAlignment(JLabel.CENTER); 
     }
 
+    /**
+     * Shows the dialog.
+     * 
+     * @return 
+     */
+    
     public ArrayList<String> showDialog() {
         setVisible(true);
         if(users.isEmpty())

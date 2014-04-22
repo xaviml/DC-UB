@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
-package ub.view;
+package ub.view.components;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -82,6 +82,12 @@ public class ButtonTabComponent extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
     }
     
+    /**
+     * This method allows to show the star in the tab when someone talks.
+     * 
+     * @param visible 
+     */
+    
     public void visibleStar(boolean visible) {
         lbl_star.setVisible(visible);
     }
@@ -104,7 +110,7 @@ public class ButtonTabComponent extends JPanel {
             addMouseListener(buttonMouseListener);
             setRolloverEnabled(true);
             //Close the proper tab by clicking the button
-            addActionListener(this);
+            addActionListener(TabButton.this);
         }
 
         @Override
