@@ -518,17 +518,6 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         return m;
     }
     
-    /*private MessageBox getMessageBoxGroup(GroupReference ref, String[] users, String name) {
-        MessageBox m;
-        if(hashGroup.containsKey(ref)) {
-            m = hashGroup.get(ref);
-        }else{
-            m = new MessageBox(username, this.username, new String[]{username}, false, this);
-            chats.put(username, m);
-        }
-        return m;
-    }*/
-    
     private ButtonTabComponent getButtonTabComponent(MessageBox m) {
         int idx = tab_chats.indexOfComponent(m);
         return (ButtonTabComponent) tab_chats.getTabComponentAt(idx);
