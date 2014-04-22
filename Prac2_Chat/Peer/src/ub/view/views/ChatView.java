@@ -3,8 +3,13 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.views;
 
+import ub.view.complements.GroupListModel;
+import ub.view.complements.MessageBox;
+import ub.view.components.AddMemberDialog;
+import ub.view.components.CreateGroupDialog;
+import ub.view.components.ButtonTabComponent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -30,7 +35,7 @@ import ub.exceptions.WrongAdresseeException;
 import ub.model.Chat;
 import ub.model.ChatModel;
 import ub.model.Group;
-import ub.view.CreateGroupDialog.CreateGroupObject;
+import ub.view.complements.CreateGroupObject;
 
 /**
  *
@@ -51,7 +56,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private Timer timer;
     
     /**
-     * Creates new form ChatView
+     * Creates new form ChatView.
      */
     public ChatView() {
         initComponents();
@@ -76,7 +81,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         tab_chats.setVisible(false);
         btn_createGroup.setEnabled(false);
         btn_addGroup.setEnabled(false);
-        btn_leftGroup.setEnabled(false);
+        btn_leaveGroup.setEnabled(false);
         
         list_users.setModel(new DefaultListModel());
         list_groups.setModel(new DefaultListModel());
@@ -105,6 +110,18 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         });
     }
     
+    /**
+     * This method allows yout to registry on the server
+     * 
+     * @param IP
+     * @param port
+     * @param user
+     * @throws RemoteException
+     * @throws NotBoundException
+     * @throws MalformedURLException
+     * @throws UserInUseException 
+     */
+    
     public void registry(String IP, int port, String user) throws RemoteException, NotBoundException, MalformedURLException, UserInUseException {
         this.username = user;
         controller.register(IP, port, user);
@@ -130,7 +147,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         list_groups = new javax.swing.JList();
         lbl_state = new javax.swing.JLabel();
         btn_createGroup = new javax.swing.JButton();
-        btn_leftGroup = new javax.swing.JButton();
+        btn_leaveGroup = new javax.swing.JButton();
         btn_addGroup = new javax.swing.JButton();
         lbl_server = new javax.swing.JLabel();
         lbl_stateServer = new javax.swing.JLabel();
@@ -207,10 +224,10 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             }
         });
 
-        btn_leftGroup.setText("Leave group");
-        btn_leftGroup.addActionListener(new java.awt.event.ActionListener() {
+        btn_leaveGroup.setText("Leave group");
+        btn_leaveGroup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_leftGroupActionPerformed(evt);
+                btn_leaveGroupActionPerformed(evt);
             }
         });
 
@@ -237,7 +254,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(btn_addGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btn_leaveGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(tab_users, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addComponent(btn_createGroup, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -276,7 +293,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btn_addGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btn_leftGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btn_leaveGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_createGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -341,11 +358,11 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     private void tab_usersStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_usersStateChanged
         int idx = tab_users.getSelectedIndex();
         if(tab_users.getTitleAt(idx).equals("Users")) {
-            btn_leftGroup.setEnabled(false);
+            btn_leaveGroup.setEnabled(false);
             btn_addGroup.setEnabled(false);
         }else{
             btn_addGroup.setEnabled(!hashGroup.isEmpty());
-            btn_leftGroup.setEnabled(!hashGroup.isEmpty());
+            btn_leaveGroup.setEnabled(!hashGroup.isEmpty());
         }
     }//GEN-LAST:event_tab_usersStateChanged
 
@@ -357,7 +374,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         controller.addGroup(c.users, c.name);
     }//GEN-LAST:event_btn_createGroupActionPerformed
 
-    private void btn_leftGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_leftGroupActionPerformed
+    private void btn_leaveGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_leaveGroupActionPerformed
          //if groups is empty: btn_leftGroup.setEnabled(false);
         int idx = list_groups.getSelectedIndex();
         if(idx == -1) return;
@@ -370,13 +387,19 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
             }
         }).start();
         
+        /*if the tab is open, we close it*/
+        int i = tab_chats.indexOfComponent(m);
+        if (i != -1) {
+            tab_chats.remove(i);
+        }
+        
         removeGroup(m);
         hashGroup.remove(m.getGroupReference());
         if(hashGroup.isEmpty()) {
-            btn_leftGroup.setEnabled(false);
+            btn_leaveGroup.setEnabled(false);
             btn_addGroup.setEnabled(false);
         }
-    }//GEN-LAST:event_btn_leftGroupActionPerformed
+    }//GEN-LAST:event_btn_leaveGroupActionPerformed
 
     private void btn_addGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addGroupActionPerformed
         int idx = list_groups.getSelectedIndex();
@@ -518,7 +541,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_addGroup;
     private javax.swing.JButton btn_createGroup;
-    private javax.swing.JButton btn_leftGroup;
+    private javax.swing.JButton btn_leaveGroup;
     private javax.swing.JButton btn_send;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -569,7 +592,7 @@ public class ChatView extends JFrame implements ChatModel.ChatRoomListener, Mess
         hashGroup.put(gref, group);
         openTab(group, true, true);
         if(hashGroup.size() == 1) {
-            btn_leftGroup.setEnabled(true);
+            btn_leaveGroup.setEnabled(true);
             btn_addGroup.setEnabled(true);
         }
         tab_usersStateChanged(null);

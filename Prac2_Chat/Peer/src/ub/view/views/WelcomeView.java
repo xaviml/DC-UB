@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.views;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -21,7 +21,6 @@ public class WelcomeView extends JFrame {
 
     private String IP;
     private int port;
-    private String user;
     
     /**
      * Creates new form NewJFrame
@@ -129,10 +128,6 @@ public class WelcomeView extends JFrame {
                     c.setVisible(true);
                     setVisible(false);
                     dispose();
-                    
-                    
-                    
-                    
                 } catch (RemoteException | MalformedURLException | NotBoundException ex) {
                     lbl_nickname_in_use.setText("Server is down");
                     lbl_nickname_in_use.setVisible(true);

@@ -3,13 +3,14 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.complements;
 
 import java.util.ArrayList;
 import javax.swing.AbstractListModel;
 
 /**
- *
+ * This class is used to show the list of the groups.
+ * 
  * @author Xavi Moreno
  */
 public class GroupListModel extends AbstractListModel<String>{
@@ -20,10 +21,23 @@ public class GroupListModel extends AbstractListModel<String>{
         this.mArray = mArray;
     }
     
+    /**
+     * Return the size of the array.
+     * 
+     * @return 
+     */
+    
     @Override
     public int getSize() {
         return mArray.size();
     }
+    
+    /**
+     * Return the i-th element of the list
+     * 
+     * @param i
+     * @return 
+     */
 
     @Override
     public String getElementAt(int i) {

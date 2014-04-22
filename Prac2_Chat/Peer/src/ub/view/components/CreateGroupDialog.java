@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view;
+package ub.view.components;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.WindowConstants;
+import ub.view.complements.CreateGroupObject;
 
 /**
  *
@@ -43,6 +43,12 @@ public class CreateGroupDialog extends javax.swing.JDialog {
         DefaultListCellRenderer renderer =  (DefaultListCellRenderer)list_users.getCellRenderer();  
         renderer.setHorizontalAlignment(JLabel.CENTER); 
     }
+    
+    /**
+     * Shows the dialog.
+     * 
+     * @return 
+     */
     
     public CreateGroupObject showDialog() {
         setVisible(true);
@@ -158,16 +164,6 @@ public class CreateGroupDialog extends javax.swing.JDialog {
         this.name = "";
         dispose();
     }//GEN-LAST:event_btn_cancelActionPerformed
-
-    class CreateGroupObject {
-        public String name;
-        public ArrayList<String> users;
-
-        public CreateGroupObject(String name, ArrayList<String> users) {
-            this.name = name;
-            this.users = users;
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_cancel;

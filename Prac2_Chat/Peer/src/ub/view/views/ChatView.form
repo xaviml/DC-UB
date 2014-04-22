@@ -34,7 +34,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="btn_addGroup" min="-2" pref="132" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="btn_leftGroup" min="-2" pref="120" max="-2" attributes="0"/>
+                          <Component id="btn_leaveGroup" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
                       <Component id="tab_users" alignment="1" pref="0" max="32767" attributes="0"/>
                       <Component id="btn_createGroup" alignment="1" max="32767" attributes="0"/>
@@ -85,7 +85,7 @@
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btn_addGroup" max="32767" attributes="0"/>
-                          <Component id="btn_leftGroup" min="-2" pref="35" max="-2" attributes="0"/>
+                          <Component id="btn_leaveGroup" min="-2" pref="35" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btn_createGroup" min="-2" pref="33" max="-2" attributes="0"/>
@@ -223,12 +223,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_createGroupActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btn_leftGroup">
+    <Component class="javax.swing.JButton" name="btn_leaveGroup">
       <Properties>
         <Property name="text" type="java.lang.String" value="Leave group"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_leftGroupActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_leaveGroupActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btn_addGroup">
