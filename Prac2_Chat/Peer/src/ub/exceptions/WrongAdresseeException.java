@@ -6,8 +6,8 @@
 package ub.exceptions;
 
 /**
- *
- * @author kirtash
+ * 
+ * @author Pablo Martinez
  */
 public class WrongAdresseeException extends RuntimeException{
 }

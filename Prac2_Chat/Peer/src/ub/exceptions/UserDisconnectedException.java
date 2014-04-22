@@ -6,8 +6,9 @@
 package ub.exceptions;
 
 /**
- *
- * @author kirtash
+ * This Exception is thrown when you try to contact with a Disconnected user.
+ * 
+ * @author Pablo Martinez
  */
 public class UserDisconnectedException extends RuntimeException{
     

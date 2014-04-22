@@ -10,7 +10,8 @@ import ub.common.IServer;
 import ub.model.ChatModelServices;
 
 /**
- *
+ * This thread start when the software reach the server and works until the 
+ * server goes down. 
  * @author kirtash
  */
 public class PingServer implements Runnable{
@@ -33,9 +34,7 @@ public class PingServer implements Runnable{
             } catch (RemoteException ex) {
                 services.notifyServerDown();
                 break;
-            } catch (InterruptedException ex) {
-                System.err.println("Interrupted");
-            }
+            } catch (InterruptedException ex) {}
         }
     }
     

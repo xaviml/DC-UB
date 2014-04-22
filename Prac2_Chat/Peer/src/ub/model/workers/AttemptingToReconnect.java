@@ -12,7 +12,8 @@ import java.rmi.RemoteException;
 import ub.common.UserInUseException;
 
 /**
- *
+ * This thread is launched when server falls down and it run until the Peer 
+ * can connect the server again.
  * @author kirtash
  */
 public class AttemptingToReconnect implements Runnable{

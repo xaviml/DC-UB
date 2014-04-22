@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ub.common.IPeer;
 import workers.DisconnectedList;
 import workers.NotifyDisconnectionWorker;
@@ -27,7 +25,7 @@ public class Pinger implements Runnable, DisconnectedList {
     private final ServerServices services;
     private ExecutorService executor;
     private final boolean working;
-    private boolean newDisconnectedFlag;
+    private final boolean newDisconnectedFlag;
     
     public Pinger(ServerServices services){
         this.newDisconnectedFlag = false;
@@ -43,12 +41,16 @@ public class Pinger implements Runnable, DisconnectedList {
             try {
                 // Do the propper disconnections
                 notifyDisconnections();
+                
+                // Wait 3sec
                 synchronized(this){
                     this.wait(3000);
                 }
+                
+                // Ping all connections
                 pingConnections();
-            } catch (InterruptedException ex) {//Server added a disconnection!
-            }
+                
+            } catch (InterruptedException ex) {/*Server added a disconnection!*/}
         }
     }
 

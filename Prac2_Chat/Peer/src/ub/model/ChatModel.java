@@ -23,7 +23,9 @@ import ub.model.workers.NotifyGroup;
 import ub.model.workers.PingServer;
 
 /**
- *
+ *  This is the main model class. Here there are all the relevant objects of the
+ * program. 
+ * 
  * @author Pablo
  */
 public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReconnect{
@@ -44,7 +46,7 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     private IServer server;
     public ConcurrentHashMap<String,IPeer> connections;                         // All the connections         
     public ConcurrentHashMap<String, Chat> chats;                               // Chats
-    public ConcurrentHashMap<String, Group> groups;                     // Groups
+    public ConcurrentHashMap<String, Group> groups;                             // Groups
     private ExecutorService executor;
     
     
@@ -290,14 +292,6 @@ public class ChatModel implements ChatModelServices, AttemptingToReconnect.IReco
     public String getMyUserName() {
         return myUsername;
     }
-
-
-
-
-
-
-
-
     
     public interface ChatRoomListener{
         public ChatListener onNewChatCreated(String username);

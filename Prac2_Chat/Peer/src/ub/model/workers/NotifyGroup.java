@@ -12,20 +12,21 @@ import ub.common.Message;
 import ub.model.ChatModelServices;
 
 /**
- *
+ * This is a Worker that notify the events going on in a group. The variable
+ * instruction, contains the current task to be executed.
  * @author kirtash
  */
 public class NotifyGroup implements Runnable{
     private enum Instruction{ADD_GROUP,SEND_MESSAGE,NEW_MEMBER,LEAVE_GROUP};
-    private Instruction instruction;
-    private IPeer adreesse;
-    private String username;
+    private final Instruction instruction;
+    private final IPeer adreesse;
+    private final String username;
     private ArrayList<String> members;
     private Message message;
     private String groupName;
     private String newMemberName;
-    private String gref;
-    private ChatModelServices services;
+    private final String gref;
+    private final ChatModelServices services;
 
     public NotifyGroup(ChatModelServices services, String gref, String groupName, ArrayList<String> members, IPeer adreesse, String username){
         this.instruction = Instruction.ADD_GROUP;
