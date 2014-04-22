@@ -3,7 +3,7 @@
  * This project is being developed by Pablo Martinez and Xavi Moreno
  */
 
-package ub.view.components;
+package ub.view.components.dialog;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;

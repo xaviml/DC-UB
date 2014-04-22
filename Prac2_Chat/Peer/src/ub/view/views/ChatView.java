@@ -7,9 +7,9 @@ package ub.view.views;
 
 import ub.view.complements.GroupListModel;
 import ub.view.complements.MessageBox;
-import ub.view.components.AddMemberDialog;
-import ub.view.components.CreateGroupDialog;
-import ub.view.components.ButtonTabComponent;
+import ub.view.components.dialog.AddMemberDialog;
+import ub.view.components.dialog.CreateGroupDialog;
+import ub.view.components.buttons.ButtonTabComponent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;

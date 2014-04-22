@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
-package ub.view.components;
+package ub.view.components.buttons;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
