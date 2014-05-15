@@ -10,6 +10,7 @@ import ub.botiga.data.Data;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,24 +29,37 @@ public class ServletDispatcher extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
-	super.init(); 
-	data = new Data();
+	super.init();
+	ServletContext c = getServletContext();
+	String users = c.getRealPath("WEB-INF/users.json");
+	String products = c.getRealPath("WEB-INF/products.json");
+
+	data = new Data(users, products);
     }
     
     private void locationProxy(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	String CONTEXT = request.getContextPath();
 	String location = request.getRequestURI();
-	System.out.println(CONTEXT +" - " + location);
-	if(location.equals( CONTEXT + "/BO/")){
+	if(location.equals( CONTEXT + "/")){
 	    showPage( request, response, "index.jsp");
-	}else if ( location.equals( CONTEXT + "/BO/login") ) { 
-	    showPage( request, response, "login.jsp");
-	}else if(location.equals( CONTEXT + "/BO/Cataleg") ){ 
+
+	} else if ( location.equals( CONTEXT + "/login") ) { 
+	    showPage( request, response, "authtent.jsp");
+	    
+	} else if(location.equals( CONTEXT + "/logout") ){ 
+	    request.getSession().invalidate();
+	    response.sendRedirect(CONTEXT + "/");
+	    //showPage( request, response, "index.jsp");
+	    
+	} else if(location.equals( CONTEXT + "/Cataleg") ){ 
 	    showPage( request, response, "cataleg.jsp");
-	}else if(location.equals( CONTEXT + "/BO/Cistell") ){ 
+	    
+	} else if(location.equals( CONTEXT + "/Cistell") ){ 
 	    showPage( request, response, "cistell.jsp");
-	} else if(location.equals( CONTEXT + "/BO/Historial") ){ 
+	    
+	} else if(location.equals( CONTEXT + "/Historial") ){ 
 	    showPage( request, response, "historial.jsp");
+	    
 	} else{
 	    showPage( request, response, "error404.jsp");
 	}
@@ -60,18 +74,19 @@ public class ServletDispatcher extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	//Implement POST-Redirect-GET Pattern Design.
-
-	/*String user = req.getParameter("j_username");
-	String pass = req.getParameter("j_password");
-
-	response.sendRedirect("/Project-web/"+request.);*/
-	doGet(request, response);
+	String parameters = getParameters(request);
+	response.sendRedirect(request.getRequestURI()+parameters);
     }
 
     public void showPage(HttpServletRequest request, HttpServletResponse response, String jspPage) throws ServletException, IOException {
-	RequestDispatcher rd = request.getRequestDispatcher( "/WEB-INF/jsp/" + jspPage);
+	//String parameters = getParameters(request);
+ 	RequestDispatcher rd = request.getRequestDispatcher( "/WEB-INF/jsp/" + jspPage);
 	rd.forward(request, response);
-	//El que hi ha aquí no s'executarà mai
+    }
+    
+    private String getParameters(HttpServletRequest request) {
+	String q = request.getQueryString();
+	return q != null ? "?"+q : "";
     }
 
     private void controlUser(HttpServletRequest request, HttpServletResponse response) {
@@ -79,7 +94,7 @@ public class ServletDispatcher extends HttpServlet {
 	if(user != null) {
 	    User u = data.addUser(user);
 	    HttpSession s = request.getSession();
-	    s.setAttribute(u.getName(), u);
+	    s.setAttribute("user", u);
 	}
     }
 }

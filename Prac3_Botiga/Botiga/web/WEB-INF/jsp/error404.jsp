@@ -9,9 +9,14 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="static/css/generic.css" type="text/css" rel="stylesheet"/>
+	<link href="static/css/index.css" type="text/css" rel="stylesheet">
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Error404</h1>
+        <%@include file="header.jsp" %>
+	<div id="body-content">
+	    <h1>Error 404</h1>
+	</div>
     </body>
 </html>

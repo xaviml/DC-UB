@@ -21,11 +21,10 @@ body{
 #header-content {
     width: 100%;
     max-width: 1200px;
-    height: 80px;
+    height: 90px;
     //background-color: inherit;
-    display: block;
-    margin: 0 auto;
-    padding-top: 45px;
+    margin: auto;
+    padding-top: 40px;
 }
 
 #body-content {
@@ -42,29 +41,27 @@ body{
     color: #c8d7a4;
     font-weight: bold;
     float: left;
-    left: 0;
     margin: 0;
+    margin-top: -30px;
+    margin-left: 25px;
     
 }
 
 .right-header {
-    height: 100%;
     float:right;
+    margin: 0;
     margin-right: 70px;
+    margin-left: 15px;
+    padding: 0;
     
-    //margin-top: 3.8%;
 }
 
-#seccio-registrat {
-    height: content-box;
-}
-
-#cistell {
+.link {
     color: #c8d7a4;
     border-bottom-color: #c8d7a4;
 }
 
-#cistell:hover {
+.link:hover {
     color: #FFFFFF;
     text-decoration: none;
     border-bottom-color: #FFFFFF;
@@ -73,4 +70,29 @@ body{
 .left-content{
     float: left;
     font-size: 140%;
+    margin: 0;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.button {
+    background-color: #c8d7a4;
+    color: #646b52;
+    border-radius: 7px;
+    padding: 7px;
+}
+
+.button:hover {
+    background-color: #c8e7a4;
+    color: #647b52;
+}
+
+#seccio-registrat-avall {
+    height: 100%;
+    float: bottom;
+    margin: 0 auto;
+}
+
+#credits{
+    float: none;
 }

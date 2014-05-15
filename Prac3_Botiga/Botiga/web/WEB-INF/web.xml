@@ -18,9 +18,10 @@
          <web-resource-name>Protected Area</web-resource-name>
 
          <!-- Define the context-relative URL(s) to be protected -->
-         <url-pattern>/BO/Cistell</url-pattern>
-	 <url-pattern>/BO/Historial</url-pattern>
-	 <url-pattern>/BO/Producte/*</url-pattern>
+         <url-pattern>/Cistell</url-pattern>
+	 <url-pattern>/Historial</url-pattern>
+	 <url-pattern>/Producte/*</url-pattern>
+	 <url-pattern>/login</url-pattern>
 	 
 
          <!-- If you list http methods, only those methods are protected -->
@@ -39,8 +40,8 @@
       <auth-method>FORM</auth-method>
       <realm-name>Secure Area</realm-name>
       <form-login-config>
-        <form-login-page>/BO/login</form-login-page>
-        <form-error-page>/BO/login?error=true</form-error-page>
+        <form-login-page>/WEB-INF/jsp/login.jsp</form-login-page>
+        <form-error-page>/WEB-INF/jsp/login.jsp?error=true</form-error-page>
       </form-login-config>
     </login-config>
 
@@ -55,8 +56,12 @@
 
     <servlet-mapping>
         <servlet-name>ServletDispatcher</servlet-name>
-        <url-pattern>/BO/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
     
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
     
 </web-app>

@@ -24,14 +24,16 @@ public class Data {
     
     private final Object mutex = new Object();
     
-    public Data() {
-	mProducts = Utils.loadProducts("/home/zenbook/NetBeansProjects/Botiga/web/WEB-INF/products.json");
-	mUsers = Utils.loadUsers("/home/zenbook/NetBeansProjects/Botiga/web/WEB-INF/users.json",mProducts);
+    public Data(String users, String products) {
+	//mProducts = Utils.loadProducts("/home/zenbook/SWD/Dijous2/Prac3_Botiga/Botiga/web/WEB-INF/products.json");
+	//mUsers = Utils.loadUsers("/home/zenbook/SWD/Dijous2/Prac3_Botiga/Botiga/web/WEB-INF/users.json",mProducts);
+	mProducts = Utils.loadProducts(products);
+	mUsers = Utils.loadUsers(users, mProducts);
     }
     
     private void saveUsers() {
 	try {
-	    Utils.saveUsers("/home/zenbook/NetBeansProjects/Botiga/web/WEB-INF/users.json", mUsers, mutex);
+	    Utils.saveUsers("/home/zenbook/SWD/Dijous2/Prac3_Botiga/Botiga/web/WEB-INF/users.json", mUsers, mutex);
 	} catch (JSONException ex) {
 	    System.err.println("Error");
 	} catch (FileNotFoundException ex) {
@@ -58,6 +60,8 @@ public class Data {
     public void buyProduct(String user, String product) {
 	
 	//Aquí s'ha d'actualitzar el fitxer users.json també
+	mUsers.get("pablo");
+	saveUsers();
     }
     
     
