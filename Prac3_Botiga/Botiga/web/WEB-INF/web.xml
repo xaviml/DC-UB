@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <display-name>HelloWorld Application</display-name>
+    
+    <description>
+        This is a simple web application with a source code organization
+        based on the recommendations of the Application Developer's Guide.
+    </description>
+    
+    <security-constraint>
+      <display-name>Exemple Autentificació</display-name>
+      <web-resource-collection>
+         <web-resource-name>Protected Area</web-resource-name>
+
+         <!-- Define the context-relative URL(s) to be protected -->
+         <url-pattern>/BO/Cistell</url-pattern>
+	 <url-pattern>/BO/Historial</url-pattern>
+	 <url-pattern>/BO/Producte/*</url-pattern>
+	 
+
+         <!-- If you list http methods, only those methods are protected -->
+         <http-method>DELETE</http-method>
+         <http-method>GET</http-method>
+         <http-method>POST</http-method>
+         <http-method>PUT</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+         <!-- Anyone with one of the listed roles may access this area -->
+         <role-name>client</role-name>
+      </auth-constraint>
+    </security-constraint>
+    
+    <login-config>
+      <auth-method>FORM</auth-method>
+      <realm-name>Secure Area</realm-name>
+      <form-login-config>
+        <form-login-page>/BO/login</form-login-page>
+        <form-error-page>/BO/login?error=true</form-error-page>
+      </form-login-config>
+    </login-config>
+
+    <security-role>
+      <role-name>client</role-name>
+    </security-role>
+
+    <servlet>
+        <servlet-name>ServletDispatcher</servlet-name>
+        <servlet-class>ub.botiga.ServletDispatcher</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ServletDispatcher</servlet-name>
+        <url-pattern>/BO/*</url-pattern>
+    </servlet-mapping>
+    
+    
+</web-app>

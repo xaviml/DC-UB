@@ -1,0 +1,15 @@
+{"products": [
+	{
+	"name": "I'm Not Part Of Me",
+	"desc": "Cançó de Cloud Nothings",
+	"price": "1.99",
+	"type" : "mp3",
+	"path" : "products/mp3/imnotpartofme"
+	},{
+	"name": "Walking With A Ghost",
+	"desc": "Cançó de Tegan And Sara",
+	"price": "2.99",
+	"type" : "mp3",
+	"path" : "products/mp3/walkingwithaghost"
+	}
+]}

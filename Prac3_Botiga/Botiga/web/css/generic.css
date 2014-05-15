@@ -1,0 +1,76 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 15-may-2014, 10:36:14
+    Author     : zenbook
+*/
+body{
+    font-family: DejaVuSans, Arial;
+    margin:0;
+}
+
+#header {
+    
+    background-image: url('../img/background_header.png');
+    zoom: 1;
+}
+
+#header-content {
+    width: 100%;
+    max-width: 1200px;
+    height: 80px;
+    //background-color: inherit;
+    display: block;
+    margin: 0 auto;
+    padding-top: 45px;
+}
+
+#body-content {
+    width: 100%;
+    max-width: 1300px;
+    height: 100%;
+    margin: 0 auto;
+    display:block;
+    overflow-x: hidden;
+}
+
+#title{
+    
+    color: #c8d7a4;
+    font-weight: bold;
+    float: left;
+    left: 0;
+    margin: 0;
+    
+}
+
+.right-header {
+    height: 100%;
+    float:right;
+    margin-right: 70px;
+    
+    //margin-top: 3.8%;
+}
+
+#seccio-registrat {
+    height: content-box;
+}
+
+#cistell {
+    color: #c8d7a4;
+    border-bottom-color: #c8d7a4;
+}
+
+#cistell:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+    border-bottom-color: #FFFFFF;
+}
+
+.left-content{
+    float: left;
+    font-size: 140%;
+}
