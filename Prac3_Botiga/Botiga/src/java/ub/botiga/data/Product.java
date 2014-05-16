@@ -22,12 +22,14 @@ public class Product {
     private String mName; //The name must be unique
     private String mDescription;
     private float mPrice;
+    private String path;
 
-    public Product(FileType mType, String mName, String mDescription, int mPrice) {
+    public Product(FileType mType, String mName, String mDescription, int mPrice, String path) {
 	this.mType = mType;
 	this.mName = mName;
 	this.mDescription = mDescription;
 	this.mPrice = mPrice;
+	this.path = path;
     }
     
     public Product(JSONObject obj) throws JSONException {
@@ -35,6 +37,7 @@ public class Product {
 	this.mType = Utils.getFileType(obj.getString("type"));
 	this.mDescription = obj.getString("desc");
 	this.mPrice = (float) obj.getDouble("price");
+	this.path = obj.getString("path");
     }
 
     public FileType getType() {
@@ -68,4 +71,13 @@ public class Product {
     public void setPrice(float mPrice) {
 	this.mPrice = mPrice;
     }
+
+    public String getPath() {
+	return path;
+    }
+
+    public void setPath(String path) {
+	this.path = path;
+    }
+    
 }

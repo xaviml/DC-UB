@@ -63,6 +63,10 @@ public class Data {
 	mUsers.get("pablo");
 	saveUsers();
     }
+
+    public HashMap<String, Product> getProductes() {
+	return mProducts;
+    }
     
     
 }

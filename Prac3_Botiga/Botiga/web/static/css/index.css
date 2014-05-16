@@ -19,29 +19,8 @@ and open the template in the editor.
     margin: 0 auto;
     margin-right: 3%;
     margin-left: 3%;
-    margin-top: 20px;
     margin-bottom: 20px;
     //max-width: 1000px;
 }
 
-.background {
-    border-width: 3px;
-    border-style: solid;
-    border-radius: 8px;
-    border-color: #646b52;
-}
-
-.title {
-    color: #423939;
-    margin-left: 15px;
-    margin-top: 20px;
-}
-
-hr{
-    width: 95%;
-    border: 0px none;
-    height: 3px;
-    margin: 0 auto;
-    background-color: #c8d7a4;
-}
 

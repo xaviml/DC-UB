@@ -9,6 +9,7 @@ package ub.botiga;
 import ub.botiga.data.Data;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import ub.botiga.data.Product;
 import ub.botiga.data.User;
 
 
@@ -49,10 +51,9 @@ public class ServletDispatcher extends HttpServlet {
 	} else if(location.equals( CONTEXT + "/logout") ){ 
 	    request.getSession().invalidate();
 	    response.sendRedirect(CONTEXT + "/");
-	    //showPage( request, response, "index.jsp");
 	    
 	} else if(location.equals( CONTEXT + "/Cataleg") ){ 
-	    showPage( request, response, "cataleg.jsp");
+	    showCataleg( request, response);
 	    
 	} else if(location.equals( CONTEXT + "/Cistell") ){ 
 	    showPage( request, response, "cistell.jsp");
@@ -63,7 +64,15 @@ public class ServletDispatcher extends HttpServlet {
 	} else{
 	    showPage( request, response, "error404.jsp");
 	}
-}
+    }
+    
+    private void controlPost(HttpServletRequest request, HttpServletResponse response) {
+	String CONTEXT = request.getContextPath();
+	String location = request.getRequestURI();
+	if(location.equals( CONTEXT + "/Compra")){
+	    comprar(request, response);
+	}
+    }
     
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
@@ -74,8 +83,11 @@ public class ServletDispatcher extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	//Implement POST-Redirect-GET Pattern Design.
+	
+	controlPost(request, response);
+	/*
 	String parameters = getParameters(request);
-	response.sendRedirect(request.getRequestURI()+parameters);
+	response.sendRedirect(request.getRequestURI()+parameters);*/
     }
 
     public void showPage(HttpServletRequest request, HttpServletResponse response, String jspPage) throws ServletException, IOException {
@@ -96,5 +108,29 @@ public class ServletDispatcher extends HttpServlet {
 	    HttpSession s = request.getSession();
 	    s.setAttribute("user", u);
 	}
+    }
+
+    private void showCataleg(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	ArrayList<Product> mp3 = new ArrayList<Product>();
+	ArrayList<Product> videos = new ArrayList<Product>();
+	ArrayList<Product> llibres = new ArrayList<Product>();
+	for (Product product : data.getProductes().values()) {
+	    if(product.getType() == Product.FileType.MP3)
+		mp3.add(product);
+	    else if(product.getType() == Product.FileType.PDF)
+		llibres.add(product);
+	    else if(product.getType() == Product.FileType.VIDEO)
+		videos.add(product);
+	}
+	
+	request.setAttribute("mp3", mp3);
+	request.setAttribute("llibres", llibres);
+	request.setAttribute("videos", videos);
+	
+	showPage( request, response, "cataleg.jsp");
+    }
+
+    private void comprar(HttpServletRequest request, HttpServletResponse response) {
+	
     }
 }
