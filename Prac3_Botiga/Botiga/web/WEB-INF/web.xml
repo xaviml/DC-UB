@@ -36,6 +36,10 @@
       </auth-constraint>
     </security-constraint>
     
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
     <login-config>
       <auth-method>FORM</auth-method>
       <realm-name>Secure Area</realm-name>

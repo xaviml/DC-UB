@@ -17,8 +17,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -27,6 +25,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.startup.PasswdUserDatabase;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.dbcp.pool.impl.GenericKeyedObjectPool;
+import org.json.JSONArray;
 import ub.botiga.data.Product;
 import ub.botiga.data.User;
 
@@ -72,6 +75,9 @@ public class ServletDispatcher extends HttpServlet {
 
 	} else if (location.contains(CONTEXT + "/Producte")) {
 	    controlProduct(request, response);
+
+	} else if (location.contains(CONTEXT + "/augsaldo")) {
+	    controlWebServices(request, response);
 
 	} else {
 	    showPage(request, response, "error404.jsp");
@@ -284,5 +290,37 @@ public class ServletDispatcher extends HttpServlet {
 	in.close();
 	outStream.close();
 
+    }
+
+    private void controlWebServices(HttpServletRequest request, HttpServletResponse response) {
+	
+	/*
+	Camps del JSON:
+	    - status: LIMIT_INFERIOR_SALDO,
+			LIMIT_SUPERIOR_SALDO,
+			INVALID_STRING_SALDO,
+			INVALID_USER_PASS
+	    - saldoactual: saldoanterior + saldo nou
+	*/
+	
+	String user = request.getParameter("user");
+	String pass = request.getParameter("pass");
+	
+	JSONArray status = new JSONArray();
+	boolean correct = true;
+	try{
+	    int augment = Integer.parseInt(request.getParameter("saldo"));
+	    if(augment<5){
+		status.put("LIMIT_INFERIOR_SALDO");
+		correct = false;
+	    }
+	    if(augment > 3000) {
+		status.put("LIMIT_SUPERIOR_SALDO");
+		correct = false;
+	    }
+	}catch(NumberFormatException ex) {
+	    status.put("INVALID_STRING_SALDO");
+	    correct = false;
+	}
     }
 }
