@@ -4,12 +4,36 @@
 	"desc": "Cançó de Cloud Nothings",
 	"price": "1.99",
 	"type" : "mp3",
-	"path" : "products/mp3/imnotpartofme"
+	"path" : "/music/ImNotPartofMe.mp3"
 	},{
 	"name": "Walking With A Ghost",
 	"desc": "Cançó de Tegan And Sara",
 	"price": "2.99",
 	"type" : "mp3",
-	"path" : "products/mp3/walkingwithaghost"
+	"path" : "/music/WalkingWithTheGhost.mp3"
+	},
+	
+	
+	
+	
+	
+	{
+	"name": "Exercicis Protocol Socket",
+	"desc": "Exercicis per a l'asignatura de Software Distribuït de la UB",
+	"price": "4.99",
+	"type" : "pdf",
+	"path" : "/books/Exercicis.pdf"
+	},
+	
+	
+	
+	
+	
+	{
+	"name": "Titanic",
+	"desc": "Pel·lícula",
+	"price": "4.99",
+	"type" : "video",
+	"path" : "/videos/titanic.mp4"
 	}
 ]}

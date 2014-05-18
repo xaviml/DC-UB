@@ -57,10 +57,10 @@ public class Data {
 	return u;
     }
     
-    public void buyProduct(String user, String product) {
-	
-	//Aquí s'ha d'actualitzar el fitxer users.json també
-	mUsers.get("pablo");
+    public void buyProduct(User user, HashMap<String, Product> productes, float preu) {
+	//Aquí s'actualitzar el fitxer users.json també
+	user.getProducts().putAll(productes);
+	user.setCredits(user.getCredits()-preu);
 	saveUsers();
     }
 

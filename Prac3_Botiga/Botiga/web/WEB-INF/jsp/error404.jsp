@@ -9,14 +9,14 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link href="static/css/generic.css" type="text/css" rel="stylesheet"/>
-	<link href="static/css/index.css" type="text/css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/static/css/generic.css" type="text/css" rel="stylesheet"/>
         <title>JSP Page</title>
     </head>
     <body>
         <%@include file="header.jsp" %>
 	<div id="body-content">
 	    <h1>Error 404</h1>
+	    <h4>Pàgina no trobada</h4>
 	</div>
     </body>
 </html>

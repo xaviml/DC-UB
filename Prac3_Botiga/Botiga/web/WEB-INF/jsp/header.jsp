@@ -18,7 +18,6 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<!--<link href="../static/css/generic.css" type="text/css" rel="stylesheet"></link>-->
     </head>
     <body>
 	<div id="header">
@@ -38,18 +37,18 @@
 			<p id="benvolgut" class="left-content">Hola, <%=u.getName()%></p>
 			<p class="left-content" style="color: #c8d7a4;">|</p>
 			
-			<p id="credits" class="left-content"><%=u.getCredits()%>  <%=u.getCredits() != 1?"crèdits":"crèdit"%></p>
+			<p id="credits" class="left-content"><%=u.getCredits()%>  €</p>
 			<div id="seccio-registrat-avall">
-			    <p class="left-content"> <a id="cataleg" class="link" href="Cataleg">Catàleg</a></p>
+			    <p class="left-content"> <a id="cataleg" class="link" href="/Botiga/Cataleg">Catàleg</a></p>
 			    <p class="left-content" style="color: #c8d7a4;">|</p>
 			    
-			    <p class="left-content"> <a id="historial"  class="link" href="Historial">Historial</a></p>
+			    <p class="left-content"> <a id="historial"  class="link" href="/Botiga/Historial">Historial</a></p>
 			    <p class="left-content" style="color: #c8d7a4;">|</p>
 
-			    <p class="left-content"> <a id="cistell"  class="link" href="Cistell">Cistell</a></p>
+			    <p class="left-content"> <a id="cistell"  class="link" href="/Botiga/Cistell">Cistell</a></p>
 			    <p class="left-content" style="color: #c8d7a4;">|</p>
 
-			    <p class="left-content"> <a id="logout"  class="link" href="logout">Sortir</a></p>
+			    <p class="left-content"> <a id="logout"  class="link" href="/Botiga/logout">Sortir</a></p>
 			</div>
 		    </div>
 		<%}%>

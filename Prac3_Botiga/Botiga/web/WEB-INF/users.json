@@ -1,5 +1,16 @@
-{"users": [{
-  "name": "xavi",
-  "credit": 1000,
-  "products": []
-}]}
+{"users": [
+  {
+    "name": "albert",
+    "credit": 987.030029296875,
+    "products": [
+      "Exercicis Protocol Socket",
+      "Walking With A Ghost",
+      "Titanic"
+    ]
+  },
+  {
+    "name": "xavi",
+    "credit": 997.010009765625,
+    "products": ["Walking With A Ghost"]
+  }
+]}

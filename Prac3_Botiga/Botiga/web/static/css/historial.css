@@ -1,0 +1,117 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 15-may-2014, 10:36:14
+    Author     : zenbook
+*/
+
+#menu {
+    width: 200px;
+    margin-left: 16px;
+    /*float: left;
+    margin-top: 20px;
+    position: relative;
+    width: 400px;
+    right: 67%;
+    left:0;
+    height: 20%;*/
+}
+
+#content-cataleg {
+    /*position: relative;
+    left: 35%;
+    width: 64%;
+    right: 0;*/
+}
+
+#index.title {
+    font-size: 110%;
+    float: bottom;
+}
+
+.title{
+    margin-left: 35px;
+}
+
+.itemindex {
+    text-align: right;
+    margin-right: 18px;
+    //width: 100%;
+    //right: 0;
+    
+    float: bottom;
+}
+
+.prod-container {
+    margin-bottom: 40px;
+}
+
+.row{
+    width: 92%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #c8d7a4;
+    border-left: none;
+    border-right: none;
+    
+    padding-left: 8px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    
+    margin: 0 auto;
+    float: bottom;
+}
+
+.nomprod{
+    font-size: 100%;
+    color: #423939;
+    
+    right: 0;
+    margin: 0 auto;
+    
+    font-size: 130%;
+    
+}
+
+#submit{
+    position: fixed;
+    margin-top: -20px;
+    margin-right: 30px;
+    margin-bottom: 10px;
+    right: 0;
+    bottom: 0;
+    font-size: 140%;
+    
+}
+
+.price {
+    //margin-right: 7%;
+    //margin-left: 20px;
+    //float: right;
+}
+
+#nocistell {
+    width: 95%;
+    text-align: center;
+}
+
+#confirma {
+    float: left;
+    margin-left: 45px;
+    margin-right: 30px;
+    margin-bottom: 40px;
+}
+
+#cancela {
+    float: left;
+}
+
+#preu{
+     margin-left: 60px;
+     color: #423939;
+     font-size: 140%;
+}
+
