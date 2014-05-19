@@ -2,15 +2,14 @@
   {
     "name": "albert",
     "credit": 987.030029296875,
-    "products": [
-      "Exercicis Protocol Socket",
-      "Walking With A Ghost",
-      "Titanic"
-    ]
+    "products": []
   },
   {
     "name": "xavi",
-    "credit": 997.010009765625,
-    "products": ["Walking With A Ghost"]
+    "credit": 992.530029296875,
+    "products": [
+      "I'm Not Part Of Me",
+      "Manual per solventar el cub de rubik"
+    ]
   }
 ]}

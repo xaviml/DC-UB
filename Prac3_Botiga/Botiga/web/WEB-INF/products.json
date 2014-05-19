@@ -23,6 +23,12 @@
 	"price": "4.99",
 	"type" : "pdf",
 	"path" : "/books/Exercicis.pdf"
+	},{
+	"name": "Manual per solventar el cub de rubik",
+	"desc": "Manual complet per aprendre a solucionar un cub de rubik",
+	"price": "2.49",
+	"type" : "pdf",
+	"path" : "/books/cubrubik.pdf"
 	},
 	
 	
