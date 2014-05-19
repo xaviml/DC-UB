@@ -67,6 +67,15 @@ public class Data {
     public HashMap<String, Product> getProductes() {
 	return mProducts;
     }
+
+    public HashMap<String, User> getUsers() {
+	return mUsers;
+    }
+
+    public void augmentarSaldo(User u, int augment) {
+	u.setCredits(u.getCredits()+augment);
+	saveUsers();
+    }
     
     
 }

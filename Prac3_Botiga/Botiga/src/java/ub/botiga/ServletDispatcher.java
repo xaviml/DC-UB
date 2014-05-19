@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import ub.botiga.data.Data;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -35,6 +36,8 @@ import org.apache.catalina.startup.PasswdUserDatabase;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.dbcp.pool.impl.GenericKeyedObjectPool;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import ub.botiga.data.Product;
 import ub.botiga.data.User;
 
@@ -304,17 +307,20 @@ public class ServletDispatcher extends HttpServlet {
 	    - status: LIMIT_INFERIOR_SALDO,
 			LIMIT_SUPERIOR_SALDO,
 			INVALID_STRING_SALDO,
-			INVALID_USER_PASS
+			INVALID_USER_PASS,
+			OK
 	    - saldoactual: saldoanterior + saldo nou
 	*/
 	
+	JSONObject obj = new JSONObject();
+	
 	String user = request.getParameter("user");
 	String pass = request.getParameter("pass");
-	
+	int augment = 0;
 	JSONArray status = new JSONArray();
 	boolean correct = true;
 	try{
-	    int augment = Integer.parseInt(request.getParameter("saldo"));
+	    augment = Integer.parseInt(request.getParameter("saldo"));
 	    if(augment<5){
 		status.put("LIMIT_INFERIOR_SALDO");
 		correct = false;
@@ -327,16 +333,52 @@ public class ServletDispatcher extends HttpServlet {
 	    status.put("INVALID_STRING_SALDO");
 	    correct = false;
 	}
-	boolean login = false;
-	try {
-	    request.login("aldbert", "albert");
-	    login = true;
-	} catch (ServletException ex) { login = false; }
 	
-	if(login) {
-	    
-	}else{
-	    
+	float saldoactual = -1;
+	
+	try {
+	    request.login(user, pass);
+	    User u = data.getUsers().get(user);
+	    if(correct) {
+		status.put("OK");
+		data.augmentarSaldo(u, augment);
+		saldoactual = u.getCredits();
+	    }
+	    request.getSession().invalidate();
+	} catch (ServletException ex) {
+	    status.put("INVALID_USER_PASS"); 
 	}
+	try {
+	    obj.put("status", status);
+	    if(saldoactual>=0)
+		obj.put("saldoactual", saldoactual);
+	} catch (JSONException ex) {
+	    Logger.getLogger(ServletDispatcher.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	
+	
+	
+	
+	/********************************/
+	/*     Retornem un json
+	/********************************/
+	
+	
+	try {
+	    response.setContentType("application/json");
+	    // Get the printwriter object from response to write the required json object to the output stream      
+	    PrintWriter out = response.getWriter();
+	    // Assuming your json object is **jsonObject**, perform the following, it will return your json object
+	    out.print(obj.toString(2));
+	    out.close();
+	} catch (JSONException ex) {
+	    Logger.getLogger(ServletDispatcher.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	
+	
+	
+	
+	
     }
+
 }
