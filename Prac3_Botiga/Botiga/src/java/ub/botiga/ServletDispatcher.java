@@ -5,6 +5,8 @@
  */
 package ub.botiga;
 
+import com.sun.net.httpserver.Authenticator;
+import com.sun.net.httpserver.HttpExchange;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +19,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.startup.PasswdUserDatabase;
 import org.apache.catalina.startup.Tomcat;
@@ -292,7 +297,7 @@ public class ServletDispatcher extends HttpServlet {
 
     }
 
-    private void controlWebServices(HttpServletRequest request, HttpServletResponse response) {
+    private void controlWebServices(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	
 	/*
 	Camps del JSON:
@@ -321,6 +326,17 @@ public class ServletDispatcher extends HttpServlet {
 	}catch(NumberFormatException ex) {
 	    status.put("INVALID_STRING_SALDO");
 	    correct = false;
+	}
+	boolean login = false;
+	try {
+	    request.login("aldbert", "albert");
+	    login = true;
+	} catch (ServletException ex) { login = false; }
+	
+	if(login) {
+	    
+	}else{
+	    
 	}
     }
 }
