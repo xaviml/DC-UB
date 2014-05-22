@@ -37,7 +37,7 @@
 	
 	{
 	"name": "Titanic",
-	"desc": "Pel·lícula",
+	"desc": "Trailer de pel·lícula",
 	"price": "4.99",
 	"type" : "video",
 	"path" : "/videos/titanic.mp4"

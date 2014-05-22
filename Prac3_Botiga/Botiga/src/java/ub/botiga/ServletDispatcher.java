@@ -5,8 +5,6 @@
  */
 package ub.botiga;
 
-import com.sun.net.httpserver.Authenticator;
-import com.sun.net.httpserver.HttpExchange;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,11 +28,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.catalina.authenticator.AuthenticatorBase;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.startup.PasswdUserDatabase;
-import org.apache.catalina.startup.Tomcat;
-import org.apache.tomcat.dbcp.pool.impl.GenericKeyedObjectPool;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -120,7 +113,7 @@ public class ServletDispatcher extends HttpServlet {
 	HttpSession session = request.getSession();
 	User u = (User) session.getAttribute("user");
 	if (u == null) {
-	    response.sendRedirect("Botiga/");
+	    response.sendRedirect("/Botiga/");
 	    return;
 	}
 
@@ -130,6 +123,11 @@ public class ServletDispatcher extends HttpServlet {
 	    cistell.remove(p.getName());
 	}
 	session.setAttribute("cistell", cistell);
+	if(u.getCredits() - getPreuCistell(request) < 0) {
+	    request.setAttribute("creditsuficient", false);
+	} else{
+	    request.setAttribute("creditsuficient", true);
+	}
 
 	request.setAttribute("cistell", cistell.values());
 	DecimalFormat df = new DecimalFormat();
@@ -168,7 +166,7 @@ public class ServletDispatcher extends HttpServlet {
     private void showHistorial(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 	User u = (User) request.getSession().getAttribute("user");
 	if (u == null) {
-	    response.sendRedirect("Botiga/");
+	    response.sendRedirect("/Botiga/");
 	    return;
 	}
 	HashMap<String, Product> historial = u.getProducts();
@@ -218,12 +216,12 @@ public class ServletDispatcher extends HttpServlet {
 	session.setAttribute("cistell", cistell);
 
 	/*Redireccionem a cistell*/
-	response.sendRedirect("Cistell");
+	response.sendRedirect("/Botiga/Cistell");
     }
 
     private void cancela(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	request.getSession().removeAttribute("cistell");
-	response.sendRedirect("Cataleg");
+	response.sendRedirect("/Botiga/Cataleg");
     }
 
     private void confirma(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -232,17 +230,17 @@ public class ServletDispatcher extends HttpServlet {
 	User u = (User) request.getSession().getAttribute("user");
 	float preu = getPreuCistell(request);
 	if (u == null) {
-	    response.sendRedirect("Botiga/");
+	    response.sendRedirect("/Botiga/");
 	    return;
 	}
 	if (u.getCredits() - preu < 0) { //No pot comprar
-	    //TODO: do something
+	    response.sendRedirect("/Botiga/Cistell");
 	} else {
 	    //Borrem el cistell
 	    request.getSession().removeAttribute("cistell");
 
 	    data.buyProduct(u, productes, preu);
-	    response.sendRedirect("Historial");
+	    response.sendRedirect("/Botiga/Historial");
 	}
 
     }
@@ -357,8 +355,6 @@ public class ServletDispatcher extends HttpServlet {
 	}
 	
 	
-	
-	
 	/********************************/
 	/*     Retornem un json
 	/********************************/
@@ -374,11 +370,6 @@ public class ServletDispatcher extends HttpServlet {
 	} catch (JSONException ex) {
 	    Logger.getLogger(ServletDispatcher.class.getName()).log(Level.SEVERE, null, ex);
 	}
-	
-	
-	
-	
-	
     }
 
 }

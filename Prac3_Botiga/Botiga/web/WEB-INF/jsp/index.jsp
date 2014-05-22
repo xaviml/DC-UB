@@ -20,14 +20,23 @@
 	    <div id="music" class="box background-box">
 		<h1 class="title">Música</h1>
 		<hr/>
+		<p class="contingutdiv">
+		    Descarrega tot tipus de Música!
+		</p>
 	    </div>
 	    <div id="book" class="box background-box">
 		<h1 class="title">Llibres</h1>
 		<hr/>
+		<p class="contingutdiv">
+		    Descarrega tot tipus de Llibres i contingut electrónic!
+		</p>
 	    </div>
 	    <div id="videos" class="box background-box">
 		<h1 class="title">Vídeos</h1>
 		<hr/>
+		<p class="contingutdiv">
+		    Descarrega tot tipus de Vídeo!
+		</p>
 	    </div>
 	</div>
     </body>

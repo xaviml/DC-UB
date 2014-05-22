@@ -50,17 +50,22 @@ public class Data {
      */
     
     public User addUser(String user) {
-	if(mUsers.containsKey(user)) return mUsers.get(user);
-	User u = new User(user, 1000, new HashMap<String, Product>());
-	mUsers.put(user, u);
+	User u;
+	synchronized(mUsers) {
+	    if(mUsers.containsKey(user)) return mUsers.get(user);
+	    u = new User(user, 1000, new HashMap<String, Product>());
+	    mUsers.put(user, u);	
+	}
 	saveUsers();
 	return u;
     }
     
     public void buyProduct(User user, HashMap<String, Product> productes, float preu) {
 	//Aquí s'actualitzar el fitxer users.json també
-	user.getProducts().putAll(productes);
-	user.setCredits(user.getCredits()-preu);
+	synchronized(user) {
+	    user.getProducts().putAll(productes);
+	    user.setCredits(user.getCredits()-preu);
+	}
 	saveUsers();
     }
 
@@ -73,7 +78,9 @@ public class Data {
     }
 
     public void augmentarSaldo(User u, int augment) {
-	u.setCredits(u.getCredits()+augment);
+	synchronized(u) {
+	    u.setCredits(u.getCredits()+augment);
+	}
 	saveUsers();
     }
     

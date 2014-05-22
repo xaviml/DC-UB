@@ -1,15 +1,5 @@
-{"users": [
-  {
-    "name": "albert",
-    "credit": 987.030029296875,
-    "products": []
-  },
-  {
-    "name": "xavi",
-    "credit": 410092.53125,
-    "products": [
-      "I'm Not Part Of Me",
-      "Manual per solventar el cub de rubik"
-    ]
-  }
-]}
+{"users": [{
+  "name": "xavi",
+  "credit": 1000,
+  "products": []
+}]}

@@ -31,19 +31,29 @@
 	    </c:forEach>
 	    
 	    <% Collection<Product> cistell = (Collection<Product>) request.getAttribute("cistell");
-	    if(cistell.size() > 0) {%>
-		<br/>
-		<h1 class="title">Confirmació de la compra</h1>
-		<hr/>
-		<br/>
-		<p id="preu">Total: <c:out value="${preucistell}"/> €</p>
-		<form action="/Botiga/Confirma" method="POST">
-		    <input id="confirma" type="submit" class="button" value="Confirma compra"/>
-		</form>
-		<form action="/Botiga/Cancela" method="POST">
-		    <input id="cancela" type="submit" class="button" value="Cancel·la compra"/>
-		</form>
-	    <%} else{%>
+	    if(cistell.size() > 0) {
+		Boolean creditsuficient = (Boolean) request.getAttribute("creditsuficient");
+		if(creditsuficient) {%>
+		    <br/>
+		    <h1 class="title">Confirmació de la compra</h1>
+		    <hr/>
+		    <br/>
+		    <p id="preu">Total: <c:out value="${preucistell}"/> €</p>
+		    <form action="/Botiga/Confirma" method="POST">
+			<input id="confirma" type="submit" class="button" value="Confirma compra"/>
+		    </form>
+		    <form action="/Botiga/Cancela" method="POST">
+			<input id="cancela" type="submit" class="button" value="Cancel·la compra"/>
+		    </form>
+		<%} else{%>
+		    <br/>
+		    <p id="nocistell" class ="title">No tens crédits suficients</p>
+		    <form action="/Botiga/Cancela" method="POST">
+			<input id="cancela" type="submit" class="button" value="Cancel·la compra"/>
+		    </form>
+		<%}
+		
+	    }else{%>
 		<br/>
 		<p id="nocistell" class ="title">No hi han articles al cistell</p>
 	    <%}%>

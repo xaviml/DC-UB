@@ -21,7 +21,7 @@
          <url-pattern>/Cistell</url-pattern>
 	 <url-pattern>/Historial</url-pattern>
 	 <url-pattern>/Producte/*</url-pattern>
-	 <url-pattern>/login</url-pattern>
+	 <url-pattern>/login/*</url-pattern>
 	 
 
          <!-- If you list http methods, only those methods are protected -->
