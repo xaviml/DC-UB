@@ -5,3 +5,8 @@ This repository contains all code of the subject of Distributed Computing at Uni
 * **Prac1_Domino:** We created a protocol mounted over Transmission Control Protocol (TCP). We implemented our own [RFC](https://github.com/xaviml/DC-UB/blob/master/Prac1_Domino/PabloMartinez_XaviMoreno_rfcDP.txt).
 * **Prac2_Chat:** This project use RMI technology to create a chat, where the client communication is P2P.
 * **Prac3_Botiga:** Web implemented with Servlets and JSP. We used Apache Tomcat.
+
+
+## Collaborators
+* [@xaviml](https://github.com/xaviml) (me)
+* [@kirtashdark](https://github.com/kirtashdark)
